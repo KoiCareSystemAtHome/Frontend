@@ -1,0 +1,12 @@
+.ant-menu-item-selected {
+    /* background-color: #2A303D !important; */
+  }
+  .demo-logo-vertical{
+    height: 65px;
+  }
+.ant-menu-title-content{
+  font-size: 20px !important
+}
+:where(.css-dev-only-do-not-override-77tu7h).ant-menu-inline.ant-menu-root .ant-menu-item >.ant-menu-title-content, :where(.css-dev-only-do-not-override-77tu7h).ant-menu-inline.ant-menu-root .ant-menu-submenu-title >.ant-menu-title-content{
+  color: white;
+}
