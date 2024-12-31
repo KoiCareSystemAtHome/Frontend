@@ -1,12 +1,54 @@
 .ant-menu-item-selected {
-    /* background-color: #2A303D !important; */
-  }
-  .demo-logo-vertical{
-    height: 65px;
-  }
-.ant-menu-title-content{
-  font-size: 20px !important
+  /* background-color: #2A303D !important; */
 }
-:where(.css-dev-only-do-not-override-77tu7h).ant-menu-inline.ant-menu-root .ant-menu-item >.ant-menu-title-content, :where(.css-dev-only-do-not-override-77tu7h).ant-menu-inline.ant-menu-root .ant-menu-submenu-title >.ant-menu-title-content{
+.demo-logo-vertical {
+  height: 65px;
+}
+.ant-menu-title-content {
+  font-size: 20px !important;
+}
+:where(.css-dev-only-do-not-override-77tu7h).ant-menu-inline.ant-menu-root
+  .ant-menu-item
+  > .ant-menu-title-content,
+:where(.css-dev-only-do-not-override-77tu7h).ant-menu-inline.ant-menu-root
+  .ant-menu-submenu-title
+  > .ant-menu-title-content {
   color: white;
+}
+
+/* Styling for the selected menu item */
+.ant-menu-item-selected {
+  background-color: #f0f0f0 !important; /* Change to your desired background color */
+  color: black !important; /* Text color becomes black */
+}
+
+/* Change the color of icons in the selected menu item */
+.ant-menu-item-selected .anticon {
+  color: black !important; /* Icon color becomes black */
+}
+
+/* Ensure submenu items also inherit correct styles */
+.ant-menu-item-selected .ant-menu-title-content {
+  color: black !important; /* Submenu text color becomes black */
+}
+
+/* Hover effect: Ensure both text and icon turn black */
+.ant-menu-item:hover {
+  background-color: #e6e6e6 !important; /* Optional: hover background color */
+  color: black !important; /* Text color on hover */
+}
+
+/* Ensure icon turns black on hover */
+.ant-menu-item:hover .anticon {
+  color: black !important; /* Icon color on hover */
+}
+
+/* Ensure submenu text also turns black on hover */
+.ant-menu-item:hover .ant-menu-title-content {
+  color: black !important; /* Submenu text color on hover */
+}
+
+/* Ensure the arrow icon turns white when a submenu item is selected */
+.ant-menu-submenu-open > .ant-menu-submenu-title .ant-menu-submenu-arrow {
+  color: white !important; /* Arrow icon turns white */
 }
