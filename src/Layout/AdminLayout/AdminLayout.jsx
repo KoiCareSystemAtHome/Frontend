@@ -155,23 +155,13 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   ShopOutlined,
-  SearchOutlined,
-  BellOutlined,
-  LogoutOutlined,
 } from "@ant-design/icons";
-import { Layout, Menu, Button, Image } from "antd";
+import { Layout, Menu, Button } from "antd";
 import { useNavigate } from "react-router-dom";
 import "./AdminLayout.css";
-import logoutIcon from "../../assets/logout.png";
 import HeaderLayout from "../../components/HeaderLayout";
 
 const { Sider, Content } = Layout;
-
-const Icon = ({ children, color = "text-blue-400" }) => (
-  <div className={`w-5 h-5 ${color} flex items-center justify-center`}>
-    {children}
-  </div>
-);
 
 const AdminLayout = ({ children }) => {
   // Initialize collapsed state from localStorage or default to false
@@ -179,7 +169,6 @@ const AdminLayout = ({ children }) => {
     const savedState = localStorage.getItem("navbarCollapsed");
     return savedState ? JSON.parse(savedState) : false;
   });
-  const [isOpen, setIsOpen] = useState(false);
   const [selectedKey, setSelectedKey] = useState(
     localStorage.getItem("selectedMenuKey") || "admin/dashboard"
   );
@@ -195,13 +184,13 @@ const AdminLayout = ({ children }) => {
 
   const getMenuItemLabel = (key) => {
     const menuItems = [
-      { key: "admin/dashboard", label: "Dashboard" },
-      { key: "admin/membership", label: "Membership" },
-      { key: "admin/account/member", label: "Member" },
-      { key: "admin/account/shop", label: "Shop" },
-      { key: "admin/parameter", label: "Parameter" },
-      { key: "admin/feedback", label: "Feedback" },
-      { key: "admin/diseases", label: "Common Diseases" },
+      { key: "/admin/dashboard", label: "Dashboard" },
+      { key: "/admin/membership", label: "Membership" },
+      { key: "/admin/account/member", label: "Member" },
+      { key: "/admin/account/shop", label: "Shop" },
+      { key: "/admin/parameter", label: "Parameter" },
+      { key: "/admin/feedback", label: "Feedback" },
+      { key: "/admin/diseases", label: "Common Diseases" },
     ];
 
     const menuItem = menuItems.find((item) => item.key === key);
@@ -222,10 +211,6 @@ const AdminLayout = ({ children }) => {
     localStorage.setItem("headerTitle", newTitle);
 
     navigate(key);
-  };
-
-  const toggleCollapsed = () => {
-    setCollapsed(!collapsed);
   };
 
   return (

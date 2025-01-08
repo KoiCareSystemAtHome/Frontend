@@ -1,15 +1,9 @@
-import React, { useState } from "react";
-import { Form, Input, Button, Checkbox } from "antd";
+import React from "react";
+import { Form, Input, Button } from "antd";
 import LoginBackground from "../../assets/login-background.png";
 import Logo from "../../assets/logo.png";
 
 const RegisterPage = () => {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    remember: false,
-  });
-
   const onFinish = (e) => {
     console.log("Form submitted:", e);
   };
@@ -18,7 +12,11 @@ const RegisterPage = () => {
     <div className="min-h-screen bg-cyan-50 flex items-center justify-center p-4 font-title">
       {/* Decorative Background */}
       <div className="absolute inset-0 overflow-hidden">
-        <img src={LoginBackground} style={{ width: "100%", height: "100%" }} />
+        <img
+          src={LoginBackground}
+          alt=""
+          style={{ width: "100%", height: "100%" }}
+        />
       </div>
 
       {/* Top Left Logo */}
@@ -152,7 +150,7 @@ const RegisterPage = () => {
           {/* Sign up link */}
           <div className="text-center mt-6 font-title">
             <span className="text-gray-600">Already have an Account? </span>
-            <a href="/login" className="text-orange-500 hover:text-orange-600">
+            <a href="/`" className="text-orange-500 hover:text-orange-600">
               Sign In
             </a>
           </div>

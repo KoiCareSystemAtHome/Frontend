@@ -181,7 +181,7 @@
 // export default LoginPage;
 
 import React from "react";
-import { Form, Input, Button, Checkbox, message } from "antd";
+import { Form, Input, Button, Checkbox } from "antd";
 import LoginBackground from "../../assets/login-background.png";
 import Logo from "../../assets/logo.png";
 
@@ -194,7 +194,11 @@ const LoginPage = () => {
     <div className="min-h-screen bg-cyan-50 flex items-center justify-center p-4 font-title">
       {/* Decorative Background */}
       <div className="absolute inset-0 overflow-hidden">
-        <img src={LoginBackground} style={{ width: "100%", height: "100%" }} />
+        <img
+          src={LoginBackground}
+          alt=""
+          style={{ width: "100%", height: "100%" }}
+        />
       </div>
 
       {/* Top Left Logo */}
