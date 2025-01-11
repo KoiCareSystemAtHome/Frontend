@@ -1,149 +1,3 @@
-// import React, { useState, useEffect } from "react";
-// import {
-//   DashboardOutlined,
-//   TeamOutlined,
-//   DollarCircleOutlined,
-//   MessageOutlined,
-//   SettingOutlined,
-//   QuestionCircleOutlined,
-//   MenuFoldOutlined,
-//   MenuUnfoldOutlined,
-//   ShopOutlined,
-// } from "@ant-design/icons";
-// import { Layout, Menu, Button } from "antd";
-// import { useNavigate } from "react-router-dom";
-// import "./AdminLayout.css";
-
-// const { Sider, Content } = Layout;
-
-// const AdminLayout = ({ children }) => {
-//   const [collapsed, setCollapsed] = useState(false);
-//   const [selectedKey, setSelectedKey] = useState(
-//     localStorage.getItem("selectedMenuKey") || "admin/dashboard"
-//   );
-//   const navigate = useNavigate();
-
-//   useEffect(() => {
-//     // Navigate to the selected menu item on load
-//     navigate(selectedKey);
-//   }, [selectedKey, navigate]);
-
-//   const handleMenuClick = ({ key }) => {
-//     setSelectedKey(key);
-//     localStorage.setItem("selectedMenuKey", key); // Persist the selected menu key
-//     navigate(key);
-//   };
-
-//   return (
-//     <Layout className="min-h-[100vh]">
-//       <Sider
-//         trigger={null}
-//         collapsible
-//         collapsed={collapsed}
-//         width={250}
-//         style={{ backgroundColor: "#4d4d4d" }}
-//       >
-//         <div
-//           style={{
-//             height: 60,
-//             display: "flex",
-//             alignItems: "center",
-//             padding: "0 16px",
-//             borderBottom: "1px solid #333",
-//           }}
-//         >
-//           <Button
-//             type="text"
-//             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-//             onClick={() => setCollapsed(!collapsed)}
-//             style={{
-//               color: "white",
-//               background: "none",
-//               border: "none",
-//               fontSize: "18px",
-//               margin: "0 0 0 10px", // Add margin to space the button from the edge
-//             }}
-//           />
-//           {!collapsed && (
-//             <h2
-//               style={{
-//                 color: "white",
-//                 fontSize: "18px",
-//                 margin: "0 0 0 50px", // Add margin to space the text from the button
-//               }}
-//             >
-//               Admin
-//             </h2>
-//           )}
-//         </div>
-//         <Menu
-//           mode="inline"
-//           selectedKeys={[selectedKey]} // Highlight the selected menu item
-//           style={{ backgroundColor: "#4d4d4d", color: "white" }}
-//           onClick={handleMenuClick}
-//           items={[
-//             {
-//               key: "admin/dashboard",
-//               icon: <DashboardOutlined style={{ color: "white" }} />,
-//               label: "Dashboard",
-//               style: { color: "Black" },
-//             },
-//             {
-//               key: "admin/membership",
-//               icon: <TeamOutlined style={{ color: "white" }} />,
-//               label: "Membership",
-//             },
-//             {
-//               key: "admin/account",
-//               icon: <SettingOutlined style={{ color: "white" }} />,
-//               label: "Account",
-//               children: [
-//                 {
-//                   key: "admin/account/member",
-//                   icon: <TeamOutlined style={{ color: "white" }} />,
-//                   label: "Member",
-//                 },
-//                 {
-//                   key: "admin/account/shop",
-//                   icon: <ShopOutlined style={{ color: "white" }} />,
-//                   label: "Shop",
-//                 },
-//               ],
-//             },
-//             {
-//               key: "admin/parameter",
-//               icon: <DollarCircleOutlined style={{ color: "white" }} />,
-//               label: "Parameter",
-//             },
-//             {
-//               key: "admin/feedback",
-//               icon: <MessageOutlined style={{ color: "white" }} />,
-//               label: "Feedback",
-//             },
-//             {
-//               key: "admin/diseases",
-//               icon: <QuestionCircleOutlined style={{ color: "white" }} />,
-//               label: "Common Diseases",
-//             },
-//           ]}
-//         />
-//       </Sider>
-//       <Layout>
-//         <Content
-//           style={{
-//             padding: "24px",
-//             background: "#F5F5F5",
-//           }}
-//         >
-//           <div>{children && children}</div>
-//         </Content>
-//       </Layout>
-//     </Layout>
-//   );
-// };
-
-// export default AdminLayout;
-
 import React, { useState, useEffect } from "react";
 import {
   DashboardOutlined,
@@ -157,9 +11,11 @@ import {
   ShopOutlined,
 } from "@ant-design/icons";
 import { Layout, Menu, Button } from "antd";
-import { useNavigate } from "react-router-dom";
+import { Route, Routes, useNavigate } from "react-router-dom";
 import "./AdminLayout.css";
-import HeaderLayout from "../../components/HeaderLayout";
+import HeaderLayout from "../../components/HeaderLayout/HeaderLayout";
+import Dashboard from "../../pages/Dashboard/Dashboard";
+import Membership from "../../pages/Membership/Membership";
 
 const { Sider, Content } = Layout;
 
@@ -238,44 +94,44 @@ const AdminLayout = ({ children }) => {
           onClick={handleMenuClick}
           items={[
             {
-              key: "admin/dashboard",
+              key: "/admin/dashboard",
               icon: <DashboardOutlined style={{ color: "white" }} />,
               label: "Dashboard",
             },
             {
-              key: "admin/membership",
+              key: "/admin/membership",
               icon: <TeamOutlined style={{ color: "white" }} />,
               label: "Membership",
             },
             {
-              key: "admin/account",
+              key: "/admin/account",
               icon: <SettingOutlined style={{ color: "white" }} />,
               label: "Account",
               children: [
                 {
-                  key: "admin/account/member",
+                  key: "/admin/account/member",
                   icon: <TeamOutlined style={{ color: "white" }} />,
                   label: "Member",
                 },
                 {
-                  key: "admin/account/shop",
+                  key: "/admin/account/shop",
                   icon: <ShopOutlined style={{ color: "white" }} />,
                   label: "Shop",
                 },
               ],
             },
             {
-              key: "admin/parameter",
+              key: "/admin/parameter",
               icon: <DollarCircleOutlined style={{ color: "white" }} />,
               label: "Parameter",
             },
             {
-              key: "admin/feedback",
+              key: "/admin/feedback",
               icon: <MessageOutlined style={{ color: "white" }} />,
               label: "Feedback",
             },
             {
-              key: "admin/diseases",
+              key: "/admin/diseases",
               icon: <QuestionCircleOutlined style={{ color: "white" }} />,
               label: "Common Diseases",
             },
@@ -285,7 +141,16 @@ const AdminLayout = ({ children }) => {
       <Layout>
         {/* Pass headerTitle and setter to Header */}
         <HeaderLayout title={headerTitle} />
-        <Content className="bg-gray-100 p-4">{children}</Content>
+        <Content
+          key={selectedKey}
+          className="custom-scrollbar h-[calc(100vh-64px)] overflow-y-auto bg-gray-100 p-4"
+        >
+          <Routes>
+            {/* Add other admin routes here */}
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="membership" element={<Membership />} />
+          </Routes>
+        </Content>
       </Layout>
     </Layout>
   );

@@ -1,6 +1,6 @@
 import { BellOutlined, SearchOutlined } from "@ant-design/icons";
 import React, { useState } from "react";
-import logoutIcon from "../assets/logout.png";
+import logoutIcon from "../../assets/logout.png";
 
 const Icon = ({ children, color = "text-blue-400" }) => (
   <div className={`w-5 h-5 ${color} flex items-center justify-center`}>
@@ -43,7 +43,7 @@ const HeaderLayout = ({ title }) => {
         </div>
         <div className="relative">
           <button className="p-2 hover:bg-gray-100 rounded-lg">
-            <img src={logoutIcon} className="h-5 w-5 text-gray-500" />
+            <img src={logoutIcon} alt="" className="h-5 w-5 text-gray-500" />
           </button>
         </div>
         <div className="relative">

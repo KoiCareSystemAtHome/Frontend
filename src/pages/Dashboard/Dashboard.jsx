@@ -22,7 +22,7 @@ import {
   ArrowDownOutlined,
 } from "@ant-design/icons";
 import { Option } from "antd/es/mentions";
-import HeaderLayout from "../../components/HeaderLayout";
+import "./Dashboard.css";
 
 const { Title, Text } = Typography;
 
@@ -130,7 +130,7 @@ const StatCard = ({ title, value, trend, trendValue, icon, color }) => (
   </Card>
 );
 
-const DashboardPage = () => {
+const Dashboard = () => {
   const [selectedYear, setSelectedYear] = useState("2024");
 
   const handleYearChange = (value) => {
@@ -139,7 +139,7 @@ const DashboardPage = () => {
 
   return (
     <div>
-      <HeaderLayout />
+      <div className="font-semibold ml-4 text-2xl">Dashboard</div>
       <div style={{ padding: 24, minHeight: "100vh", background: "#f0f2f5" }}>
         <Row gutter={[16, 16]}>
           {/* Stats Cards */}
@@ -348,7 +348,9 @@ const DashboardPage = () => {
                       ></Image>
                       <Text>{item.name}</Text>
                     </Space>
-                    <Text type="secondary">Sold: {item.sold}</Text>
+                    <Text style={{ fontWeight: "bold" }} type="secondary">
+                      Sold: {item.sold}
+                    </Text>
                   </div>
                 ))}
               </Space>
@@ -360,4 +362,4 @@ const DashboardPage = () => {
   );
 };
 
-export default DashboardPage;
+export default Dashboard;
