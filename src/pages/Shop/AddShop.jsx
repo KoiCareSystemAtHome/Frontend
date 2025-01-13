@@ -1,8 +1,8 @@
 import { PlusOutlined } from "@ant-design/icons";
-import { Button, Col, DatePicker, Form, Input, Modal, Row, Select } from "antd";
+import { Button, Col, Form, Input, Modal, Row, Select } from "antd";
 import React, { useState } from "react";
 
-const AddMember = () => {
+const AddShop = () => {
   const [isAddOpen, setIsAddOpen] = useState(false);
 
   const showAddModal = () => {
@@ -19,7 +19,7 @@ const AddMember = () => {
 
   const buttonStyle = {
     height: "40px",
-    width: "140px",
+    width: "120px",
     borderRadius: "10px",
     margin: "0px 5px",
     padding: "7px 0px 10px 0px",
@@ -37,13 +37,13 @@ const AddMember = () => {
         style={buttonStyle}
         onClick={showAddModal}
       >
-        Add Member
+        Add Shop
       </Button>
 
       <Modal
         className="custom-modal"
         centered
-        title="Create Member"
+        title="Create Shop"
         open={isAddOpen}
         onCancel={handleCancel}
         width={870}
@@ -54,20 +54,35 @@ const AddMember = () => {
           <Row style={{ justifyContent: "space-between" }}>
             {/* 1st column */}
             <Col>
-              <p className="modalContent">Member Name</p>
+              <p className="modalContent">Shop Name</p>
               <Form.Item
-                name="memberName"
+                name="shopName"
                 rules={[
                   {
                     required: true,
-                    message: "Please enter member name!",
+                    message: "Please enter shop name!",
                   },
                 ]}
               >
-                <Input placeholder="Member Name"></Input>
+                <Input placeholder="Shop Name"></Input>
               </Form.Item>
             </Col>
             {/* 2nd column */}
+            <Col>
+              <p className="modalContent">Owner Name</p>
+              <Form.Item
+                name="ownerName"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please enter owner name!",
+                  },
+                ]}
+              >
+                <Input placeholder="Owner Name"></Input>
+              </Form.Item>
+            </Col>
+            {/* 3rd column */}
             <Col>
               <p className="modalContent">Email Address</p>
               <Form.Item
@@ -82,7 +97,10 @@ const AddMember = () => {
                 <Input placeholder="Email Address"></Input>
               </Form.Item>
             </Col>
-            {/* 3rd column */}
+          </Row>
+          {/* 2nd Row */}
+          <Row style={{ justifyContent: "space-between" }}>
+            {/* 1st column */}
             <Col>
               <p className="modalContent">Phone Number</p>
               <Form.Item
@@ -97,64 +115,22 @@ const AddMember = () => {
                 <Input placeholder="Phone Number"></Input>
               </Form.Item>
             </Col>
-          </Row>
-          {/* 2nd Row */}
-          <Row style={{ justifyContent: "space-between" }}>
-            {/* 1st column */}
-            <Col>
-              <p className="modalContent">Membership Type</p>
-              <Form.Item
-                name="membershipType"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please select membership type!",
-                  },
-                ]}
-              >
-                <Select placeholder="Membership Type"></Select>
-              </Form.Item>
-            </Col>
             {/* 2nd column */}
             <Col>
-              <p className="modalContent">Start Date</p>
+              <p className="modalContent">Shop Address</p>
               <Form.Item
-                name="startDate"
+                name="shopAddress"
                 rules={[
                   {
                     required: true,
-                    message: "Please select start date!",
+                    message: "Please enter shop address!",
                   },
                 ]}
               >
-                <DatePicker
-                  style={{ width: "270px" }}
-                  placeholder="Start Date"
-                ></DatePicker>
+                <Input placeholder="Shop Address"></Input>
               </Form.Item>
             </Col>
             {/* 3rd column */}
-            <Col>
-              <p className="modalContent">End Date</p>
-              <Form.Item
-                name="endDate"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please select end date!",
-                  },
-                ]}
-              >
-                <DatePicker
-                  style={{ width: "270px" }}
-                  placeholder="End Date"
-                ></DatePicker>
-              </Form.Item>
-            </Col>
-          </Row>
-          {/* 3rd Row */}
-          <Row>
-            {/* 1st column */}
             <Col>
               <p className="modalContent">Status</p>
               <Form.Item
@@ -193,4 +169,4 @@ const AddMember = () => {
   );
 };
 
-export default AddMember;
+export default AddShop;

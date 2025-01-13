@@ -1,133 +1,127 @@
 import { Pagination, Table } from "antd";
 import React from "react";
-import UpdateMember from "./UpdateMember";
+import UpdateShop from "./UpdateShop";
 
-const renderUpdateMember = (record) => <UpdateMember record={record} />;
-
-const MemberTable = () => {
+const renderUpdateShop = (record) => <UpdateShop record={record} />;
+const ShopTable = () => {
   const dataSource = [
     {
       key: 1,
-      memberId: 1,
-      memberName: "John",
+      shopId: 1,
+      shopName: "Koi Guardian",
+      ownerName: "John",
       email: "john123@gmail.com",
       phone: "0123456789",
-      membershipType: "Standard",
-      startDate: "01/01/2023",
-      endDate: "01/01/2024",
+      shopAddress: "Apt. 340 62580 Dong Ferry, Laneton, UT 24917-6849",
       status: "Active",
     },
     {
       key: 2,
-      memberId: 2,
-      memberName: "John",
+      shopId: 2,
+      shopName: "Koi Guardian",
+      ownerName: "John",
       email: "john123@gmail.com",
       phone: "0123456789",
-      membershipType: "Standard",
-      startDate: "01/01/2023",
-      endDate: "01/01/2024",
+      shopAddress: "Apt. 340 62580 Dong Ferry, Laneton, UT 24917-6849",
       status: "Inactive",
     },
     {
       key: 3,
-      memberId: 3,
-      memberName: "John",
+      shopId: 3,
+      shopName: "Koi Guardian",
+      ownerName: "John",
       email: "john123@gmail.com",
       phone: "0123456789",
-      membershipType: "Standard",
-      startDate: "01/01/2023",
-      endDate: "01/01/2024",
-      status: "Expired",
-    },
-    {
-      key: 4,
-      memberId: 4,
-      memberName: "John",
-      email: "john123@gmail.com",
-      phone: "0123456789",
-      membershipType: "Standard",
-      startDate: "01/01/2023",
-      endDate: "01/01/2024",
+      shopAddress: "Apt. 340 62580 Dong Ferry, Laneton, UT 24917-6849",
       status: "Active",
     },
     {
-      key: 5,
-      memberId: 5,
-      memberName: "John",
+      key: 4,
+      shopId: 4,
+      shopName: "Koi Guardian",
+      ownerName: "John",
       email: "john123@gmail.com",
       phone: "0123456789",
-      membershipType: "Standard",
-      startDate: "01/01/2023",
-      endDate: "01/01/2024",
+      shopAddress: "Apt. 340 62580 Dong Ferry, Laneton, UT 24917-6849",
       status: "Inactive",
     },
     {
-      key: 6,
-      memberId: 6,
-      memberName: "John",
+      key: 5,
+      shopId: 5,
+      shopName: "Koi Guardian",
+      ownerName: "John",
       email: "john123@gmail.com",
       phone: "0123456789",
-      membershipType: "Standard",
-      startDate: "01/01/2023",
-      endDate: "01/01/2024",
-      status: "Expired",
+      shopAddress: "Apt. 340 62580 Dong Ferry, Laneton, UT 24917-6849",
+      status: "Active",
+    },
+    {
+      key: 6,
+      shopId: 6,
+      shopName: "Koi Guardian",
+      ownerName: "John",
+      email: "john123@gmail.com",
+      phone: "0123456789",
+      shopAddress: "Apt. 340 62580 Dong Ferry, Laneton, UT 24917-6849",
+      status: "Inactive",
     },
     {
       key: 7,
-      memberId: 7,
-      memberName: "John",
+      shopId: 7,
+      shopName: "Koi Guardian",
+      ownerName: "John",
       email: "john123@gmail.com",
       phone: "0123456789",
-      membershipType: "Standard",
-      startDate: "01/01/2023",
-      endDate: "01/01/2024",
+      shopAddress: "Apt. 340 62580 Dong Ferry, Laneton, UT 24917-6849",
       status: "Active",
     },
     {
       key: 8,
-      memberId: 8,
-      memberName: "John",
+      shopId: 8,
+      shopName: "Koi Guardian",
+      ownerName: "John",
       email: "john123@gmail.com",
       phone: "0123456789",
-      membershipType: "Standard",
-      startDate: "01/01/2023",
-      endDate: "01/01/2024",
+      shopAddress: "Apt. 340 62580 Dong Ferry, Laneton, UT 24917-6849",
       status: "Inactive",
     },
     {
       key: 9,
-      memberId: 9,
-      memberName: "John",
+      shopId: 9,
+      shopName: "Koi Guardian",
+      ownerName: "John",
       email: "john123@gmail.com",
       phone: "0123456789",
-      membershipType: "Standard",
-      startDate: "01/01/2023",
-      endDate: "01/01/2024",
-      status: "Expired",
+      shopAddress: "Apt. 340 62580 Dong Ferry, Laneton, UT 24917-6849",
+      status: "Active",
     },
     {
       key: 10,
-      memberId: 10,
-      memberName: "John",
+      shopId: 10,
+      shopName: "Koi Guardian",
+      ownerName: "John",
       email: "john123@gmail.com",
       phone: "0123456789",
-      membershipType: "Standard",
-      startDate: "01/01/2023",
-      endDate: "01/01/2024",
-      status: "Active",
+      shopAddress: "Apt. 340 62580 Dong Ferry, Laneton, UT 24917-6849",
+      status: "Inactive",
     },
   ];
 
   const columns = [
     {
-      title: "Member ID",
-      dataIndex: "memberId",
-      key: "memberId",
+      title: "Shop ID",
+      dataIndex: "shopId",
+      key: "shopId",
     },
     {
-      title: "Member Name",
-      dataIndex: "memberName",
-      key: "memberName",
+      title: "Shop Name",
+      dataIndex: "shopName",
+      key: "shopName",
+    },
+    {
+      title: "Owner Name",
+      dataIndex: "ownerName",
+      key: "ownerName",
     },
     {
       title: "Email Address",
@@ -140,19 +134,9 @@ const MemberTable = () => {
       key: "phone",
     },
     {
-      title: "Membership Type",
-      dataIndex: "membershipType",
-      key: "membershipType",
-    },
-    {
-      title: "Start Date",
-      dataIndex: "startDate",
-      key: "startDate",
-    },
-    {
-      title: "End Date",
-      dataIndex: "endDate",
-      key: "endDate",
+      title: "Shop Address",
+      dataIndex: "shopAddress",
+      key: "shopAddress",
     },
     {
       title: "Status",
@@ -183,11 +167,10 @@ const MemberTable = () => {
       title: "Edit",
       key: "edit",
       render: (record) => {
-        return renderUpdateMember(record);
+        return renderUpdateShop(record);
       },
     },
   ];
-
   return (
     <div>
       <div className="w-full">
@@ -213,4 +196,4 @@ const MemberTable = () => {
   );
 };
 
-export default MemberTable;
+export default ShopTable;

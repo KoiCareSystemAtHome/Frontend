@@ -45,7 +45,7 @@ const UpdateMembership = () => {
       <Modal
         className="custom-modal"
         centered
-        title="Cập nhật Bảo Hiểm"
+        title="Edit Membership"
         open={isEditOpen}
         onCancel={handleEditCancel}
         width={870}

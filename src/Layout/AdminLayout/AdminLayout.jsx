@@ -17,6 +17,7 @@ import HeaderLayout from "../../components/HeaderLayout/HeaderLayout";
 import Dashboard from "../../pages/Dashboard/Dashboard";
 import Membership from "../../pages/Membership/Membership";
 import Member from "../../pages/Member/Member";
+import Shop from "../../pages/Shop/Shop";
 
 const { Sider, Content } = Layout;
 
@@ -151,6 +152,7 @@ const AdminLayout = ({ children }) => {
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="membership" element={<Membership />} />
             <Route path="account/member" element={<Member />} />
+            <Route path="account/shop" element={<Shop />} />
           </Routes>
         </Content>
       </Layout>

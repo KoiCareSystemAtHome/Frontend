@@ -1,136 +1,133 @@
-import { PlusOutlined } from "@ant-design/icons";
-import { Button, Col, Form, Input, Modal, Row, Select } from "antd";
+import { EditOutlined } from "@ant-design/icons";
+import { Button, Col, Form, Input, Modal, Popover, Row, Select } from "antd";
 import React, { useState } from "react";
-import "../../Styles/Modal.css";
-//import { useDispatch } from "react-redux";
 
-const AddMembership = () => {
-  const [isAddOpen, setIsAddOpen] = useState(false);
+const UpdateShop = () => {
+  //const { record } = props;
+  const [form] = Form.useForm();
+  //const dispatch = useDispatch();
+  const [isEditOpen, setIsEditOpen] = useState(false);
 
-  const showAddModal = () => {
-    setIsAddOpen(true);
+  const showEditModal = () => {
+    setIsEditOpen(true);
+  };
+
+  const handleEditCancel = () => {
+    form.resetFields();
+    setIsEditOpen(false);
   };
 
   const handleCancel = () => {
-    setIsAddOpen(false);
+    setIsEditOpen(false);
   };
 
-  //   const dispatch = useDispatch();
-
-  const [form] = Form.useForm();
-
-  const buttonStyle = {
-    height: "40px",
-    width: "160px",
-    borderRadius: "10px",
-    margin: "0px 5px",
-    padding: "7px 0px 10px 0px",
-  };
-
-  const onFinish = (values) => {};
+  const handleEditSubmit = () => {};
 
   return (
     <div>
-      <Button
-        size="small"
-        className="addBtn"
-        type="primary"
-        icon={<PlusOutlined />}
-        style={buttonStyle}
-        onClick={showAddModal}
-      >
-        Add Membership
-      </Button>
+      <Popover content="Edit" trigger="hover">
+        <Button
+          type="primary"
+          icon={<EditOutlined />}
+          onClick={showEditModal}
+          className="bg-[#FFC043] hover:bg-[#FFB520] border-none shadow-none flex items-center justify-center"
+          style={{
+            width: "32px",
+            height: "32px",
+            padding: 0,
+            backgroundColor: "orange",
+          }}
+        />
+      </Popover>
 
       <Modal
         className="custom-modal"
         centered
-        title="Create Membership"
-        open={isAddOpen}
-        onCancel={handleCancel}
+        title="Edit Shop"
+        open={isEditOpen}
+        onCancel={handleEditCancel}
         width={870}
         footer={null}
       >
-        <Form form={form} onFinish={onFinish}>
+        <Form form={form} onFinish={handleEditSubmit}>
           {/* 1st Row */}
           <Row style={{ justifyContent: "space-between" }}>
             {/* 1st column */}
             <Col>
-              <p className="modalContent">Package Name</p>
+              <p className="modalContent">Shop Name</p>
               <Form.Item
-                name="packageName"
+                name="shopName"
                 rules={[
                   {
                     required: true,
-                    message: "Please enter package name!",
+                    message: "Please enter shop name!",
                   },
                 ]}
               >
-                <Input placeholder="Package Name"></Input>
+                <Input placeholder="Shop Name"></Input>
               </Form.Item>
             </Col>
             {/* 2nd column */}
             <Col>
-              <p className="modalContent">Description</p>
+              <p className="modalContent">Owner Name</p>
               <Form.Item
-                name="description"
+                name="ownerName"
                 rules={[
                   {
                     required: true,
-                    message: "Please enter description!",
+                    message: "Please enter owner name!",
                   },
                 ]}
               >
-                <Input placeholder="Description"></Input>
+                <Input placeholder="Owner Name"></Input>
               </Form.Item>
             </Col>
             {/* 3rd column */}
             <Col>
-              <p className="modalContent">Period</p>
+              <p className="modalContent">Email Address</p>
               <Form.Item
-                name="period"
+                name="email"
                 rules={[
                   {
                     required: true,
-                    message: "Please select period!",
+                    message: "Please enter email address!",
                   },
                 ]}
               >
-                <Select placeholder="Period"></Select>
+                <Input placeholder="Email Address"></Input>
               </Form.Item>
             </Col>
           </Row>
-
           {/* 2nd Row */}
           <Row style={{ justifyContent: "space-between" }}>
             {/* 1st column */}
             <Col>
-              <p className="modalContent">Package Type</p>
+              <p className="modalContent">Phone Number</p>
               <Form.Item
-                name="packageType"
+                name="phone"
                 rules={[
                   {
                     required: true,
-                    message: "Please select package type!",
+                    message: "Please enter phone number!",
                   },
                 ]}
               >
-                <Select placeholder="Package Type"></Select>
+                <Input placeholder="Phone Number"></Input>
               </Form.Item>
             </Col>
             {/* 2nd column */}
             <Col>
-              <p className="modalContent">Price</p>
+              <p className="modalContent">Shop Address</p>
               <Form.Item
-                name="price"
+                name="shopAddress"
                 rules={[
                   {
                     required: true,
-                    message: "Please enter price!",
+                    message: "Please enter shop address!",
                   },
                 ]}
               >
-                <Input placeholder="Price"></Input>
+                <Input placeholder="Shop Address"></Input>
               </Form.Item>
             </Col>
             {/* 3rd column */}
@@ -152,17 +149,19 @@ const AddMembership = () => {
           <Row className="membershipButton">
             <Form.Item>
               <Button
+                onClick={handleCancel}
                 htmlType="submit"
                 type="primary"
                 style={{
-                  width: "180px",
+                  width: "120px",
                   height: "40px",
                   padding: "8px",
                   borderRadius: "10px",
+                  backgroundColor: "orange",
                 }}
               >
-                <PlusOutlined />
-                Create Membership
+                <EditOutlined />
+                Edit Shop
               </Button>
             </Form.Item>
           </Row>
@@ -172,4 +171,4 @@ const AddMembership = () => {
   );
 };
 
-export default AddMembership;
+export default UpdateShop;
