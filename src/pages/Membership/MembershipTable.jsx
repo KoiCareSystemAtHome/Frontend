@@ -1,7 +1,8 @@
 import React from "react";
-import { Table, Button, Popover, Pagination } from "antd";
-import { EditOutlined } from "@ant-design/icons";
-import "./Membership.css";
+import { Table, Pagination } from "antd";
+import UpdateMembership from "./UpdateMembership";
+
+const renderUpdateMembership = (record) => <UpdateMembership record={record} />;
 
 const Membership = () => {
   const dataSource = [
@@ -24,7 +25,7 @@ const Membership = () => {
       period: "1 year",
       packageTier: "Premium",
       price: "1.099.000 đ",
-      status: "Active",
+      status: "Inactive",
     },
     {
       key: 3,
@@ -35,7 +36,7 @@ const Membership = () => {
       period: "1 month",
       packageTier: "Standard",
       price: "299.000 đ",
-      status: "Active",
+      status: "Expired",
     },
     {
       key: 4,
@@ -45,7 +46,7 @@ const Membership = () => {
       period: "1 year",
       packageTier: "Premium",
       price: "1.099.000 đ",
-      status: "Active",
+      status: "Inactive",
     },
     {
       key: 5,
@@ -66,7 +67,7 @@ const Membership = () => {
       period: "1 year",
       packageTier: "Premium",
       price: "1.099.000 đ",
-      status: "Active",
+      status: "Inactive",
     },
     {
       key: 7,
@@ -77,7 +78,7 @@ const Membership = () => {
       period: "1 month",
       packageTier: "Standard",
       price: "299.000 đ",
-      status: "Active",
+      status: "Expired",
     },
     {
       key: 8,
@@ -87,7 +88,7 @@ const Membership = () => {
       period: "1 year",
       packageTier: "Premium",
       price: "1.099.000 đ",
-      status: "Active",
+      status: "Inactive",
     },
     {
       key: 9,
@@ -108,7 +109,7 @@ const Membership = () => {
       period: "1 year",
       packageTier: "Premium",
       price: "1.099.000 đ",
-      status: "Active",
+      status: "Inactive",
     },
   ];
 
@@ -147,29 +148,33 @@ const Membership = () => {
       title: "Status",
       dataIndex: "status",
       key: "status",
-      render: (status) => (
-        <span className="px-3 py-1 rounded-full bg-[#5BD9C5] text-white text-xs">
-          {status}
-        </span>
-      ),
+      render: (status) => {
+        let backgroundColor;
+        if (status === "Active")
+          backgroundColor = "#22c55e"; // Green for Active
+        else if (status === "Inactive")
+          backgroundColor = "#ef4444"; // Red for Inactive
+        else if (status === "Expired") backgroundColor = "#facc15"; // Yellow for Expired
+        return (
+          <span
+            className={`px-3 py-1 rounded-full text-white text-xs flex items-center justify-center`}
+            style={{
+              backgroundColor,
+              width: "100px", // Fixed width
+              height: "30px", // Fixed height
+            }}
+          >
+            {status}
+          </span>
+        );
+      },
     },
     {
       title: "Edit",
       key: "edit",
-      render: () => (
-        <Popover content="Edit" trigger="hover">
-          <Button
-            type="primary"
-            icon={<EditOutlined />}
-            className="bg-[#FFC043] hover:bg-[#FFB520] border-none shadow-none flex items-center justify-center"
-            style={{
-              width: "32px",
-              height: "32px",
-              padding: 0,
-            }}
-          />
-        </Popover>
-      ),
+      render: (record) => {
+        return renderUpdateMembership(record);
+      },
     },
   ];
 

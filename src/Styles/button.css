@@ -1,0 +1,39 @@
+.ant-btn.ant-btn-primary.deleteBtn,
+.ant-btn.ant-btn-primary.editBtn,
+.ant-btn.ant-btn-primary.scheduleBtn,
+.ant-btn.ant-btn-primary.exportBtn,
+.ant-btn.ant-btn-primary.addBtn {
+  border-radius: 30px;
+  width: 100px;
+  margin: 0 1px;
+}
+
+.ant-btn.ant-btn-default.cancelBtn {
+  width: 114px;
+  margin-right: 10px;
+}
+
+.ant-btn.ant-btn-primary.scheduleBtn {
+  background-color: purple !important;
+  color: #fff;
+}
+
+.ant-btn.ant-btn-primary.exportBtn {
+  background-color: green !important;
+  color: #fff;
+}
+
+.ant-btn.ant-btn-primary.editBtn {
+  background-color: orange !important;
+  color: #fff;
+}
+
+.ant-btn.ant-btn-primary.deleteBtn {
+  background-color: red !important;
+  color: #fff;
+}
+
+/* filter input */
+.ant-col.ant-col-6.css-dev-only-do-not-override-p7e5j5 {
+  height: 40px !important;
+}

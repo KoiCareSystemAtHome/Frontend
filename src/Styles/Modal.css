@@ -1,0 +1,34 @@
+.modalContent {
+  margin-top: 0px;
+  margin-bottom: 5px;
+  font-weight: bold;
+  display: flex;
+  width: 270px;
+}
+
+.modalContent-2 {
+  margin-top: 0px;
+  margin-bottom: 5px;
+  font-weight: bold;
+  display: flex;
+  width: 405px;
+}
+
+.Select_Input {
+  height: 40px;
+  width: 270px;
+}
+
+.custom-modal .ant-modal-content {
+  border-radius: 30px; /* Set your desired border-radius value */
+}
+
+.custom-modal .ant-modal-title {
+  margin-bottom: 10px;
+}
+
+.membershipButton {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: -20px;
+}

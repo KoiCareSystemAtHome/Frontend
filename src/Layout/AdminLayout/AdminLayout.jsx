@@ -16,6 +16,7 @@ import "./AdminLayout.css";
 import HeaderLayout from "../../components/HeaderLayout/HeaderLayout";
 import Dashboard from "../../pages/Dashboard/Dashboard";
 import Membership from "../../pages/Membership/Membership";
+import Member from "../../pages/Member/Member";
 
 const { Sider, Content } = Layout;
 
@@ -149,6 +150,7 @@ const AdminLayout = ({ children }) => {
             {/* Add other admin routes here */}
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="membership" element={<Membership />} />
+            <Route path="account/member" element={<Member />} />
           </Routes>
         </Content>
       </Layout>

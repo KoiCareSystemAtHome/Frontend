@@ -142,6 +142,7 @@ const RegisterPage = () => {
               htmlType="submit"
               className="w-full bg-orange-500 text-white rounded-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors mt-4 font-title"
               size="large"
+              style={{ backgroundColor: "orange" }}
             >
               Sign in
             </Button>
@@ -150,7 +151,7 @@ const RegisterPage = () => {
           {/* Sign up link */}
           <div className="text-center mt-6 font-title">
             <span className="text-gray-600">Already have an Account? </span>
-            <a href="/`" className="text-orange-500 hover:text-orange-600">
+            <a href="/" className="text-orange-500 hover:text-orange-600">
               Sign In
             </a>
           </div>
