@@ -18,6 +18,7 @@ import Dashboard from "../../pages/Dashboard/Dashboard";
 import Membership from "../../pages/Membership/Membership";
 import Member from "../../pages/Member/Member";
 import Shop from "../../pages/Shop/Shop";
+import Parameter from "../../pages/Parameter/Parameter";
 
 const { Sider, Content } = Layout;
 
@@ -128,14 +129,14 @@ const AdminLayout = ({ children }) => {
               label: "Parameter",
             },
             {
-              key: "/admin/feedback",
-              icon: <MessageOutlined style={{ color: "white" }} />,
-              label: "Feedback",
-            },
-            {
               key: "/admin/diseases",
               icon: <QuestionCircleOutlined style={{ color: "white" }} />,
               label: "Common Diseases",
+            },
+            {
+              key: "/admin/feedback",
+              icon: <MessageOutlined style={{ color: "white" }} />,
+              label: "Feedback",
             },
           ]}
         />
@@ -153,6 +154,7 @@ const AdminLayout = ({ children }) => {
             <Route path="membership" element={<Membership />} />
             <Route path="account/member" element={<Member />} />
             <Route path="account/shop" element={<Shop />} />
+            <Route path="parameter" element={<Parameter />} />
           </Routes>
         </Content>
       </Layout>

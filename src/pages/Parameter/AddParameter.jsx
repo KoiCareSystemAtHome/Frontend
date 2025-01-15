@@ -1,8 +1,8 @@
 import { PlusOutlined } from "@ant-design/icons";
-import { Button, Col, Form, Input, Modal, Row, Select } from "antd";
+import { Button, Col, DatePicker, Form, Input, Modal, Row, Select } from "antd";
 import React, { useState } from "react";
 
-const AddShop = () => {
+const AddParameter = () => {
   const [isAddOpen, setIsAddOpen] = useState(false);
 
   const showAddModal = () => {
@@ -19,7 +19,7 @@ const AddShop = () => {
 
   const buttonStyle = {
     height: "40px",
-    width: "120px",
+    width: "140px",
     borderRadius: "10px",
     margin: "0px 5px",
     padding: "7px 0px 10px 0px",
@@ -37,13 +37,13 @@ const AddShop = () => {
         style={buttonStyle}
         onClick={showAddModal}
       >
-        Add Shop
+        Add Parameter
       </Button>
 
       <Modal
         className="custom-modal"
         centered
-        title="Create Shop"
+        title="Create Parameter"
         open={isAddOpen}
         onCancel={handleCancel}
         width={870}
@@ -54,47 +54,47 @@ const AddShop = () => {
           <Row style={{ justifyContent: "space-between" }}>
             {/* 1st column */}
             <Col>
-              <p className="modalContent">Shop Name</p>
+              <p className="modalContent">Parameter Name</p>
               <Form.Item
-                name="shopName"
+                name="parameterName"
                 rules={[
                   {
                     required: true,
-                    message: "Please enter shop name!",
+                    message: "Please enter parameter name!",
                   },
                 ]}
               >
-                <Input placeholder="Shop Name"></Input>
+                <Input placeholder="Parameter Name"></Input>
               </Form.Item>
             </Col>
             {/* 2nd column */}
             <Col>
-              <p className="modalContent">Owner Name</p>
+              <p className="modalContent">Parameter Code</p>
               <Form.Item
-                name="ownerName"
+                name="parameterCode"
                 rules={[
                   {
                     required: true,
-                    message: "Please enter owner name!",
+                    message: "Please enter parameter code!",
                   },
                 ]}
               >
-                <Input placeholder="Owner Name"></Input>
+                <Input placeholder="Parameter Code"></Input>
               </Form.Item>
             </Col>
             {/* 3rd column */}
             <Col>
-              <p className="modalContent">Email Address</p>
+              <p className="modalContent">Medium</p>
               <Form.Item
-                name="email"
+                name="medium"
                 rules={[
                   {
                     required: true,
-                    message: "Please enter email address!",
+                    message: "Please enter medium!",
                   },
                 ]}
               >
-                <Input placeholder="Email Address"></Input>
+                <Input placeholder="Medium"></Input>
               </Form.Item>
             </Col>
           </Row>
@@ -102,35 +102,56 @@ const AddShop = () => {
           <Row style={{ justifyContent: "space-between" }}>
             {/* 1st column */}
             <Col>
-              <p className="modalContent">Phone Number</p>
+              <p className="modalContent">Warning - Danger Range (g/m2)</p>
               <Form.Item
-                name="phone"
+                name="warningDangerRange"
                 rules={[
                   {
                     required: true,
-                    message: "Please enter phone number!",
+                    message: "Please select warning - danger range!",
                   },
                 ]}
               >
-                <Input placeholder="Phone Number"></Input>
+                <Select placeholder="Warning - Danger Range"></Select>
               </Form.Item>
             </Col>
             {/* 2nd column */}
             <Col>
-              <p className="modalContent">Shop Address</p>
+              <p className="modalContent">Type</p>
               <Form.Item
-                name="shopAddress"
+                name="type"
                 rules={[
                   {
                     required: true,
-                    message: "Please enter shop address!",
+                    message: "Please select type!",
                   },
                 ]}
               >
-                <Input placeholder="Shop Address"></Input>
+                <Select placeholder="Type"></Select>
               </Form.Item>
             </Col>
             {/* 3rd column */}
+            <Col>
+              <p className="modalContent">Updated Date</p>
+              <Form.Item
+                name="updatedDate"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please select updated date!",
+                  },
+                ]}
+              >
+                <DatePicker
+                  style={{ width: "270px" }}
+                  placeholder="Updated Date"
+                ></DatePicker>
+              </Form.Item>
+            </Col>
+          </Row>
+          {/* 3rd Row */}
+          <Row>
+            {/* 1st column */}
             <Col>
               <p className="modalContent">Status</p>
               <Form.Item
@@ -159,7 +180,7 @@ const AddShop = () => {
                 }}
               >
                 <PlusOutlined />
-                Create Shop
+                Create Parameter
               </Button>
             </Form.Item>
           </Row>
@@ -169,4 +190,4 @@ const AddShop = () => {
   );
 };
 
-export default AddShop;
+export default AddParameter;
