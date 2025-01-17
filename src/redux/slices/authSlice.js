@@ -3,28 +3,42 @@ import { postRequest } from "../../services/httpMethods";
 import { notification } from "antd";
 import { handleDangNhap } from "../../axios/axiosInterceptor";
 
-
+// Define the async thunk for login
 export const login = createAsyncThunk(
-  "authSlice/login",
-  async (credentials, { rejectWithValue }) => {
+  "Account/login",
+  async ({ username, password }, { rejectWithValue }) => {
     try {
-      const response = await postRequest("authentication/login", credentials);
-      return response.data; 
+      // Ensure you're sending the correct headers and payload
+      const res = await postRequest("Account/login", {
+        username,
+        password,
+      });
+      console.log("Payload being sent:", { username, password });
+      return res.data; // Assuming the response contains user data
     } catch (error) {
+      // Check if the error response is available
+      if (error.response && error.response.data) {
+        return rejectWithValue(
+          error.response.data.message || "Invalid credentials"
+        );
+      }
+      return rejectWithValue("Invalid credentials");
     }
   }
 );
 
 export const register = createAsyncThunk(
-    "authSlice/login",
-    async (credentials, { rejectWithValue }) => {
-      try {
-        const response = await postRequest("authentication/register", credentials);
-        return response.data; 
-      } catch (error) {
-      }
-    }
-  );
+  "authSlice/login",
+  async (credentials, { rejectWithValue }) => {
+    try {
+      const response = await postRequest(
+        "authentication/register",
+        credentials
+      );
+      return response.data;
+    } catch (error) {}
+  }
+);
 
 const initialState = {
   user: null,
@@ -54,7 +68,7 @@ const authSlice = createSlice({
       .addCase(login.fulfilled, (state, action) => {
         state.loading = false;
         state.token = action.payload;
-        handleDangNhap(action.payload)
+        handleDangNhap(action.payload);
       })
       // Rejected state
       .addCase(login.rejected, (state, action) => {

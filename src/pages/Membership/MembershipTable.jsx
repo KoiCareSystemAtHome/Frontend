@@ -1,117 +1,16 @@
-import React from "react";
-import { Table, Pagination } from "antd";
+import React, { useEffect, useState } from "react";
+import { Table, Pagination, Spin } from "antd";
 import UpdateMembership from "./UpdateMembership";
+import { useDispatch } from "react-redux";
+import { getListMembershipPackage } from "../../redux/slices/membershipPackageSlice";
 
 const renderUpdateMembership = (record) => <UpdateMembership record={record} />;
 
-const Membership = () => {
-  const dataSource = [
-    {
-      key: 1,
-      packageId: 1,
-      packageName: "Koi Standard Pack",
-      description:
-        "Allow user to have access to the app but with limited features",
-      period: "1 month",
-      packageTier: "Standard",
-      price: "299.000 đ",
-      status: "Active",
-    },
-    {
-      key: 2,
-      packageId: 2,
-      packageName: "Koi Premium Pack",
-      description: "Allow user to have full access to the app",
-      period: "1 year",
-      packageTier: "Premium",
-      price: "1.099.000 đ",
-      status: "Inactive",
-    },
-    {
-      key: 3,
-      packageId: 3,
-      packageName: "Koi Standard Pack",
-      description:
-        "Allow user to have access to the app but with limited features",
-      period: "1 month",
-      packageTier: "Standard",
-      price: "299.000 đ",
-      status: "Expired",
-    },
-    {
-      key: 4,
-      packageId: 4,
-      packageName: "Koi Premium Pack",
-      description: "Allow user to have full access to the app",
-      period: "1 year",
-      packageTier: "Premium",
-      price: "1.099.000 đ",
-      status: "Inactive",
-    },
-    {
-      key: 5,
-      packageId: 5,
-      packageName: "Koi Standard Pack",
-      description:
-        "Allow user to have access to the app but with limited features",
-      period: "1 month",
-      packageTier: "Standard",
-      price: "299.000 đ",
-      status: "Active",
-    },
-    {
-      key: 6,
-      packageId: 6,
-      packageName: "Koi Premium Pack",
-      description: "Allow user to have full access to the app",
-      period: "1 year",
-      packageTier: "Premium",
-      price: "1.099.000 đ",
-      status: "Inactive",
-    },
-    {
-      key: 7,
-      packageId: 7,
-      packageName: "Koi Standard Pack",
-      description:
-        "Allow user to have access to the app but with limited features",
-      period: "1 month",
-      packageTier: "Standard",
-      price: "299.000 đ",
-      status: "Expired",
-    },
-    {
-      key: 8,
-      packageId: 8,
-      packageName: "Koi Premium Pack",
-      description: "Allow user to have full access to the app",
-      period: "1 year",
-      packageTier: "Premium",
-      price: "1.099.000 đ",
-      status: "Inactive",
-    },
-    {
-      key: 9,
-      packageId: 9,
-      packageName: "Koi Standard Pack",
-      description:
-        "Allow user to have access to the app but with limited features",
-      period: "1 month",
-      packageTier: "Standard",
-      price: "299.000 đ",
-      status: "Active",
-    },
-    {
-      key: 10,
-      packageId: 10,
-      packageName: "Koi Premium Pack",
-      description: "Allow user to have full access to the app",
-      period: "1 year",
-      packageTier: "Premium",
-      price: "1.099.000 đ",
-      status: "Inactive",
-    },
-  ];
+function Membership({ dataSource }) {
+  console.log("Datasource: ", dataSource);
+  const dispatch = useDispatch();
+  // const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(false);
 
   const columns = [
     {
@@ -120,29 +19,34 @@ const Membership = () => {
       key: "packageId",
     },
     {
-      title: "Package Name",
-      dataIndex: "packageName",
-      key: "packageName",
+      title: "Package Title",
+      dataIndex: "packageTitle",
+      key: "packageTitle",
     },
     {
       title: "Description",
-      dataIndex: "description",
-      key: "description",
+      dataIndex: "packageDescription",
+      key: "packageDescription",
     },
     {
-      title: "Period",
-      dataIndex: "period",
-      key: "period",
+      title: "Package Price",
+      dataIndex: "packagePrice",
+      key: "packagePrice",
     },
     {
-      title: "Package Tier",
-      dataIndex: "packageTier",
-      key: "packageTier",
+      title: "Package Type",
+      dataIndex: "type",
+      key: "type",
     },
     {
-      title: "Price",
-      dataIndex: "price",
-      key: "price",
+      title: "Start Date",
+      dataIndex: "startDate",
+      key: "startDate",
+    },
+    {
+      title: "End Date",
+      dataIndex: "endDate",
+      key: "endDate",
     },
     {
       title: "Status",
@@ -178,16 +82,46 @@ const Membership = () => {
     },
   ];
 
+  useEffect(() => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+  }, [dataSource]);
+
+  // Get List
+  const GetListTable = () => {
+    setLoading(true);
+    dispatch(getListMembershipPackage())
+      .then(() => {
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+        setLoading(false);
+      });
+  };
+
   return (
     <div className="w-full">
-      <Table
-        dataSource={dataSource}
-        columns={columns}
-        pagination={false}
-        className="[&_.ant-table-thead_.ant-table-cell]:bg-[#fafafa] [&_.ant-table-thead_.ant-table-cell]:font-medium [&_.ant-table-cell]:py-4"
-        style={{ marginBottom: "1rem" }}
-      />
-
+      <Spin spinning={loading} tip="Loading...">
+        <Table
+          dataSource={dataSource.data?.map((membershipPackageSlice) => ({
+            packageId: membershipPackageSlice.packageId,
+            packageTitle: membershipPackageSlice.packageTitle,
+            packageDescription: membershipPackageSlice.packageDescription,
+            packagePrice: membershipPackageSlice.packagePrice,
+            type: membershipPackageSlice.type,
+            startDate: membershipPackageSlice.startDate,
+            endDate: membershipPackageSlice.endDate,
+          }))}
+          columns={columns}
+          pagination={false}
+          className="[&_.ant-table-thead_.ant-table-cell]:bg-[#fafafa] [&_.ant-table-thead_.ant-table-cell]:font-medium [&_.ant-table-cell]:py-4"
+          style={{ marginBottom: "1rem" }}
+          onChange={GetListTable}
+        />
+      </Spin>
       <Pagination
         total={50}
         align="end"
@@ -196,9 +130,10 @@ const Membership = () => {
         }
         defaultPageSize={10}
         defaultCurrent={1}
+        onChange={GetListTable}
       />
     </div>
   );
-};
+}
 
 export default Membership;

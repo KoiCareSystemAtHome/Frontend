@@ -2,8 +2,10 @@ import React from "react";
 import SearchTable from "../../components/SearchTable/searchTable";
 import MembershipTable from "./MembershipTable";
 import MembershipButton from "./MembershipButton";
+import useMembershipPackageList from "../../hooks/useMembershipPackageList";
 
 const Membership = () => {
+  const membershipPackageList = useMembershipPackageList();
   return (
     <div>
       <div
@@ -30,7 +32,7 @@ const Membership = () => {
       </div>
 
       <div className="tableContainer" style={{ marginTop: "10px" }}>
-        <MembershipTable />
+        <MembershipTable dataSource={membershipPackageList} />
       </div>
     </div>
   );

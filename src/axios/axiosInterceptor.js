@@ -6,7 +6,7 @@ let isRefreshing = false;
 let refreshPromise = null;
 
 export const axiosClientVer2 = axios.create({
-  baseURL: "https://localhost:7032/api/",
+  baseURL: "http://14.225.206.203:5444/api/",
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
@@ -102,7 +102,7 @@ axiosClientVer2.interceptors.response.use(
 );
 
 export const handleDangNhap = (newToken) => {
-  console.log(newToken)
+  console.log(newToken);
   accessToken = newToken;
   axiosClientVer2.defaults.headers.common[
     "Authorization"
