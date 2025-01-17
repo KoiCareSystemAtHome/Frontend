@@ -10,7 +10,6 @@ function App() {
       <Route path="/" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/admin/*" element={<AdminLayout />} />
-      {/* <Route path="admin/dashboard" element={<DashboardPage />}></Route> */}
     </Routes>
   );
 }

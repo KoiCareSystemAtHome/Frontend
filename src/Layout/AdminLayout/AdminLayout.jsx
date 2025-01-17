@@ -19,6 +19,9 @@ import Membership from "../../pages/Membership/Membership";
 import Member from "../../pages/Member/Member";
 import Shop from "../../pages/Shop/Shop";
 import Parameter from "../../pages/Parameter/Parameter";
+import CommonDiseases from "../../pages/CommonDiseases/CommonDiseases";
+import CommonDiseasesDetail from "../../pages/CommonDiseases/CommonDiseasesDetail";
+import { Feedback } from "../../pages/Feedback/Feedback";
 
 const { Sider, Content } = Layout;
 
@@ -155,6 +158,9 @@ const AdminLayout = ({ children }) => {
             <Route path="account/member" element={<Member />} />
             <Route path="account/shop" element={<Shop />} />
             <Route path="parameter" element={<Parameter />} />
+            <Route path="diseases" element={<CommonDiseases />} />
+            <Route path="diseases/Detail" element={<CommonDiseasesDetail />} />
+            <Route path="feedback" element={<Feedback />} />
           </Routes>
         </Content>
       </Layout>
