@@ -1,8 +1,19 @@
 import { PlusOutlined } from "@ant-design/icons";
-import { Button, Col, Form, Input, Modal, Row, Select } from "antd";
-import React, { useState } from "react";
+import {
+  Button,
+  Col,
+  Form,
+  Input,
+  Modal,
+  notification,
+  Row,
+  Select,
+} from "antd";
+import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { createShop, getListShop } from "../../redux/slices/shopSlice";
 
-const AddShop = () => {
+const AddShop = ({ onClose }) => {
   const [isAddOpen, setIsAddOpen] = useState(false);
 
   const showAddModal = () => {
@@ -13,7 +24,7 @@ const AddShop = () => {
     setIsAddOpen(false);
   };
 
-  //   const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
   const [form] = Form.useForm();
 
@@ -25,7 +36,63 @@ const AddShop = () => {
     padding: "7px 0px 10px 0px",
   };
 
-  const onFinish = (values) => {};
+  // Notification
+  const [notificationType, setNotificationType] = useState(null);
+  const [notificationMessage, setNotificationMessage] = useState(null);
+
+  useEffect(() => {
+    if (notificationType && notificationMessage) {
+      notification[notificationType]({
+        message: notificationMessage,
+        placement: "top",
+        duration: 5,
+      });
+      setTimeout(() => {
+        notification.destroy();
+      }, 5000);
+      console.log("notification: ", notification);
+    }
+  }, [notificationType, notificationMessage]);
+
+  const openNotification = (type, message) => {
+    setNotificationType(type);
+    setNotificationMessage(message);
+  };
+
+  const onFinish = (values) => {
+    const payload = {
+      ...values,
+      isActivate:
+        values.isActivate === "true" || values.isActivate === true
+          ? true
+          : false, // Ensure boolean type
+    };
+    console.log(payload);
+    // Dispatch the createShop action with the form values
+    dispatch(createShop(payload))
+      .unwrap()
+      .then(() => {
+        // Close the Modal
+        onClose();
+        openNotification("success", "Shop Created Successfully!");
+        dispatch(getListShop());
+        handleCancel();
+        // Reset the form fields after dispatching the action
+        form.resetFields();
+      })
+      .catch((error) => {
+        openNotification("warning", error);
+      })
+      .finally(() => {
+        // Reset the form fields after dispatching the action
+        form.resetFields();
+        // Close the Modal
+        onClose();
+        dispatch(getListShop());
+        openNotification("success", "Shop Created Successfully!");
+        handleCancel();
+      });
+  };
 
   return (
     <div>
@@ -69,53 +136,38 @@ const AddShop = () => {
             </Col>
             {/* 2nd column */}
             <Col>
-              <p className="modalContent">Owner Name</p>
+              <p className="modalContent">Shop Rate</p>
               <Form.Item
-                name="ownerName"
+                name="shopRate"
                 rules={[
                   {
                     required: true,
-                    message: "Please enter owner name!",
+                    message: "Please enter shop rate!",
                   },
                 ]}
               >
-                <Input placeholder="Owner Name"></Input>
+                <Input placeholder="Shop Rate"></Input>
               </Form.Item>
             </Col>
             {/* 3rd column */}
             <Col>
-              <p className="modalContent">Email Address</p>
+              <p className="modalContent">Shop Description</p>
               <Form.Item
-                name="email"
+                name="shopDescription"
                 rules={[
                   {
                     required: true,
-                    message: "Please enter email address!",
+                    message: "Please enter shop description!",
                   },
                 ]}
               >
-                <Input placeholder="Email Address"></Input>
+                <Input placeholder="Shop Description"></Input>
               </Form.Item>
             </Col>
           </Row>
           {/* 2nd Row */}
           <Row style={{ justifyContent: "space-between" }}>
             {/* 1st column */}
-            <Col>
-              <p className="modalContent">Phone Number</p>
-              <Form.Item
-                name="phone"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please enter phone number!",
-                  },
-                ]}
-              >
-                <Input placeholder="Phone Number"></Input>
-              </Form.Item>
-            </Col>
-            {/* 2nd column */}
             <Col>
               <p className="modalContent">Shop Address</p>
               <Form.Item
@@ -130,11 +182,26 @@ const AddShop = () => {
                 <Input placeholder="Shop Address"></Input>
               </Form.Item>
             </Col>
+            {/* 2nd column */}
+            <Col>
+              <p className="modalContent">License</p>
+              <Form.Item
+                name="bizLicences"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please enter liscense!",
+                  },
+                ]}
+              >
+                <Input placeholder="License"></Input>
+              </Form.Item>
+            </Col>
             {/* 3rd column */}
             <Col>
               <p className="modalContent">Status</p>
               <Form.Item
-                name="status"
+                name="isActivate"
                 rules={[
                   {
                     required: true,
@@ -142,7 +209,11 @@ const AddShop = () => {
                   },
                 ]}
               >
-                <Select placeholder="Status"></Select>
+                <Select placeholder="Select status">
+                  <Select.Option value="true">Active</Select.Option>
+                  <Select.Option value="false">Inactive</Select.Option>
+                </Select>
+                {/* <Input placeholder="Status"></Input> */}
               </Form.Item>
             </Col>
           </Row>

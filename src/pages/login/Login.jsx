@@ -23,7 +23,7 @@ const LoginPage = () => {
         if (res.payload.status === 200) {
           message.success("Login successful!");
           if (res.payload?.data?.userInfo.roles === "Admin") {
-            navigate("admin");
+            navigate("/admin");
           } else if (res.payload?.data?.userInfo.roles === "Shop") {
             navigate("/");
           } else {

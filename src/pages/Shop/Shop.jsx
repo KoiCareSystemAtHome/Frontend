@@ -2,8 +2,11 @@ import React from "react";
 import SearchTable from "../../components/SearchTable/searchTable";
 import ShopButton from "./ShopButton";
 import ShopTable from "./ShopTable";
+import useShopList from "../../hooks/useShopList";
 
 const Shop = () => {
+  const shopList = useShopList();
+
   return (
     <div>
       <div
@@ -30,7 +33,7 @@ const Shop = () => {
       </div>
 
       <div className="tableContainer" style={{ marginTop: "10px" }}>
-        <ShopTable />
+        <ShopTable dataSource={shopList} />
       </div>
     </div>
   );

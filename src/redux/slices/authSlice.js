@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { postRequest } from "../../services/httpMethods";
-import { notification } from "antd";
+import { postRequest, postRequestFormData } from "../../services/httpMethods";
+import { message, notification } from "antd";
 import { handleDangNhap } from "../../axios/axiosInterceptor";
 
 // Define the async thunk for login
@@ -28,15 +28,20 @@ export const login = createAsyncThunk(
 );
 
 export const register = createAsyncThunk(
-  "authSlice/login",
-  async (credentials, { rejectWithValue }) => {
+  "Account/register",
+  async (payload, { rejectWithValue }) => {
     try {
-      const response = await postRequest(
-        "authentication/register",
-        credentials
-      );
+      const response = await postRequestFormData("Account/register", payload);
+      if (response && response.status === 200) {
+        message.success("You have successfully registered.");
+      }
       return response.data;
-    } catch (error) {}
+    } catch (error) {
+      message.error(
+        error.response.data.message || "An error occurred during registration."
+      );
+      return rejectWithValue(error.response || error.response.data.message);
+    }
   }
 );
 
@@ -60,6 +65,7 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // Login
       .addCase(login.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -73,7 +79,21 @@ const authSlice = createSlice({
       // Rejected state
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = action.payload || "Login failed";
+      })
+      // Register
+      .addCase(register.pending, (state) => {
+        state.loading = true;
+      })
+      // Fulfilled state
+      .addCase(register.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+      })
+      // Rejected state
+      .addCase(register.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Registration failed";
       });
   },
 });

@@ -1,10 +1,24 @@
 import { PlusOutlined } from "@ant-design/icons";
-import { Button, Col, Form, Input, Modal, Row, Select } from "antd";
-import React, { useState } from "react";
+import {
+  Button,
+  Col,
+  DatePicker,
+  Form,
+  Input,
+  Modal,
+  notification,
+  Row,
+} from "antd";
+import React, { useEffect, useState } from "react";
 import "../../Styles/Modal.css";
+import { useDispatch } from "react-redux";
+import {
+  createPackage,
+  getListMembershipPackage,
+} from "../../redux/slices/membershipPackageSlice";
 //import { useDispatch } from "react-redux";
 
-const AddMembership = () => {
+const AddMembership = ({ onClose }) => {
   const [isAddOpen, setIsAddOpen] = useState(false);
 
   const showAddModal = () => {
@@ -15,7 +29,7 @@ const AddMembership = () => {
     setIsAddOpen(false);
   };
 
-  //   const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
   const [form] = Form.useForm();
 
@@ -27,7 +41,56 @@ const AddMembership = () => {
     padding: "7px 0px 10px 0px",
   };
 
-  const onFinish = (values) => {};
+  // Notification
+  const [notificationType, setNotificationType] = useState(null);
+  const [notificationMessage, setNotificationMessage] = useState(null);
+
+  useEffect(() => {
+    if (notificationType && notificationMessage) {
+      notification[notificationType]({
+        message: notificationMessage,
+        placement: "top",
+        duration: 5,
+      });
+      setTimeout(() => {
+        notification.destroy();
+      }, 5000);
+      console.log("notification: ", notification);
+    }
+  }, [notificationType, notificationMessage]);
+
+  const openNotification = (type, message) => {
+    setNotificationType(type);
+    setNotificationMessage(message);
+  };
+
+  const onFinish = (values) => {
+    console.log(values);
+    // Dispatch the createBaoHiem action with the form values
+    dispatch(createPackage(values))
+      .unwrap()
+      .then(() => {
+        // Close the Modal
+        onClose();
+        openNotification("success", "Membership Created Successfully!");
+        dispatch(getListMembershipPackage());
+        handleCancel();
+        // Reset the form fields after dispatching the action
+        form.resetFields();
+      })
+      .catch((error) => {
+        openNotification("warning", error);
+      })
+      .finally(() => {
+        // Reset the form fields after dispatching the action
+        form.resetFields();
+        // Close the Modal
+        onClose();
+        dispatch(getListMembershipPackage());
+        openNotification("success", "Membership Created Successfully!");
+        handleCancel();
+      });
+  };
 
   return (
     <div>
@@ -56,47 +119,47 @@ const AddMembership = () => {
           <Row style={{ justifyContent: "space-between" }}>
             {/* 1st column */}
             <Col>
-              <p className="modalContent">Package Name</p>
+              <p className="modalContent">Package Title</p>
               <Form.Item
-                name="packageName"
+                name="packageTitle"
                 rules={[
                   {
                     required: true,
-                    message: "Please enter package name!",
+                    message: "Please enter package title!",
                   },
                 ]}
               >
-                <Input placeholder="Package Name"></Input>
+                <Input placeholder="Package Title"></Input>
               </Form.Item>
             </Col>
             {/* 2nd column */}
             <Col>
-              <p className="modalContent">Description</p>
+              <p className="modalContent">Package Description</p>
               <Form.Item
-                name="description"
+                name="packageDescription"
                 rules={[
                   {
                     required: true,
-                    message: "Please enter description!",
+                    message: "Please enter package description!",
                   },
                 ]}
               >
-                <Input placeholder="Description"></Input>
+                <Input placeholder="Package Description"></Input>
               </Form.Item>
             </Col>
             {/* 3rd column */}
             <Col>
-              <p className="modalContent">Period</p>
+              <p className="modalContent">Package Price</p>
               <Form.Item
-                name="period"
+                name="packagePrice"
                 rules={[
                   {
                     required: true,
-                    message: "Please select period!",
+                    message: "Please select package price!",
                   },
                 ]}
               >
-                <Select placeholder="Period"></Select>
+                <Input placeholder="Package Price"></Input>
               </Form.Item>
             </Col>
           </Row>
@@ -107,7 +170,7 @@ const AddMembership = () => {
             <Col>
               <p className="modalContent">Package Type</p>
               <Form.Item
-                name="packageType"
+                name="type"
                 rules={[
                   {
                     required: true,
@@ -115,37 +178,43 @@ const AddMembership = () => {
                   },
                 ]}
               >
-                <Select placeholder="Package Type"></Select>
+                <Input placeholder="Package Type"></Input>
               </Form.Item>
             </Col>
             {/* 2nd column */}
             <Col>
-              <p className="modalContent">Price</p>
+              <p className="modalContent">Start Date</p>
               <Form.Item
-                name="price"
+                name="startDate"
                 rules={[
                   {
                     required: true,
-                    message: "Please enter price!",
+                    message: "Please select start date!",
                   },
                 ]}
               >
-                <Input placeholder="Price"></Input>
+                <DatePicker
+                  style={{ width: "270px" }}
+                  placeholder="Start Date"
+                ></DatePicker>
               </Form.Item>
             </Col>
             {/* 3rd column */}
             <Col>
-              <p className="modalContent">Status</p>
+              <p className="modalContent">End Date</p>
               <Form.Item
-                name="status"
+                name="endDate"
                 rules={[
                   {
                     required: true,
-                    message: "Please select status!",
+                    message: "Please select end date!",
                   },
                 ]}
               >
-                <Select placeholder="Status"></Select>
+                <DatePicker
+                  style={{ width: "270px" }}
+                  placeholder="End Date"
+                ></DatePicker>
               </Form.Item>
             </Col>
           </Row>

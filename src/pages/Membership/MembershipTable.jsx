@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Table, Pagination, Spin } from "antd";
 import UpdateMembership from "./UpdateMembership";
-import { useDispatch } from "react-redux";
-import { getListMembershipPackage } from "../../redux/slices/membershipPackageSlice";
+import { useDispatch, useSelector } from "react-redux";
+import useMembershipPackageList from "../../hooks/useMembershipPackageList";
+import { getListMembershipPackageSelector } from "../../redux/selector";
 
 const renderUpdateMembership = (record) => <UpdateMembership record={record} />;
 
 function Membership({ dataSource }) {
   console.log("Datasource: ", dataSource);
+  const packageList = useSelector(getListMembershipPackageSelector);
+  console.log("package list", packageList);
   const dispatch = useDispatch();
   // const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -92,7 +95,7 @@ function Membership({ dataSource }) {
   // Get List
   const GetListTable = () => {
     setLoading(true);
-    dispatch(getListMembershipPackage())
+    dispatch(useMembershipPackageList())
       .then(() => {
         setLoading(false);
       })
@@ -106,15 +109,7 @@ function Membership({ dataSource }) {
     <div className="w-full">
       <Spin spinning={loading} tip="Loading...">
         <Table
-          dataSource={dataSource.data?.map((membershipPackageSlice) => ({
-            packageId: membershipPackageSlice.packageId,
-            packageTitle: membershipPackageSlice.packageTitle,
-            packageDescription: membershipPackageSlice.packageDescription,
-            packagePrice: membershipPackageSlice.packagePrice,
-            type: membershipPackageSlice.type,
-            startDate: membershipPackageSlice.startDate,
-            endDate: membershipPackageSlice.endDate,
-          }))}
+          dataSource={dataSource}
           columns={columns}
           pagination={false}
           className="[&_.ant-table-thead_.ant-table-cell]:bg-[#fafafa] [&_.ant-table-thead_.ant-table-cell]:font-medium [&_.ant-table-cell]:py-4"
@@ -130,7 +125,6 @@ function Membership({ dataSource }) {
         }
         defaultPageSize={10}
         defaultCurrent={1}
-        onChange={GetListTable}
       />
     </div>
   );

@@ -1,11 +1,12 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getRequest } from "../../services/httpMethods";
+import { getRequest, postRequest } from "../../services/httpMethods";
 
 const initialState = {
   token: "",
   listMembership: [],
 };
 
+// GET
 export const getListMembershipPackage = createAsyncThunk(
   "Package",
   async () => {
@@ -19,14 +20,37 @@ export const getListMembershipPackage = createAsyncThunk(
   }
 );
 
+// POST
+export const createPackage = createAsyncThunk(
+  "Package/create-package",
+  async (newPackage, { rejectWithValue }) => {
+    try {
+      const res = await postRequest("Package/create-package", newPackage);
+      console.log("res", res);
+      if (res.data.status === 400) {
+        return rejectWithValue(res.data.detail);
+      }
+      return res.data;
+    } catch (error) {
+      console.log(error.detail);
+    }
+  }
+);
+
+// UPDATE
+
 const membershipPackageSlice = createSlice({
   name: "membershipPackage",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(getListMembershipPackage.fulfilled, (state, action) => {
-      state.listMembership = action.payload;
-    });
+    builder
+      .addCase(getListMembershipPackage.fulfilled, (state, action) => {
+        state.listMembership = action.payload;
+      })
+      .addCase(createPackage.fulfilled, (state, action) => {
+        state.listMembership.push(action.payload);
+      });
   },
 });
 
