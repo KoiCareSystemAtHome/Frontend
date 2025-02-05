@@ -53,16 +53,23 @@ const AdminLayout = ({ children }) => {
       { key: "/admin/parameter", label: "Parameter" },
       { key: "/admin/feedback", label: "Feedback" },
       { key: "/admin/diseases", label: "Common Diseases" },
+      { key: "/admin/diseases-detail", label: "Common Diseases Detail" },
     ];
 
     const menuItem = menuItems.find((item) => item.key === key);
     return menuItem ? menuItem.label : "Dashboard";
   };
 
+  // useEffect(() => {
+  //   // Navigate to the selected menu item on load
+  //   navigate(selectedKey);
+  // }, [selectedKey, navigate]);
+
   useEffect(() => {
-    // Navigate to the selected menu item on load
-    navigate(selectedKey);
-  }, [selectedKey, navigate]);
+    if (!localStorage.getItem("selectedMenuKey")) {
+      navigate(selectedKey);
+    }
+  }, [selectedKey, navigate]); // Run only once when component mounts
 
   const handleMenuClick = ({ key }) => {
     setSelectedKey(key);
@@ -159,7 +166,7 @@ const AdminLayout = ({ children }) => {
             <Route path="account/shop" element={<Shop />} />
             <Route path="parameter" element={<Parameter />} />
             <Route path="diseases" element={<CommonDiseases />} />
-            <Route path="diseases/Detail" element={<CommonDiseasesDetail />} />
+            <Route path="diseases-detail" element={<CommonDiseasesDetail />} />
             <Route path="feedback" element={<Feedback />} />
           </Routes>
         </Content>

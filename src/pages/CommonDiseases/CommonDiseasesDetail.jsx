@@ -11,12 +11,12 @@ const CommonDiseasesDetail = () => {
   return (
     <div>
       {/* Header with back button */}
-      <div className="bg-white border-b border-gray-200 fixed top-0 left-0 right-0 z-10">
-        <div className="max-w-5xl mx-auto px-4 py-3 flex items-center">
+      <div>
+        <div className="align-content-start">
           <Button
             type="text"
             icon={<LeftOutlined />}
-            onClick={() => navigate("diseases")}
+            onClick={() => navigate("/admin/diseases")} // Use an absolute path
             className="flex items-center"
           >
             Back
@@ -26,12 +26,12 @@ const CommonDiseasesDetail = () => {
 
       {/* Main content with top padding to account for fixed header */}
       <div className="pt-16">
-        <div className="max-w-5xl mx-auto p-4 md:p-6">
+        <div className="max-w-8xl mx-auto p-4 md:p-6">
           <div className="flex flex-col md:flex-row gap-8">
             {/* Image Section */}
             <div className="md:w-1/3">
               <img
-                src="/api/placeholder/400/300"
+                src="https://koiservice.vn/wp-content/uploads/2021/04/cach-tri-trung-mo-neo-cho-ca-koi-tan-goc-va-hieu-qua-nhat-1.jpg"
                 alt="Bệnh cá mó neo"
                 className="w-full rounded-lg shadow-md"
               />
@@ -72,52 +72,49 @@ const CommonDiseasesDetail = () => {
                   </li>
                 </ul>
               </div>
-
-              {/* Treatment Methods */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Method 1 */}
-                <div>
-                  <Title level={4} className="text-blue-600">
-                    Cách 1: Gắp trùng mỏ neo bằng tay
-                  </Title>
-                  <ul className="list-none pl-0">
-                    <li className="mb-3">
-                      + Tiến hành lý các koi, khử khuẩn bằng thuốc tím sau đó
-                      gắy mé cá koi.
-                    </li>
-                    <li className="mb-3">
-                      + Sau đó hồi sức, dưỡng cá koi trong tank dưỡng riêng với
-                      nước muối.
-                    </li>
-                    <li className="mb-3">
-                      + Tăng nhiệt độ nước lên 32 độ C để diệt trứng.
-                    </li>
-                  </ul>
-                </div>
-
-                {/* Method 2 */}
-                <div>
-                  <Title level={4} className="text-blue-600">
-                    Cách 2: Trị trùng mỏ neo bằng thuốc Dimilin
-                  </Title>
-                  <Paragraph>
-                    Cách xử lý trùng mỏ neo bằng đánh thuốc Dimilin đơn giản.
-                    Thực hiện trong công 15 ngày.
-                  </Paragraph>
-                  <ul className="list-none pl-0">
-                    <li className="mb-3">
-                      Ngày 1: Sử dụng 1g Dimilin/1m3 đánh liều đầu tiên.
-                    </li>
-                    <li className="mb-3">
-                      Ngày thứ 3: Tiến hành thay 20% nước.
-                    </li>
-                    <li className="mb-3">
-                      Ngày thứ 7: Thay 20% nước, đánh liều thứ 3.
-                    </li>
-                  </ul>
-                </div>
-              </div>
             </div>
+          </div>
+        </div>
+        {/* Treatment Methods */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Method 1 */}
+          <div className="m-10">
+            <Title level={4} className="text-blue-600">
+              Cách 1: Gắp trùng mỏ neo bằng tay
+            </Title>
+            <ul className="list-none pl-0">
+              <li className="mb-3">
+                + Tiến hành lý các koi, khử khuẩn bằng thuốc tím sau đó gắy mé
+                cá koi.
+              </li>
+              <li className="mb-3">
+                + Sau đó hồi sức, dưỡng cá koi trong tank dưỡng riêng với nước
+                muối.
+              </li>
+              <li className="mb-3">
+                + Tăng nhiệt độ nước lên 32 độ C để diệt trứng.
+              </li>
+            </ul>
+          </div>
+
+          {/* Method 2 */}
+          <div>
+            <Title level={4} className="text-blue-600">
+              Cách 2: Trị trùng mỏ neo bằng thuốc Dimilin
+            </Title>
+            <Paragraph>
+              Cách xử lý trùng mỏ neo bằng đánh thuốc Dimilin đơn giản. Thực
+              hiện trong công 15 ngày.
+            </Paragraph>
+            <ul className="list-none pl-0">
+              <li className="mb-3">
+                Ngày 1: Sử dụng 1g Dimilin/1m3 đánh liều đầu tiên.
+              </li>
+              <li className="mb-3">Ngày thứ 3: Tiến hành thay 20% nước.</li>
+              <li className="mb-3">
+                Ngày thứ 7: Thay 20% nước, đánh liều thứ 3.
+              </li>
+            </ul>
           </div>
         </div>
       </div>

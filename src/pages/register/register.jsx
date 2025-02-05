@@ -2,10 +2,15 @@ import React from "react";
 import { Form, Input, Button } from "antd";
 import LoginBackground from "../../assets/login-background.png";
 import Logo from "../../assets/logo.png";
+import { useDispatch, useSelector } from "react-redux";
+import { register } from "../../redux/slices/authSlice";
 
 const RegisterPage = () => {
-  const onFinish = (e) => {
-    console.log("Form submitted:", e);
+  const dispatch = useDispatch();
+  const loading = useSelector((state) => state.authSlice?.loading);
+  const onFinish = (values) => {
+    console.log("Form submitted:", values);
+    dispatch(register(values));
   };
 
   return (
@@ -143,6 +148,7 @@ const RegisterPage = () => {
               className="w-full bg-orange-500 text-white rounded-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors mt-4 font-title"
               size="large"
               style={{ backgroundColor: "orange" }}
+              loading={loading}
             >
               Sign in
             </Button>

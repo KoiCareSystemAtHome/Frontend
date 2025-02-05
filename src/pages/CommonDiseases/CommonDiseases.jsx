@@ -10,8 +10,7 @@ const CommonDiseases = () => {
   const navigate = useNavigate();
 
   const handleViewDetails = (e) => {
-    e.preventDefault(); // Prevent any default behavior
-    navigate("Detail");
+    navigate("/admin/diseases-detail");
   };
 
   // Mock data for the diseases
