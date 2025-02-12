@@ -38,7 +38,7 @@ const CommonDiseasesDetail = () => {
             </div>
 
             {/* Content Section */}
-            <div className="md:w-2/3">
+            <div className="md:w-1/3">
               <Title level={3} className="text-gray-800">
                 Bệnh cá mó neo
               </Title>
@@ -47,7 +47,7 @@ const CommonDiseasesDetail = () => {
                 <Text strong className="text-green-600 text-lg">
                   + Nguyên Nhân Gây Bệnh
                 </Text>
-                <Paragraph className="mt-2">
+                <Paragraph className="pl-4 mt-2">
                   Ký sinh trùng Lernaea gây bệnh cá Koi. Chúng sinh sôi này nở
                   nhanh rồi lây bệnh cho cả đàn cá. Trùng mỏ neo hút máu và chất
                   dinh dưỡng của cá Koi khiến cá gầy yếu, cơ thể bị tổn thương
@@ -84,21 +84,27 @@ const CommonDiseasesDetail = () => {
             </Title>
             <ul className="list-none pl-0">
               <li className="mb-3">
-                + Tiến hành lý các koi, khử khuẩn bằng thuốc tím sau đó gắy mé
-                cá koi.
+                + Tiến hành cách ly các koi, khử khuẩn bằng thuộc tím sau đó gây
+                mê cá koi. Dùng dụng cụ gắp hết ký sinh trùng bán trên cơ thể cá
+                koi ra.
               </li>
               <li className="mb-3">
                 + Sau đó hồi sức, dưỡng cá koi trong tank dưỡng riêng với nước
-                muối.
+                muối liều lượng 300g/ 100ml nước trong vòng 1 tuần.
               </li>
               <li className="mb-3">
-                + Tăng nhiệt độ nước lên 32 độ C để diệt trứng.
+                + Tăng nhiệt độ nước lên 32 độ C để diệt trứng trùng mỏ neo
+                trong nước chưa nở còn sót.
+              </li>
+              <li className="mb-3">
+                + Khử trùng lại toàn bộ hồ cá koi bằng thuốc tím, nước muối với
+                liều lượng 300g/ 1001 tiến hành trong vòng 7 ngày.
               </li>
             </ul>
           </div>
 
           {/* Method 2 */}
-          <div>
+          <div className="m-10">
             <Title level={4} className="text-blue-600">
               Cách 2: Trị trùng mỏ neo bằng thuốc Dimilin
             </Title>
@@ -108,11 +114,20 @@ const CommonDiseasesDetail = () => {
             </Paragraph>
             <ul className="list-none pl-0">
               <li className="mb-3">
-                Ngày 1: Sử dụng 1g Dimilin/1m3 đánh liều đầu tiên.
+                Ngày 1: Sử dụng 1g Dimilin/1m3 đánh liều đầu tiên. Sau đó để
+                cách một ngày
               </li>
-              <li className="mb-3">Ngày thứ 3: Tiến hành thay 20% nước.</li>
               <li className="mb-3">
-                Ngày thứ 7: Thay 20% nước, đánh liều thứ 3.
+                Ngày thứ 3: Tiến hành thay 20% nước, đánh liều thuốc Dimilin thứ
+                2 liều giống liều 1. Sau đó để cách đến ngày 7.
+              </li>
+              <li className="mb-3">
+                Ngày thứ 7: Tới ngày thứ 7 thì thay 20% nước, đánh liều thứ 3
+                liều lượng như liều đầu 1g Dimilin/1m3. Lại cách tiếp 2 ngày.
+              </li>
+              <li className="mb-3">
+                Ngày thứ 9: Thay 20% nước, đánh liều thuốc thứ 4 vẫn liều lượng
+                cũ. Sau đó để cách tiếp 3 ngày.
               </li>
             </ul>
           </div>

@@ -9,7 +9,7 @@ import {
   notification,
   Row,
 } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "../../Styles/Modal.css";
 import { useDispatch } from "react-redux";
 import {
@@ -42,26 +42,14 @@ const AddMembership = ({ onClose }) => {
   };
 
   // Notification
-  const [notificationType, setNotificationType] = useState(null);
-  const [notificationMessage, setNotificationMessage] = useState(null);
-
-  useEffect(() => {
-    if (notificationType && notificationMessage) {
-      notification[notificationType]({
-        message: notificationMessage,
-        placement: "top",
-        duration: 5,
-      });
-      setTimeout(() => {
-        notification.destroy();
-      }, 5000);
-      console.log("notification: ", notification);
-    }
-  }, [notificationType, notificationMessage]);
+  const [api, contextHolder] = notification.useNotification();
 
   const openNotification = (type, message) => {
-    setNotificationType(type);
-    setNotificationMessage(message);
+    api[type]({
+      message: message,
+      placement: "top",
+      duration: 5,
+    });
   };
 
   const onFinish = (values) => {
@@ -80,20 +68,21 @@ const AddMembership = ({ onClose }) => {
       })
       .catch((error) => {
         openNotification("warning", error);
-      })
-      .finally(() => {
-        // Reset the form fields after dispatching the action
-        form.resetFields();
-        // Close the Modal
-        onClose();
-        dispatch(getListMembershipPackage());
-        openNotification("success", "Membership Created Successfully!");
-        handleCancel();
       });
+    // .finally(() => {
+    //   // Reset the form fields after dispatching the action
+    //   form.resetFields();
+    //   // Close the Modal
+    //   onClose();
+    //   dispatch(getListMembershipPackage());
+    //   openNotification("success", "Membership Created Successfully!");
+    //   handleCancel();
+    // });
   };
 
   return (
     <div>
+      {contextHolder}
       <Button
         size="small"
         className="addBtn"

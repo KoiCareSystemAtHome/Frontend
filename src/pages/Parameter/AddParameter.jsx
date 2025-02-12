@@ -1,190 +1,93 @@
-import { PlusOutlined } from "@ant-design/icons";
-import { Button, Col, DatePicker, Form, Input, Modal, Row, Select } from "antd";
 import React, { useState } from "react";
+import { Button, Modal, Upload, Alert, message } from "antd";
+import { InboxOutlined, PlusOutlined } from "@ant-design/icons";
+
+const { Dragger } = Upload;
 
 const AddParameter = () => {
-  const [isAddOpen, setIsAddOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const showAddModal = () => {
-    setIsAddOpen(true);
+  const showModal = () => {
+    setIsModalOpen(true);
   };
 
   const handleCancel = () => {
-    setIsAddOpen(false);
+    setIsModalOpen(false);
   };
 
-  //   const dispatch = useDispatch();
-
-  const [form] = Form.useForm();
-
-  const buttonStyle = {
-    height: "40px",
-    width: "140px",
-    borderRadius: "10px",
-    margin: "0px 5px",
-    padding: "7px 0px 10px 0px",
+  const uploadProps = {
+    name: "file",
+    multiple: false,
+    accept: ".xlsx,.xls",
+    action: "https://your-upload-endpoint.com", // Replace with your upload endpoint
+    onChange(info) {
+      const { status } = info.file;
+      if (status !== "uploading") {
+        console.log(info.file, info.fileList);
+      }
+      if (status === "done") {
+        message.success(`${info.file.name} file uploaded successfully.`);
+      } else if (status === "error") {
+        message.error(`${info.file.name} file upload failed.`);
+      }
+    },
+    onDrop(e) {
+      console.log("Dropped files", e.dataTransfer.files);
+    },
   };
-
-  const onFinish = (values) => {};
 
   return (
     <div>
       <Button
-        size="small"
-        className="addBtn"
         type="primary"
+        onClick={showModal}
+        size="large"
         icon={<PlusOutlined />}
-        style={buttonStyle}
-        onClick={showAddModal}
       >
         Add Parameter
       </Button>
 
       <Modal
-        className="custom-modal"
-        centered
-        title="Create Parameter"
-        open={isAddOpen}
+        title="Upload Files"
+        open={isModalOpen}
         onCancel={handleCancel}
-        width={870}
         footer={null}
+        width={800}
+        centered
       >
-        <Form form={form} onFinish={onFinish}>
-          {/* 1st Row */}
-          <Row style={{ justifyContent: "space-between" }}>
-            {/* 1st column */}
-            <Col>
-              <p className="modalContent">Parameter Name</p>
-              <Form.Item
-                name="parameterName"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please enter parameter name!",
-                  },
-                ]}
-              >
-                <Input placeholder="Parameter Name"></Input>
-              </Form.Item>
-            </Col>
-            {/* 2nd column */}
-            <Col>
-              <p className="modalContent">Parameter Code</p>
-              <Form.Item
-                name="parameterCode"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please enter parameter code!",
-                  },
-                ]}
-              >
-                <Input placeholder="Parameter Code"></Input>
-              </Form.Item>
-            </Col>
-            {/* 3rd column */}
-            <Col>
-              <p className="modalContent">Medium</p>
-              <Form.Item
-                name="medium"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please enter medium!",
-                  },
-                ]}
-              >
-                <Input placeholder="Medium"></Input>
-              </Form.Item>
-            </Col>
-          </Row>
-          {/* 2nd Row */}
-          <Row style={{ justifyContent: "space-between" }}>
-            {/* 1st column */}
-            <Col>
-              <p className="modalContent">Warning - Danger Range (g/m2)</p>
-              <Form.Item
-                name="warningDangerRange"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please select warning - danger range!",
-                  },
-                ]}
-              >
-                <Select placeholder="Warning - Danger Range"></Select>
-              </Form.Item>
-            </Col>
-            {/* 2nd column */}
-            <Col>
-              <p className="modalContent">Type</p>
-              <Form.Item
-                name="type"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please select type!",
-                  },
-                ]}
-              >
-                <Select placeholder="Type"></Select>
-              </Form.Item>
-            </Col>
-            {/* 3rd column */}
-            <Col>
-              <p className="modalContent">Updated Date</p>
-              <Form.Item
-                name="updatedDate"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please select updated date!",
-                  },
-                ]}
-              >
-                <DatePicker
-                  style={{ width: "270px" }}
-                  placeholder="Updated Date"
-                ></DatePicker>
-              </Form.Item>
-            </Col>
-          </Row>
-          {/* 3rd Row */}
-          <Row>
-            {/* 1st column */}
-            <Col>
-              <p className="modalContent">Status</p>
-              <Form.Item
-                name="status"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please select status!",
-                  },
-                ]}
-              >
-                <Select placeholder="Status"></Select>
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row className="membershipButton">
-            <Form.Item>
-              <Button
-                htmlType="submit"
-                type="primary"
-                style={{
-                  width: "150px",
-                  height: "40px",
-                  padding: "8px",
-                  borderRadius: "10px",
-                }}
-              >
-                <PlusOutlined />
-                Create Parameter
-              </Button>
-            </Form.Item>
-          </Row>
-        </Form>
+        <div className="space-y-6">
+          <Alert
+            message="Templates are provided to help you quickly fill in number information."
+            type="info"
+            showIcon
+          />
+
+          <div className="space-y-2">
+            <h2 className="text-base font-medium">
+              1. Download and fill in the template
+            </h2>
+            <Button type="primary" size="large">
+              Download template
+            </Button>
+          </div>
+
+          <div className="space-y-2">
+            <h2 className="text-base font-medium">
+              2. Upload completed template
+            </h2>
+            <Dragger {...uploadProps}>
+              <p className="ant-upload-drag-icon">
+                <InboxOutlined className="text-4xl text-blue-500" />
+              </p>
+              <p className="ant-upload-text">
+                Click or drag file here to upload Excel file
+              </p>
+              <p className="ant-upload-hint">
+                Only Excel files (.xlsx, .xls) according to template format
+              </p>
+            </Dragger>
+          </div>
+        </div>
       </Modal>
     </div>
   );

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import AddMembership from "./AddMembership";
+import AddProductManagement from "./AddProductManagement";
 
-const MembershipButton = () => {
+const ProductManagementButton = () => {
   const [isAddOpen, setIsAddOpen] = useState(false);
 
   const handleOk = () => {
@@ -10,9 +10,9 @@ const MembershipButton = () => {
 
   return (
     <div>
-      <AddMembership onClose={handleOk} />
+      <AddProductManagement onClose={handleOk} />
     </div>
   );
 };
 
-export default MembershipButton;
+export default ProductManagementButton;

@@ -1,8 +1,15 @@
 import { EyeOutlined } from "@ant-design/icons";
 import { Button, Pagination, Table, Tag } from "antd";
 import React from "react";
+import { useNavigate } from "react-router";
 
 function OrdermanagementTable() {
+  const navigate = useNavigate();
+
+  const handleViewDetails = (e) => {
+    navigate("/shop/order-detail");
+  };
+
   const dataSource = [
     {
       id: 1,
@@ -172,6 +179,7 @@ function OrdermanagementTable() {
           type="text"
           icon={<EyeOutlined className="w-4 h-4" />}
           className="flex items-center justify-center"
+          onClick={handleViewDetails}
         />
       ),
     },

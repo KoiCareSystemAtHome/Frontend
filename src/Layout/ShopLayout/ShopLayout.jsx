@@ -15,6 +15,9 @@ import "./ShopLayout.css";
 import HeaderLayout from "../../components/HeaderLayout/HeaderLayout";
 import Dashboard from "../../pages/Dashboard/Dashboard";
 import OrderManagement from "../../pages/OrderManagement/OrderManagement";
+import OrderDetail from "../../pages/OrderManagement/OrderDetail";
+import OrderRefund from "../../pages/OrderManagement/OrderRefund";
+import ProductManagement from "../../pages/ProductManagement/ProductManagement";
 
 const { Sider, Content } = Layout;
 
@@ -42,6 +45,8 @@ const ShopLayout = ({ children }) => {
     const menuItems = [
       { key: "/shop/dashboard", label: "Dashboard" },
       { key: "/shop/orderManagement", label: "Order Management" },
+      { key: "/shop/order-detail", label: "Order Detail" },
+      { key: "/shop/order-refund", label: "Order Refund" },
       { key: "/shop/productManagement", label: "Product Management" },
       { key: "/shop/promotionManagement", label: "Promotion Management" },
       { key: "/shop/feedback", label: "Feedback" },
@@ -52,9 +57,15 @@ const ShopLayout = ({ children }) => {
     return menuItem ? menuItem.label : "Dashboard";
   };
 
+  // useEffect(() => {
+  //   navigate(selectedKey);
+  // }, [selectedKey, navigate]);
+
   useEffect(() => {
-    navigate(selectedKey);
-  }, [selectedKey, navigate]);
+    if (!localStorage.getItem("selectedMenuKey")) {
+      navigate(selectedKey);
+    }
+  }, [selectedKey, navigate]); // Run only once when component mounts
 
   const handleMenuClick = ({ key }) => {
     setSelectedKey(key);
@@ -137,6 +148,9 @@ const ShopLayout = ({ children }) => {
           <Routes>
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="ordermanagement" element={<OrderManagement />} />
+            <Route path="order-detail" element={<OrderDetail />} />
+            <Route path="order-refund" element={<OrderRefund />} />
+            <Route path="productManagement" element={<ProductManagement />} />
           </Routes>
         </Content>
       </Layout>
