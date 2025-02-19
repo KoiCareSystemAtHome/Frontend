@@ -12,8 +12,17 @@ function Membership({ dataSource }) {
   const packageList = useSelector(getListMembershipPackageSelector);
   console.log("package list", packageList);
   const dispatch = useDispatch();
-  // const [currentPage, setCurrentPage] = useState(1);
+
+  // pagination
   const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  // Compute paginated data
+  const paginatedData = dataSource.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
 
   const columns = [
     {
@@ -51,31 +60,31 @@ function Membership({ dataSource }) {
       dataIndex: "endDate",
       key: "endDate",
     },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      render: (status) => {
-        let backgroundColor;
-        if (status === "Active")
-          backgroundColor = "#22c55e"; // Green for Active
-        else if (status === "Inactive")
-          backgroundColor = "#ef4444"; // Red for Inactive
-        else if (status === "Expired") backgroundColor = "#facc15"; // Yellow for Expired
-        return (
-          <span
-            className={`px-3 py-1 rounded-full text-white text-xs flex items-center justify-center`}
-            style={{
-              backgroundColor,
-              width: "100px", // Fixed width
-              height: "30px", // Fixed height
-            }}
-          >
-            {status}
-          </span>
-        );
-      },
-    },
+    // {
+    //   title: "Status",
+    //   dataIndex: "status",
+    //   key: "status",
+    //   render: (status) => {
+    //     let backgroundColor;
+    //     if (status === "Active")
+    //       backgroundColor = "#22c55e"; // Green for Active
+    //     else if (status === "Inactive")
+    //       backgroundColor = "#ef4444"; // Red for Inactive
+    //     else if (status === "Expired") backgroundColor = "#facc15"; // Yellow for Expired
+    //     return (
+    //       <span
+    //         className={`px-3 py-1 rounded-full text-white text-xs flex items-center justify-center`}
+    //         style={{
+    //           backgroundColor,
+    //           width: "100px", // Fixed width
+    //           height: "30px", // Fixed height
+    //         }}
+    //       >
+    //         {status}
+    //       </span>
+    //     );
+    //   },
+    // },
     {
       title: "Edit",
       key: "edit",
@@ -90,7 +99,7 @@ function Membership({ dataSource }) {
     setTimeout(() => {
       setLoading(false);
     }, 2000);
-  }, [dataSource]);
+  }, [dataSource, currentPage, pageSize]);
 
   // Get List
   const GetListTable = () => {
@@ -109,7 +118,7 @@ function Membership({ dataSource }) {
     <div className="w-full">
       <Spin spinning={loading} tip="Loading...">
         <Table
-          dataSource={dataSource}
+          dataSource={paginatedData}
           columns={columns}
           pagination={false}
           className="[&_.ant-table-thead_.ant-table-cell]:bg-[#fafafa] [&_.ant-table-thead_.ant-table-cell]:font-medium [&_.ant-table-cell]:py-4"
@@ -118,13 +127,18 @@ function Membership({ dataSource }) {
         />
       </Spin>
       <Pagination
-        total={50}
+        total={dataSource.length}
+        pageSize={pageSize}
+        current={currentPage}
+        showSizeChanger
         align="end"
         showTotal={(total, range) =>
           `${range[0]}-${range[1]} of ${total} items`
         }
-        defaultPageSize={10}
-        defaultCurrent={1}
+        onChange={(page, pageSize) => {
+          setCurrentPage(page);
+          setPageSize(pageSize);
+        }}
       />
     </div>
   );

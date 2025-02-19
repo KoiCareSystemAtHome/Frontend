@@ -202,7 +202,6 @@ const AddShop = ({ onClose }) => {
                   <Select.Option value="true">Active</Select.Option>
                   <Select.Option value="false">Inactive</Select.Option>
                 </Select>
-                {/* <Input placeholder="Status"></Input> */}
               </Form.Item>
             </Col>
           </Row>

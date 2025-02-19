@@ -166,7 +166,10 @@ const AdminLayout = ({ children }) => {
             <Route path="account/shop" element={<Shop />} />
             <Route path="parameter" element={<Parameter />} />
             <Route path="diseases" element={<CommonDiseases />} />
-            <Route path="diseases-detail" element={<CommonDiseasesDetail />} />
+            <Route
+              path="diseases-detail/:diseaseId"
+              element={<CommonDiseasesDetail />}
+            />
             <Route path="feedback" element={<Feedback />} />
           </Routes>
         </Content>

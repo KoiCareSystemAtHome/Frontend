@@ -7,6 +7,7 @@ import {
   Modal,
   notification,
   Row,
+  Upload,
 } from "antd";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
@@ -14,7 +15,7 @@ import {
   createProductManagement,
   getListProductManagement,
 } from "../../redux/slices/productManagementSlice";
-import { PlusOutlined } from "@ant-design/icons";
+import { InboxOutlined, PlusOutlined } from "@ant-design/icons";
 
 const AddProductManagement = ({ onClose }) => {
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -51,6 +52,24 @@ const AddProductManagement = ({ onClose }) => {
   };
 
   const onFinish = (values) => {
+    if (typeof values.ParameterImpacts === "string") {
+      try {
+        values.ParameterImpacts = JSON.parse(values.ParameterImpacts);
+      } catch {
+        openNotification("error", "Invalid JSON format in ParameterImpacts.");
+        return;
+      }
+    }
+
+    const formData = new FormData();
+    Object.keys(values).forEach((key) => {
+      if (key === "Image") {
+        formData.append(key, values[key]?.file); // Get the actual file object
+      } else {
+        formData.append(key, values[key]);
+      }
+    });
+
     console.log(values);
     // Dispatch the createBaoHiem action with the form values
     dispatch(createProductManagement(values))
@@ -169,17 +188,17 @@ const AddProductManagement = ({ onClose }) => {
             </Col>
             {/* 2nd column */}
             <Col>
-              <p className="modalContent">Image</p>
+              <p className="modalContent">Shop ID</p>
               <Form.Item
-                name="image"
+                name="shopId"
                 rules={[
                   {
                     required: true,
-                    message: "Please select image!",
+                    message: "Please input shop ID!",
                   },
                 ]}
               >
-                <Input placeholder="Image"></Input>
+                <Input placeholder="Shop ID"></Input>
               </Form.Item>
             </Col>
             {/* 3rd column */}
@@ -281,22 +300,39 @@ const AddProductManagement = ({ onClose }) => {
                 <Input placeholder="Parameter impacts" />
               </Form.Item>
             </Col>
-            {/* 2nd column */}
-            <Col>
-              <p className="modalContent">Shop ID</p>
-              <Form.Item
-                name="shopId"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input shop ID!",
-                  },
-                ]}
-              >
-                <Input placeholder="Shop ID"></Input>
-              </Form.Item>
-            </Col>
           </Row>
+          <Col>
+            <p className="modalContent">Image</p>
+            <Form.Item
+              name="image"
+              rules={[
+                {
+                  required: true,
+                  message: "Please upload an image!",
+                },
+              ]}
+            >
+              <Upload.Dragger
+                name="file"
+                beforeUpload={(file) => {
+                  form.setFieldsValue({ Image: file }); // Store file in form state
+                  return false; // Prevent auto-upload
+                }}
+                multiple={false}
+                accept="image/*"
+              >
+                <p className="ant-upload-drag-icon">
+                  <InboxOutlined />
+                </p>
+                <p className="ant-upload-text">
+                  Click or drag file to this area to upload
+                </p>
+                <p className="ant-upload-hint">
+                  Supports a single image file. Click or drag to upload.
+                </p>
+              </Upload.Dragger>
+            </Form.Item>
+          </Col>
           <Row className="membershipButton">
             <Form.Item>
               <Button

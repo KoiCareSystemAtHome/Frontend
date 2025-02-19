@@ -10,8 +10,17 @@ function ProductManagementTable({ dataSource }) {
   const productList = useSelector(getListProductManagementSelector);
   console.log("Product list", productList);
   const dispatch = useDispatch();
-  // const [currentPage, setCurrentPage] = useState(1);
+
+  // pagination
   const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  // Compute paginated data
+  const paginatedData = dataSource.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
 
   const columns = [
     {
@@ -137,7 +146,7 @@ function ProductManagementTable({ dataSource }) {
     setTimeout(() => {
       setLoading(false);
     }, 2000);
-  }, [dataSource]);
+  }, [dataSource, currentPage, pageSize]);
 
   // Get List
   const GetListTable = () => {
@@ -156,7 +165,7 @@ function ProductManagementTable({ dataSource }) {
     <div className="w-full">
       <Spin spinning={loading} tip="Loading...">
         <Table
-          dataSource={dataSource}
+          dataSource={paginatedData}
           columns={columns}
           pagination={false}
           className="[&_.ant-table-thead_.ant-table-cell]:bg-[#fafafa] [&_.ant-table-thead_.ant-table-cell]:font-medium [&_.ant-table-cell]:py-4"
@@ -166,13 +175,18 @@ function ProductManagementTable({ dataSource }) {
         />
       </Spin>
       <Pagination
-        total={50}
+        total={dataSource.length}
+        pageSize={pageSize}
+        current={currentPage}
+        showSizeChanger
         align="end"
         showTotal={(total, range) =>
           `${range[0]}-${range[1]} of ${total} items`
         }
-        defaultPageSize={10}
-        defaultCurrent={1}
+        onChange={(page, size) => {
+          setCurrentPage(page);
+          setPageSize(size);
+        }}
       />
     </div>
   );
