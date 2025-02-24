@@ -24,7 +24,11 @@ const getRequestParams = async (url, params) => {
 
 const postRequestParams = async (url, params) => {
   try {
-    const res = await axiosClientVer2.post(`${url}`, { params: params });
+    // Convert newProduct object to query parameters
+    const queryString = new URLSearchParams(params).toString();
+    const fullUrl = queryString ? `${url}?${queryString}` : url;
+
+    const res = await axiosClientVer2.post(fullUrl, null); 
     return res;
   } catch (error) {
     return handleError(error);

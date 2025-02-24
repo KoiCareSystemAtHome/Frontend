@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getRequest, postRequest } from "../../services/httpMethods";
+import { getRequest, postRequest, postRequestParams } from "../../services/httpMethods";
 
 const initialState = {
   token: "",
@@ -25,7 +25,7 @@ export const createProductManagement = createAsyncThunk(
   "Product/create-product",
   async (newProduct, { rejectWithValue }) => {
     try {
-      const res = await postRequest("Product/create-product", newProduct);
+      const res = await postRequestParams("Product/create-product", newProduct);
       console.log("res", res);
       if (res.data.status === 400) {
         return rejectWithValue(res.data.detail);

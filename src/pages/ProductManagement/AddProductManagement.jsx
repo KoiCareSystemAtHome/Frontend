@@ -51,51 +51,48 @@ const AddProductManagement = ({ onClose }) => {
     });
   };
 
-  const onFinish = (values) => {
+  const onFinish = async (values) => {
     if (typeof values.ParameterImpacts === "string") {
       try {
-        values.ParameterImpacts = JSON.parse(values.ParameterImpacts);
+        values.ParameterImpacts = {
+          ParameterImpacts: {
+            H2O: "Increased",
+            CO2: "Increased",
+          },
+        };
       } catch {
         openNotification("error", "Invalid JSON format in ParameterImpacts.");
         return;
       }
     }
-
-    const formData = new FormData();
-    Object.keys(values).forEach((key) => {
-      if (key === "Image") {
-        formData.append(key, values[key]?.file); // Get the actual file object
-      } else {
-        formData.append(key, values[key]);
-      }
-    });
-
-    console.log(values);
-    // Dispatch the createBaoHiem action with the form values
-    dispatch(createProductManagement(values))
+  
+    // Convert form data to query parameters
+    const queryParams = {
+      ProductName: values.ProductName,
+      Description: values.Description,
+      Price: values.Price,
+      StockQuantity: values.StockQuantity,
+      CategoryId: values.CategoryId,
+      Brand: values.Brand,
+      ManufactureDate: values.ManufactureDate,
+      ExpiryDate: values.ExpiryDate,
+    };
+  
+  
+    dispatch(createProductManagement(queryParams))
       .unwrap()
       .then(() => {
-        // Close the Modal
         onClose();
         openNotification("success", "Product Created Successfully!");
         dispatch(getListProductManagement());
         handleCancel();
-        // Reset the form fields after dispatching the action
         form.resetFields();
       })
       .catch((error) => {
         openNotification("warning", error);
       });
-    // .finally(() => {
-    //   // Reset the form fields after dispatching the action
-    //   form.resetFields();
-    //   // Close the Modal
-    //   onClose();
-    //   dispatch(getListMembershipPackage());
-    //   openNotification("success", "Membership Created Successfully!");
-    //   handleCancel();
-    // });
   };
+  
 
   return (
     <div>
@@ -127,7 +124,7 @@ const AddProductManagement = ({ onClose }) => {
             <Col>
               <p className="modalContent">Product Name</p>
               <Form.Item
-                name="productName"
+                name="ProductName"
                 rules={[
                   {
                     required: true,
@@ -142,7 +139,7 @@ const AddProductManagement = ({ onClose }) => {
             <Col>
               <p className="modalContent">Description</p>
               <Form.Item
-                name="description"
+                name="Description"
                 rules={[
                   {
                     required: true,
@@ -157,7 +154,7 @@ const AddProductManagement = ({ onClose }) => {
             <Col>
               <p className="modalContent">Price</p>
               <Form.Item
-                name="price"
+                name="Price"
                 rules={[
                   {
                     required: true,
@@ -175,7 +172,7 @@ const AddProductManagement = ({ onClose }) => {
             <Col>
               <p className="modalContent">Stock Quantity</p>
               <Form.Item
-                name="stockQuantity"
+                name="StockQuantity"
                 rules={[
                   {
                     required: true,
@@ -190,7 +187,7 @@ const AddProductManagement = ({ onClose }) => {
             <Col>
               <p className="modalContent">Shop ID</p>
               <Form.Item
-                name="shopId"
+                name="ShopId"
                 rules={[
                   {
                     required: true,
@@ -205,7 +202,7 @@ const AddProductManagement = ({ onClose }) => {
             <Col>
               <p className="modalContent">Category ID</p>
               <Form.Item
-                name="categoryId"
+                name="CategoryId"
                 rules={[
                   {
                     required: true,
@@ -223,7 +220,7 @@ const AddProductManagement = ({ onClose }) => {
             <Col>
               <p className="modalContent">Brand</p>
               <Form.Item
-                name="brand"
+                name="Brand"
                 rules={[
                   {
                     required: true,
@@ -237,7 +234,7 @@ const AddProductManagement = ({ onClose }) => {
             <Col>
               <p className="modalContent">Manufacture Date</p>
               <Form.Item
-                name="manufactureDate"
+                name="ManufactureDate"
                 rules={[
                   {
                     required: true,
@@ -254,7 +251,7 @@ const AddProductManagement = ({ onClose }) => {
             <Col>
               <p className="modalContent">Expiry Date</p>
               <Form.Item
-                name="expiryDate"
+                name="ExpiryDate"
                 rules={[
                   {
                     required: true,
@@ -275,26 +272,26 @@ const AddProductManagement = ({ onClose }) => {
             <Col style={{ marginRight: "6px" }}>
               <p className="modalContent">Parameter Impacts</p>
               <Form.Item
-                name="parameterImpacts"
+                name="ParameterImpacts"
                 rules={[
                   {
                     required: true,
                     message: "Please input parameter impacts!",
                   },
-                  {
-                    validator: (_, value) => {
-                      try {
-                        if (value) {
-                          JSON.parse(value); // Validate JSON format
-                        }
-                        return Promise.resolve();
-                      } catch {
-                        return Promise.reject(
-                          new Error("Invalid JSON format!")
-                        );
-                      }
-                    },
-                  },
+                  // {
+                  //   validator: (_, value) => {
+                  //     try {
+                  //       if (value) {
+                  //         JSON.parse(value); // Validate JSON format
+                  //       }
+                  //       return Promise.resolve();
+                  //     } catch {
+                  //       return Promise.reject(
+                  //         new Error("Invalid JSON format!")
+                  //       );
+                  //     }
+                  //   },
+                  // },
                 ]}
               >
                 <Input placeholder="Parameter impacts" />
