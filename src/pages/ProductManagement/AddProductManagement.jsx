@@ -51,6 +51,16 @@ const AddProductManagement = ({ onClose }) => {
     });
   };
 
+  // Convert Image to Base64
+  const getBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result.split(",")[1]); // Extract Base64 data (remove prefix)
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
   const onFinish = async (values) => {
     if (typeof values.ParameterImpacts === "string") {
       try {
@@ -299,7 +309,7 @@ const AddProductManagement = ({ onClose }) => {
           <Col>
             <p className="modalContent">Image</p>
             <Form.Item
-              name="image"
+              name="Image"
               rules={[
                 {
                   required: true,
