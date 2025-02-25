@@ -51,15 +51,23 @@ const AddProductManagement = ({ onClose }) => {
     });
   };
 
-  const onFinish = (values) => {
-    if (typeof values.ParameterImpacts === "string") {
-      try {
-        values.ParameterImpacts = JSON.parse(values.ParameterImpacts);
-      } catch {
-        openNotification("error", "Invalid JSON format in ParameterImpacts.");
-        return;
-      }
-    }
+  // Convert Image to Base64
+  const getBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result.split(",")[1]); // Extract Base64 data (remove prefix)
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
+  const onFinish = async (values) => {
+    values.ParameterImpacts = {
+      ParameterImpacts: {
+        H2O: "Increased",
+        CO2: "Increased",
+      },
+    };
 
     const formData = new FormData();
     Object.keys(values).forEach((key) => {
@@ -69,6 +77,16 @@ const AddProductManagement = ({ onClose }) => {
         formData.append(key, values[key]);
       }
     });
+
+    if (values.image && values.image.file) {
+      try {
+        const base64Image = await getBase64(values.image.file);
+        values.image = base64Image; // Store as Base64 string
+      } catch (error) {
+        openNotification("error", "Failed to process image!");
+        return;
+      }
+    }
 
     console.log(values);
     // Dispatch the createBaoHiem action with the form values

@@ -3,6 +3,7 @@ import {
   deleteRequest,
   getRequest,
   postRequest,
+  putRequest,
 } from "../../services/httpMethods";
 
 const initialState = {
@@ -11,9 +12,9 @@ const initialState = {
 };
 
 // GET
-export const getListShop = createAsyncThunk("Shop/all-shop", async () => {
+export const getListShop = createAsyncThunk("Shop", async () => {
   try {
-    const res = await getRequest("Shop/all-shop");
+    const res = await getRequest("Shop");
     console.log("res", res);
     return res.data;
   } catch (error) {
@@ -21,7 +22,7 @@ export const getListShop = createAsyncThunk("Shop/all-shop", async () => {
   }
 });
 
-// POST
+// CREATE
 export const createShop = createAsyncThunk(
   "Shop/create",
   async (newShop, { rejectWithValue }) => {
@@ -34,6 +35,40 @@ export const createShop = createAsyncThunk(
       return res.data;
     } catch (error) {
       console.log(error.detail);
+    }
+  }
+);
+
+// UODATE
+// export const updateShop = createAsyncThunk(
+//   "Shop/update",
+//   async ({ shopId, updatedShop }) => {
+//     try {
+//       const res = await putRequest(`Shop/${shopId}`, updatedShop);
+//       return res.data;
+//     } catch (error) {
+//       console.log({ error });
+//     }
+//   }
+// );
+
+export const updateShop = createAsyncThunk(
+  "Shop/update",
+  async ({ shopId, updatedShop }, { rejectWithValue }) => {
+    try {
+      const res = await putRequest(`Shop/${shopId}`, updatedShop);
+
+      // Ensure response and data exist
+      if (!res || !res.data) {
+        throw new Error("Invalid API response");
+      }
+
+      return res.data;
+    } catch (error) {
+      console.error("Update failed:", error);
+
+      // Handle different error types
+      return rejectWithValue(error.response?.data || "Update failed");
     }
   }
 );
@@ -60,6 +95,15 @@ const shopSlice = createSlice({
       })
       .addCase(createShop.fulfilled, (state, action) => {
         state.listShop.push(action.payload);
+      })
+      .addCase(updateShop.fulfilled, (state, action) => {
+        const updateShop = action.payload;
+        const index = state.listShop.findIndex(
+          (shop) => shop.id === updateShop.id
+        );
+        if (index !== -1) {
+          state.listShop[index] = updateShop;
+        }
       })
       .addCase(deleteShop.fulfilled, (state, action) => {
         const idToDelete = action.payload;

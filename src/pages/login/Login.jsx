@@ -14,9 +14,7 @@ const LoginPage = () => {
 
   const onFinish = (e) => {
     console.log("Form submitted:", e);
-  };
 
-  const handleLogin = () => {
     dispatch(login({ username, password }))
       .then((res) => {
         console.log("Response payload:", res.payload);
@@ -37,6 +35,28 @@ const LoginPage = () => {
         message.error("Login failed. Please try again.");
       });
   };
+
+  // const handleLogin = () => {
+  //   dispatch(login({ username, password }))
+  //     .then((res) => {
+  //       console.log("Response payload:", res.payload);
+  //       if (res.payload.status === 200) {
+  //         message.success("Login successful!");
+  //         if (res.payload?.data?.userInfo.roles === "Admin") {
+  //           navigate("/admin");
+  //         } else if (res.payload?.data?.userInfo.roles === "Shop") {
+  //           navigate("/");
+  //         } else {
+  //           message.error("Wrong username or password");
+  //         }
+  //       } else {
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       console.error("Login failed:", error);
+  //       message.error("Login failed. Please try again.");
+  //     });
+  // };
 
   // const handleLogin = () => {
   //   console.log("Username:", username);
@@ -160,7 +180,6 @@ const LoginPage = () => {
               className="w-full bg-orange-500 text-white rounded-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors font-title"
               size="large"
               style={{ backgroundColor: "orange" }}
-              onClick={handleLogin}
             >
               Sign in
             </Button>

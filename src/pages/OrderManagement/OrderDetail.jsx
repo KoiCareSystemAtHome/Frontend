@@ -124,7 +124,7 @@ const OrderDetail = () => {
                 <div className="flex">
                   <span className="w-32 text-gray-600">Payment Method</span>
                   <img
-                    src="/api/placeholder/80/30"
+                    src="https://thuonghieumanh.vneconomy.vn/upload/vnpay.png"
                     alt="VNPay"
                     className="h-6"
                   />

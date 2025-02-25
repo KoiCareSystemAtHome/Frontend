@@ -8,7 +8,6 @@ import {
   Typography,
   Divider,
   Timeline,
-  Input,
 } from "antd";
 import {
   ArrowLeftOutlined,
@@ -21,6 +20,7 @@ import {
   StarOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router";
+import TextArea from "antd/es/input/TextArea";
 
 const { Title, Text } = Typography;
 
@@ -188,7 +188,7 @@ const OrderRefund = () => {
                   <span className="text-sm font-normal">Notes</span>
                   <span className="text-red-500 ml-1">*</span>
                 </div>
-                <Input className="w-full" />
+                <TextArea style={{ height: "100px" }} className="w-full" />
               </div>
 
               {/* Action Buttons */}

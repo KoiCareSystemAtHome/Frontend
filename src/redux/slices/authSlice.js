@@ -1,5 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { postRequest, postRequestFormData } from "../../services/httpMethods";
+import {
+  postRequestFormData,
+  postRequestParams,
+} from "../../services/httpMethods";
 import { message, notification } from "antd";
 import { handleDangNhap } from "../../axios/axiosInterceptor";
 
@@ -9,7 +12,7 @@ export const login = createAsyncThunk(
   async ({ username, password }, { rejectWithValue }) => {
     try {
       // Ensure you're sending the correct headers and payload
-      const res = await postRequest("Account/login", {
+      const res = await postRequestParams("Account/login", {
         username,
         password,
       });

@@ -1,6 +1,6 @@
 import React from "react";
 import SearchTable from "../../components/SearchTable/searchTable";
-import ShopButton from "./ShopButton";
+//import ShopButton from "./ShopButton";
 import ShopTable from "./ShopTable";
 import useShopList from "../../hooks/useShopList";
 
@@ -24,7 +24,7 @@ const Shop = () => {
             display: "flex",
           }}
         >
-          <ShopButton />
+          {/* <ShopButton /> */}
         </div>
       </div>
 

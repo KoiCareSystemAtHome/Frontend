@@ -53,7 +53,6 @@ function ProductManagementTable({ dataSource }) {
         />
       ),
     },
-
     {
       title: "Price",
       dataIndex: "price",
@@ -89,11 +88,11 @@ function ProductManagementTable({ dataSource }) {
       dataIndex: "shopId",
       key: "shopId",
     },
-    {
-      title: "Shop",
-      dataIndex: "shop",
-      key: "shop",
-    },
+    // {
+    //   title: "Shop",
+    //   dataIndex: "shop",
+    //   key: "shop",
+    // },
     {
       title: "Category ID",
       dataIndex: "categoryId",
@@ -104,41 +103,41 @@ function ProductManagementTable({ dataSource }) {
       dataIndex: "type",
       key: "type",
     },
-    {
-      title: "Food",
-      dataIndex: "foodIsFloat",
-      key: "foodIsFloat",
-    },
-    {
-      title: "Age From",
-      dataIndex: "ageFrom",
-      key: "ageFrom",
-    },
-    {
-      title: "Age To",
-      dataIndex: "ageTo",
-      key: "ageTo",
-    },
+    // {
+    //   title: "Food",
+    //   dataIndex: "foodIsFloat",
+    //   key: "foodIsFloat",
+    // },
+    // {
+    //   title: "Age From",
+    //   dataIndex: "ageFrom",
+    //   key: "ageFrom",
+    // },
+    // {
+    //   title: "Age To",
+    //   dataIndex: "ageTo",
+    //   key: "ageTo",
+    // },
     {
       title: "Product Weight",
       dataIndex: "productWeight",
       key: "productWeight",
     },
-    {
-      title: "Category",
-      dataIndex: "category",
-      key: "category",
-    },
-    {
-      title: "Blog Product",
-      dataIndex: "blogProducts",
-      key: "blogProducts",
-    },
-    {
-      title: "FeedBack",
-      dataIndex: "feedBacks",
-      key: "feedBacks",
-    },
+    // {
+    //   title: "Category",
+    //   dataIndex: "category",
+    //   key: "category",
+    // },
+    // {
+    //   title: "Blog Product",
+    //   dataIndex: "blogProducts",
+    //   key: "blogProducts",
+    // },
+    // {
+    //   title: "FeedBack",
+    //   dataIndex: "feedBacks",
+    //   key: "feedBacks",
+    // },
   ];
 
   useEffect(() => {
