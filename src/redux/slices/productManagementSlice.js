@@ -1,5 +1,9 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getRequest, postRequestParams } from "../../services/httpMethods";
+import {
+  getRequest,
+  postRequest,
+  postRequestParams,
+} from "../../services/httpMethods";
 
 const initialState = {
   token: "",
