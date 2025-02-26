@@ -2,13 +2,11 @@ import React, { useState, useEffect } from "react";
 import {
   DashboardOutlined,
   TeamOutlined,
-  DollarCircleOutlined,
-  MessageOutlined,
   SettingOutlined,
-  QuestionCircleOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   ShopOutlined,
+  ToolOutlined,
 } from "@ant-design/icons";
 import { Layout, Menu, Button } from "antd";
 import { Route, Routes, useNavigate } from "react-router-dom";
@@ -21,7 +19,9 @@ import Shop from "../../pages/Shop/Shop";
 import Parameter from "../../pages/Parameter/Parameter";
 import CommonDiseases from "../../pages/CommonDiseases/CommonDiseases";
 import CommonDiseasesDetail from "../../pages/CommonDiseases/CommonDiseasesDetail";
-import { Feedback } from "../../pages/Feedback/Feedback";
+import fishIcon from "../../assets/fish.png";
+import pondIcon from "../../assets/pond.png";
+import diseaseIcon from "../../assets/diseases.png";
 
 const { Sider, Content } = Layout;
 
@@ -135,19 +135,73 @@ const AdminLayout = ({ children }) => {
             },
             {
               key: "/admin/parameter",
-              icon: <DollarCircleOutlined style={{ color: "white" }} />,
+              icon: <ToolOutlined style={{ color: "white" }} />,
               label: "Parameter",
+              children: [
+                {
+                  key: "/admin/parameter/fish",
+                  label: "Fish",
+                  className: "group", // This makes the menu item act as a parent
+                  icon: (
+                    <span>
+                      <img
+                        src={fishIcon}
+                        alt="Fish Icon"
+                        className={`w-5 transition-all duration-200 
+                                    invert group-hover:invert-0 ${
+                                      selectedKey === "/admin/parameter/fish"
+                                        ? "invert-0"
+                                        : ""
+                                    }`}
+                      />
+                    </span>
+                  ),
+                },
+                {
+                  key: "/admin/parameter/pond",
+                  label: "Pond",
+                  className: "group", // This makes the menu item act as a parent
+                  icon: (
+                    <span>
+                      <img
+                        src={pondIcon}
+                        alt="Pond Icon"
+                        className={`w-5 transition-all duration-200 
+                                    invert group-hover:invert-0 ${
+                                      selectedKey === "/admin/parameter/pond"
+                                        ? "invert-0"
+                                        : ""
+                                    }`}
+                      />
+                    </span>
+                  ),
+                },
+              ],
             },
             {
               key: "/admin/diseases",
-              icon: <QuestionCircleOutlined style={{ color: "white" }} />,
+              className: "group",
               label: "Common Diseases",
+              icon: (
+                <span>
+                  <img
+                    src={diseaseIcon}
+                    alt="Pond Icon"
+                    className={`w-5 transition-all duration-200 
+                                    invert group-hover:invert-0 ${
+                                      selectedKey === "/admin/diseases"
+                                        ? "invert-0"
+                                        : ""
+                                    }`}
+                  />
+                </span>
+              ),
             },
-            {
-              key: "/admin/feedback",
-              icon: <MessageOutlined style={{ color: "white" }} />,
-              label: "Feedback",
-            },
+            // {
+            //   key: "/admin/feedback",
+            //   icon: <MessageOutlined style={{ color: "white" }} />,
+            //   label: "Feedback",
+            // },
           ]}
         />
       </Sider>
@@ -170,7 +224,7 @@ const AdminLayout = ({ children }) => {
               path="diseases-detail/:diseaseId"
               element={<CommonDiseasesDetail />}
             />
-            <Route path="feedback" element={<Feedback />} />
+            {/* <Route path="feedback" element={<Feedback />} /> */}
           </Routes>
         </Content>
       </Layout>

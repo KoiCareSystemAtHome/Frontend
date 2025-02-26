@@ -61,7 +61,7 @@ const CommonDiseasesDetail = () => {
               {/* Image Section */}
               <div className="md:w-1/3">
                 <img
-                  src={disease?.imageUrl || "https://via.placeholder.com/300"}
+                  src={disease?.image || "https://via.placeholder.com/300"}
                   alt={disease?.name || "Disease Image"}
                   className="w-full rounded-lg shadow-md"
                 />
@@ -73,18 +73,18 @@ const CommonDiseasesDetail = () => {
                   {disease?.name || "Disease Name"}
                 </Title>
 
-                <div className="mb-6">
+                {/* <div className="mb-6">
                   <Text strong className="text-green-600 text-lg">
                     + Nguyên Nhân Gây Bệnh
                   </Text>
                   <Paragraph className="pl-4 mt-2">
                     {disease?.cause || "No cause information available."}
                   </Paragraph>
-                </div>
+                </div> */}
 
                 <div className="mb-6">
                   <Text strong className="text-green-600 text-lg">
-                    + Triệu Chứng Bệnh
+                    + Disease Description
                   </Text>
                   <Paragraph className="pl-4 mt-2">
                     {disease?.description ||

@@ -28,7 +28,7 @@ const postRequestParams = async (url, params) => {
     const queryString = new URLSearchParams(params).toString();
     const fullUrl = queryString ? `${url}?${queryString}` : url;
 
-    const res = await axiosClientVer2.post(fullUrl, null); 
+    const res = await axiosClientVer2.post(fullUrl, null);
     return res;
   } catch (error) {
     return handleError(error);

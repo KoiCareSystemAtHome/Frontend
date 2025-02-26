@@ -32,6 +32,8 @@ const AddProductManagement = ({ onClose }) => {
 
   const [form] = Form.useForm();
 
+  const [imageBase64, setImageBase64] = useState(""); // Store the image as Base64
+
   const buttonStyle = {
     height: "40px",
     width: "160px",
@@ -51,12 +53,23 @@ const AddProductManagement = ({ onClose }) => {
     });
   };
 
-  // Convert Image to Base64
-  const getBase64 = (file) => {
+  const beforeUpload = async (file) => {
+    try {
+      const base64 = await convertToBase64(file);
+      setImageBase64(base64); // Store Base64 string
+      form.setFieldsValue({ Image: base64 }); // Save in form
+    } catch (error) {
+      openNotification("error", "Failed to convert image.");
+    }
+    return false; // Prevent automatic upload
+  };
+
+  // Convert image to Base64
+  const convertToBase64 = (file) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result.split(",")[1]); // Extract Base64 data (remove prefix)
+      reader.onload = () => resolve(reader.result.split(",")[1]); // Extract Base64 string
       reader.onerror = (error) => reject(error);
     });
   };
@@ -82,10 +95,13 @@ const AddProductManagement = ({ onClose }) => {
       Description: values.Description,
       Price: values.Price,
       StockQuantity: values.StockQuantity,
+      ShopId: values.ShopId,
       CategoryId: values.CategoryId,
       Brand: values.Brand,
       ManufactureDate: values.ManufactureDate,
       ExpiryDate: values.ExpiryDate,
+      ParameterImpacts: values.ParameterImpacts,
+      Image: imageBase64,
     };
 
     dispatch(createProductManagement(queryParams))
@@ -319,10 +335,7 @@ const AddProductManagement = ({ onClose }) => {
             >
               <Upload.Dragger
                 name="file"
-                beforeUpload={(file) => {
-                  form.setFieldsValue({ Image: file }); // Store file in form state
-                  return false; // Prevent auto-upload
-                }}
+                beforeUpload={beforeUpload}
                 multiple={false}
                 accept="image/*"
               >
