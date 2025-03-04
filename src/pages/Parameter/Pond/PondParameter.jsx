@@ -1,11 +1,11 @@
 import React from "react";
-import MemberButton from "./MemberButton";
-import SearchTable from "../../components/SearchTable/searchTable";
-import MemberTable from "./MemberTable";
-import useMemberList from "../../hooks/useMemberList";
+import PondParameterButton from "./PondParameterButton";
+import PondParameterTable from "./PondParameterTable";
+import SearchTable from "../../../components/SearchTable/searchTable";
+import useParameterList from "../../../hooks/useParameterList";
 
-const Member = () => {
-  const memberList = useMemberList();
+const PondParameter = () => {
+  const parameterList = useParameterList("pond");
 
   return (
     <div>
@@ -17,14 +17,14 @@ const Member = () => {
           alignItems: "center",
         }}
       >
-        <div>Member</div>
+        <div>Pond Parameter</div>
 
         <div
           style={{
             display: "flex",
           }}
         >
-          <MemberButton />
+          <PondParameterButton />
         </div>
       </div>
 
@@ -33,10 +33,10 @@ const Member = () => {
       </div>
 
       <div className="tableContainer" style={{ marginTop: "10px" }}>
-        <MemberTable dataSource={memberList} />
+        <PondParameterTable dataSource={parameterList} />
       </div>
     </div>
   );
 };
 
-export default Member;
+export default PondParameter;

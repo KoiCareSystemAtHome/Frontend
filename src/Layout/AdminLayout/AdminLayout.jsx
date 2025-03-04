@@ -16,12 +16,13 @@ import Dashboard from "../../pages/Dashboard/Dashboard";
 import Membership from "../../pages/Membership/Membership";
 import Member from "../../pages/Member/Member";
 import Shop from "../../pages/Shop/Shop";
-import Parameter from "../../pages/Parameter/Parameter";
 import CommonDiseases from "../../pages/CommonDiseases/CommonDiseases";
 import CommonDiseasesDetail from "../../pages/CommonDiseases/CommonDiseasesDetail";
 import fishIcon from "../../assets/fish.png";
 import pondIcon from "../../assets/pond.png";
 import diseaseIcon from "../../assets/diseases.png";
+import PondParameter from "../../pages/Parameter/Pond/PondParameter";
+import FishParameter from "../../pages/Parameter/Fish/FishParameter";
 
 const { Sider, Content } = Layout;
 
@@ -31,12 +32,13 @@ const AdminLayout = ({ children }) => {
     const savedState = localStorage.getItem("navbarCollapsed");
     return savedState ? JSON.parse(savedState) : false;
   });
-  const [selectedKey, setSelectedKey] = useState(
-    localStorage.getItem("selectedMenuKey") || "admin/dashboard"
-  );
+  const [selectedKey, setSelectedKey] = useState(() => {
+    return localStorage.getItem("selectedMenuKey") || "admin/dashboard";
+  });
   const [headerTitle, setHeaderTitle] = useState(
     localStorage.getItem("headerTitle") || "Dashboard"
   ); // Get the header title from localStorage, or default to "Dashboard"
+
   const navigate = useNavigate();
 
   // Save collapsed state to localStorage whenever it changes
@@ -50,7 +52,8 @@ const AdminLayout = ({ children }) => {
       { key: "/admin/membership", label: "Membership" },
       { key: "/admin/account/member", label: "Member" },
       { key: "/admin/account/shop", label: "Shop" },
-      { key: "/admin/parameter", label: "Parameter" },
+      { key: "/admin/parameter/fish", label: "Fish Parameter" },
+      { key: "/admin/parameter/pond", label: "Pond Parameter" },
       { key: "/admin/feedback", label: "Feedback" },
       { key: "/admin/diseases", label: "Common Diseases" },
       { key: "/admin/diseases-detail", label: "Common Diseases Detail" },
@@ -65,11 +68,20 @@ const AdminLayout = ({ children }) => {
   //   navigate(selectedKey);
   // }, [selectedKey, navigate]);
 
+  // useEffect(() => {
+  //   if (!localStorage.getItem("selectedMenuKey")) {
+  //     navigate(selectedKey);
+  //   }
+  // }, [selectedKey, navigate]); // Run only once when component mounts
+
   useEffect(() => {
-    if (!localStorage.getItem("selectedMenuKey")) {
-      navigate(selectedKey);
+    const storedKey = localStorage.getItem("selectedMenuKey");
+
+    if (!storedKey) {
+      setSelectedKey("/admin/dashboard");
+      navigate("/admin/dashboard", { replace: true });
     }
-  }, [selectedKey, navigate]); // Run only once when component mounts
+  }, [navigate]);
 
   const handleMenuClick = ({ key }) => {
     setSelectedKey(key);
@@ -218,7 +230,8 @@ const AdminLayout = ({ children }) => {
             <Route path="membership" element={<Membership />} />
             <Route path="account/member" element={<Member />} />
             <Route path="account/shop" element={<Shop />} />
-            <Route path="parameter" element={<Parameter />} />
+            <Route path="parameter/fish" element={<FishParameter />} />
+            <Route path="parameter/pond" element={<PondParameter />} />
             <Route path="diseases" element={<CommonDiseases />} />
             <Route
               path="diseases-detail/:diseaseId"

@@ -1,216 +1,151 @@
-import { Pagination, Table } from "antd";
-import React from "react";
-import UpdateMember from "./UpdateMember";
+import { Pagination, Spin, Table } from "antd";
+import React, { useEffect, useState } from "react";
+import useMemberList from "../../hooks/useMemberList";
+import { useDispatch } from "react-redux";
+//import UpdateMember from "./UpdateMember";
 
-const renderUpdateMember = (record) => <UpdateMember record={record} />;
+//const renderUpdateMember = (record) => <UpdateMember record={record} />;
 
-const MemberTable = () => {
-  const dataSource = [
-    {
-      key: 1,
-      memberId: 1,
-      memberName: "John",
-      email: "john123@gmail.com",
-      phone: "0123456789",
-      membershipType: "Standard",
-      startDate: "01/01/2023",
-      endDate: "01/01/2024",
-      status: "Active",
-    },
-    {
-      key: 2,
-      memberId: 2,
-      memberName: "John",
-      email: "john123@gmail.com",
-      phone: "0123456789",
-      membershipType: "Standard",
-      startDate: "01/01/2023",
-      endDate: "01/01/2024",
-      status: "Inactive",
-    },
-    {
-      key: 3,
-      memberId: 3,
-      memberName: "John",
-      email: "john123@gmail.com",
-      phone: "0123456789",
-      membershipType: "Standard",
-      startDate: "01/01/2023",
-      endDate: "01/01/2024",
-      status: "Expired",
-    },
-    {
-      key: 4,
-      memberId: 4,
-      memberName: "John",
-      email: "john123@gmail.com",
-      phone: "0123456789",
-      membershipType: "Standard",
-      startDate: "01/01/2023",
-      endDate: "01/01/2024",
-      status: "Active",
-    },
-    {
-      key: 5,
-      memberId: 5,
-      memberName: "John",
-      email: "john123@gmail.com",
-      phone: "0123456789",
-      membershipType: "Standard",
-      startDate: "01/01/2023",
-      endDate: "01/01/2024",
-      status: "Inactive",
-    },
-    {
-      key: 6,
-      memberId: 6,
-      memberName: "John",
-      email: "john123@gmail.com",
-      phone: "0123456789",
-      membershipType: "Standard",
-      startDate: "01/01/2023",
-      endDate: "01/01/2024",
-      status: "Expired",
-    },
-    {
-      key: 7,
-      memberId: 7,
-      memberName: "John",
-      email: "john123@gmail.com",
-      phone: "0123456789",
-      membershipType: "Standard",
-      startDate: "01/01/2023",
-      endDate: "01/01/2024",
-      status: "Active",
-    },
-    {
-      key: 8,
-      memberId: 8,
-      memberName: "John",
-      email: "john123@gmail.com",
-      phone: "0123456789",
-      membershipType: "Standard",
-      startDate: "01/01/2023",
-      endDate: "01/01/2024",
-      status: "Inactive",
-    },
-    {
-      key: 9,
-      memberId: 9,
-      memberName: "John",
-      email: "john123@gmail.com",
-      phone: "0123456789",
-      membershipType: "Standard",
-      startDate: "01/01/2023",
-      endDate: "01/01/2024",
-      status: "Expired",
-    },
-    {
-      key: 10,
-      memberId: 10,
-      memberName: "John",
-      email: "john123@gmail.com",
-      phone: "0123456789",
-      membershipType: "Standard",
-      startDate: "01/01/2023",
-      endDate: "01/01/2024",
-      status: "Active",
-    },
-  ];
+function MemberTable({ dataSource }) {
+  console.log("Datasource: ", dataSource);
+  //const packageList = useSelector(getListMembershipPackageSelector);
+  //console.log("package list", packageList);
+  const dispatch = useDispatch();
+
+  // pagination
+  const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  // Compute paginated data
+  const paginatedData = dataSource.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
 
   const columns = [
     {
       title: "Member ID",
-      dataIndex: "memberId",
+      dataIndex: ["member", "memberId"],
       key: "memberId",
     },
     {
       title: "Member Name",
-      dataIndex: "memberName",
-      key: "memberName",
+      dataIndex: "userName",
+      key: "userName",
     },
     {
       title: "Email Address",
       dataIndex: "email",
       key: "email",
     },
+    // {
+    //   title: "Phone Number",
+    //   dataIndex: "phone",
+    //   key: "phone",
+    // },
     {
-      title: "Phone Number",
-      dataIndex: "phone",
-      key: "phone",
+      title: "Address",
+      dataIndex: ["member", "address"],
+      key: "address",
     },
-    {
-      title: "Membership Type",
-      dataIndex: "membershipType",
-      key: "membershipType",
-    },
+    // {
+    //   title: "Membership Type",
+    //   dataIndex: "membershipType",
+    //   key: "membershipType",
+    // },
     {
       title: "Start Date",
-      dataIndex: "startDate",
-      key: "startDate",
+      dataIndex: "createdDate",
+      key: "createdDate",
     },
     {
       title: "End Date",
-      dataIndex: "endDate",
-      key: "endDate",
+      dataIndex: "validUntil",
+      key: "validUntil",
     },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      render: (status) => {
-        let backgroundColor;
-        if (status === "Active")
-          backgroundColor = "#22c55e"; // Green for Active
-        else if (status === "Inactive")
-          backgroundColor = "#ef4444"; // Red for Inactive
-        else if (status === "Expired") backgroundColor = "#facc15"; // Yellow for Expired
-        return (
-          <span
-            className={`px-3 py-1 rounded-full text-white text-xs flex items-center justify-center`}
-            style={{
-              backgroundColor,
-              width: "100px", // Fixed width
-              height: "30px", // Fixed height
-            }}
-          >
-            {status}
-          </span>
-        );
-      },
-    },
-    {
-      title: "Edit",
-      key: "edit",
-      render: (record) => {
-        return renderUpdateMember(record);
-      },
-    },
+    // {
+    //   title: "Status",
+    //   dataIndex: "status",
+    //   key: "status",
+    //   render: (status) => {
+    //     let backgroundColor;
+    //     if (status === "Active")
+    //       backgroundColor = "#22c55e"; // Green for Active
+    //     else if (status === "Inactive")
+    //       backgroundColor = "#ef4444"; // Red for Inactive
+    //     else if (status === "Expired") backgroundColor = "#facc15"; // Yellow for Expired
+    //     return (
+    //       <span
+    //         className={`px-3 py-1 rounded-full text-white text-xs flex items-center justify-center`}
+    //         style={{
+    //           backgroundColor,
+    //           width: "100px", // Fixed width
+    //           height: "30px", // Fixed height
+    //         }}
+    //       >
+    //         {status}
+    //       </span>
+    //     );
+    //   },
+    // },
+    // {
+    //   title: "Edit",
+    //   key: "edit",
+    //   render: (record) => {
+    //     return renderUpdateMember(record);
+    //   },
+    // },
   ];
 
+  useEffect(() => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+  }, [dataSource, currentPage, pageSize]);
+
+  // Get List
+  const GetListTable = () => {
+    setLoading(true);
+    dispatch(useMemberList())
+      .then(() => {
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+        setLoading(false);
+      });
+  };
+
   return (
-    <div>
-      <div className="w-full">
+    <div className="w-full">
+      <Spin spinning={loading} tip="Loading...">
         <Table
-          dataSource={dataSource}
+          dataSource={!loading ? paginatedData : []}
           columns={columns}
           pagination={false}
           className="[&_.ant-table-thead_.ant-table-cell]:bg-[#fafafa] [&_.ant-table-thead_.ant-table-cell]:font-medium [&_.ant-table-cell]:py-4"
           style={{ marginBottom: "1rem" }}
+          onChange={GetListTable}
         />
-
-        <Pagination
-          total={50}
-          align="end"
-          showTotal={(total, range) =>
-            `${range[0]}-${range[1]} of ${total} items`
-          }
-          defaultPageSize={10}
-          defaultCurrent={1}
-        />
-      </div>
+      </Spin>
+      <Pagination
+        total={dataSource.length}
+        pageSize={pageSize}
+        current={currentPage}
+        showSizeChanger
+        align="end"
+        showTotal={(total, range) =>
+          `${range[0]}-${range[1]} of ${total} items`
+        }
+        onChange={(page, pageSize) => {
+          setCurrentPage(page);
+          setPageSize(pageSize);
+        }}
+      />
     </div>
   );
-};
+}
 
 export default MemberTable;

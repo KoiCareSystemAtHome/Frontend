@@ -5,7 +5,6 @@ import {
   DollarCircleOutlined,
   MessageOutlined,
   SettingOutlined,
-  QuestionCircleOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
 } from "@ant-design/icons";
@@ -18,6 +17,7 @@ import OrderManagement from "../../pages/OrderManagement/OrderManagement";
 import OrderDetail from "../../pages/OrderManagement/OrderDetail";
 import OrderRefund from "../../pages/OrderManagement/OrderRefund";
 import ProductManagement from "../../pages/ProductManagement/ProductManagement";
+import Profile from "../../pages/ShopProfile/Profile";
 
 const { Sider, Content } = Layout;
 
@@ -27,9 +27,9 @@ const ShopLayout = ({ children }) => {
     return savedState ? JSON.parse(savedState) : false;
   });
 
-  const [selectedKey, setSelectedKey] = useState(
-    localStorage.getItem("selectedShopMenuKey") || "/shop/dashboard"
-  );
+  const [selectedKey, setSelectedKey] = useState(() => {
+    return localStorage.getItem("selectedShopMenuKey") || "/shop/dashboard";
+  });
 
   const [headerTitle, setHeaderTitle] = useState(
     localStorage.getItem("shopHeaderTitle") || "Dashboard"
@@ -61,11 +61,20 @@ const ShopLayout = ({ children }) => {
   //   navigate(selectedKey);
   // }, [selectedKey, navigate]);
 
+  // useEffect(() => {
+  //   if (!localStorage.getItem("selectedMenuKey")) {
+  //     navigate(selectedKey);
+  //   }
+  // }, [selectedKey, navigate]); // Run only once when component mounts
+
   useEffect(() => {
-    if (!localStorage.getItem("selectedMenuKey")) {
-      navigate(selectedKey);
+    const storedKey = localStorage.getItem("selectedMenuKey");
+
+    if (!storedKey) {
+      setSelectedKey("/admin/dashboard");
+      navigate("/admin/dashboard", { replace: true });
     }
-  }, [selectedKey, navigate]); // Run only once when component mounts
+  }, [navigate]);
 
   const handleMenuClick = ({ key }) => {
     setSelectedKey(key);
@@ -126,11 +135,11 @@ const ShopLayout = ({ children }) => {
               icon: <DollarCircleOutlined style={{ color: "white" }} />,
               label: "Promotion Management",
             },
-            {
-              key: "/shop/feedback",
-              icon: <QuestionCircleOutlined style={{ color: "white" }} />,
-              label: "Feedback",
-            },
+            // {
+            //   key: "/shop/feedback",
+            //   icon: <QuestionCircleOutlined style={{ color: "white" }} />,
+            //   label: "Feedback",
+            // },
             {
               key: "/shop/shopProfile",
               icon: <MessageOutlined style={{ color: "white" }} />,
@@ -151,6 +160,7 @@ const ShopLayout = ({ children }) => {
             <Route path="order-detail" element={<OrderDetail />} />
             <Route path="order-refund" element={<OrderRefund />} />
             <Route path="productManagement" element={<ProductManagement />} />
+            <Route path="shopProfile" element={<Profile />} />
           </Routes>
         </Content>
       </Layout>

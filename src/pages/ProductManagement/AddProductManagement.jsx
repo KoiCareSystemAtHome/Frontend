@@ -53,44 +53,60 @@ const AddProductManagement = ({ onClose }) => {
     });
   };
 
-  const beforeUpload = async (file) => {
-    try {
-      const base64 = await convertToBase64(file);
-      setImageBase64(base64); // Store Base64 string
-      form.setFieldsValue({ Image: base64 }); // Save in form
-    } catch (error) {
-      openNotification("error", "Failed to convert image.");
-    }
+  const [selectedImage, setSelectedImage] = useState(null); // Store the selected file
+
+  // const beforeUpload = async (file) => {
+  //   const formData = new FormData();
+  //   formData.append("filene", file); // Ensure correct field name
+
+  //   try {
+  //     const response = await fetch(
+  //       "http://14.225.206.203:5444/api/Account/test",
+  //       {
+  //         method: "POST",
+  //         body: formData,
+  //       }
+  //     );
+
+  //     const imageUrl = await response.text(); // Read response as text (not JSON)
+  //     console.log("Upload Response:", imageUrl); // Debugging
+
+  //     if (imageUrl.startsWith("http")) {
+  //       // Ensure valid URL
+  //       setImageBase64(imageUrl); // Save URL
+  //       form.setFieldsValue({ Image: imageUrl }); // Store in form
+  //       openNotification("success", "Image uploaded successfully!");
+  //     } else {
+  //       openNotification("error", "Invalid image URL received.");
+  //     }
+  //   } catch (error) {
+  //     console.error("Upload Error:", error);
+  //     openNotification("error", "Image upload failed.");
+  //   }
+
+  const beforeUpload = (file) => {
+    setSelectedImage(file); // Save file for later upload
     return false; // Prevent automatic upload
   };
 
   // Convert image to Base64
-  const convertToBase64 = (file) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result.split(",")[1]); // Extract Base64 string
-      reader.onerror = (error) => reject(error);
-    });
-  };
+  // const convertToBase64 = (file) => {
+  //   return new Promise((resolve, reject) => {
+  //     const reader = new FileReader();
+  //     reader.readAsDataURL(file);
+  //     reader.onload = () => resolve(reader.result.split(",")[1]); // Extract Base64 string
+  //     reader.onerror = (error) => reject(error);
+  //   });
+  // };
 
   const onFinish = async (values) => {
-    if (typeof values.ParameterImpacts === "string") {
-      try {
-        values.ParameterImpacts = {
-          ParameterImpacts: {
-            H2O: "Increased",
-            CO2: "Increased",
-          },
-        };
-      } catch {
-        openNotification("error", "Invalid JSON format in ParameterImpacts.");
-        return;
-      }
+    if (!selectedImage) {
+      openNotification("error", "Please upload an image!");
+      return;
     }
 
-    // Convert form data to query parameters
-    const queryParams = {
+    // Construct query parameters
+    const queryParams = new URLSearchParams({
       ProductName: values.ProductName,
       Description: values.Description,
       Price: values.Price,
@@ -100,22 +116,37 @@ const AddProductManagement = ({ onClose }) => {
       Brand: values.Brand,
       ManufactureDate: values.ManufactureDate,
       ExpiryDate: values.ExpiryDate,
-      ParameterImpacts: values.ParameterImpacts,
-      Image: imageBase64,
-    };
+      ParameterImpacts: JSON.stringify(values.ParameterImpacts),
+    });
 
-    dispatch(createProductManagement(queryParams))
-      .unwrap()
-      .then(() => {
-        onClose();
+    const formData = new FormData();
+    formData.append("image", selectedImage);
+
+    try {
+      const response = await fetch(
+        `http://14.225.206.203:5444/api/Product/create-product?${queryParams}`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      const result = await response.json();
+      if (response.ok) {
         openNotification("success", "Product Created Successfully!");
         dispatch(getListProductManagement());
         handleCancel();
         form.resetFields();
-      })
-      .catch((error) => {
-        openNotification("warning", error);
-      });
+      } else {
+        openNotification(
+          "error",
+          result.message || "Failed to create product."
+        );
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      openNotification("error", "Network error, try again later.");
+    }
   };
 
   return (
@@ -135,7 +166,7 @@ const AddProductManagement = ({ onClose }) => {
       <Modal
         className="custom-modal"
         centered
-        title="Create Membership"
+        title="Create Product"
         open={isAddOpen}
         onCancel={handleCancel}
         width={870}
@@ -318,7 +349,18 @@ const AddProductManagement = ({ onClose }) => {
                   // },
                 ]}
               >
-                <Input placeholder="Parameter impacts" />
+                {/* <Input placeholder="Parameter impacts" /> */}
+                <Input.TextArea
+                  rows={4}
+                  placeholder="Enter parameter impacts in JSON format"
+                  onChange={(e) => {
+                    try {
+                      JSON.parse(e.target.value); // Check JSON validity
+                    } catch {
+                      console.error("Invalid JSON format");
+                    }
+                  }}
+                />
               </Form.Item>
             </Col>
           </Row>
@@ -364,7 +406,7 @@ const AddProductManagement = ({ onClose }) => {
                 }}
               >
                 <PlusOutlined />
-                Create Membership
+                Create Product
               </Button>
             </Form.Item>
           </Row>

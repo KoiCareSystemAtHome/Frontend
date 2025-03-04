@@ -4,6 +4,12 @@ import UpdateMembership from "./UpdateMembership";
 import { useDispatch, useSelector } from "react-redux";
 import useMembershipPackageList from "../../hooks/useMembershipPackageList";
 import { getListMembershipPackageSelector } from "../../redux/selector";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const renderUpdateMembership = (record) => <UpdateMembership record={record} />;
 
@@ -54,11 +60,19 @@ function Membership({ dataSource }) {
       title: "Start Date",
       dataIndex: "startDate",
       key: "startDate",
+      render: (date) =>
+        date
+          ? dayjs.utc(date).tz("Asia/Ho_Chi_Minh").format("YYYY-MM-DD HH:mm:ss")
+          : "-",
     },
     {
       title: "End Date",
       dataIndex: "endDate",
       key: "endDate",
+      render: (date) =>
+        date
+          ? dayjs.utc(date).tz("Asia/Ho_Chi_Minh").format("YYYY-MM-DD HH:mm:ss")
+          : "-",
     },
     // {
     //   title: "Status",
@@ -118,7 +132,7 @@ function Membership({ dataSource }) {
     <div className="w-full">
       <Spin spinning={loading} tip="Loading...">
         <Table
-          dataSource={paginatedData}
+          dataSource={!loading ? paginatedData : []}
           columns={columns}
           pagination={false}
           className="[&_.ant-table-thead_.ant-table-cell]:bg-[#fafafa] [&_.ant-table-thead_.ant-table-cell]:font-medium [&_.ant-table-cell]:py-4"

@@ -9,6 +9,7 @@ import {
 const initialState = {
   token: "",
   listShop: [],
+  shopProfile: null, // Store only the shop of the logged-in user
 };
 
 // GET
@@ -21,6 +22,24 @@ export const getListShop = createAsyncThunk("Shop", async () => {
     console.log("Error", error);
   }
 });
+
+// GET BY USER ID
+export const getShopByUserId = createAsyncThunk(
+  "Shop/getByUser",
+  async (userId, { rejectWithValue }) => {
+    try {
+      console.log("API Call: Fetching shop for userId:", userId);
+      const res = await getRequest(`Shop/user/${userId}`);
+      console.log("API Response:", res.data);
+      return res.data;
+    } catch (error) {
+      console.error("API Error:", error.response?.data);
+      return rejectWithValue(
+        error.response?.data || "Failed to fetch shop details"
+      );
+    }
+  }
+);
 
 // CREATE
 export const createShop = createAsyncThunk(
@@ -39,19 +58,7 @@ export const createShop = createAsyncThunk(
   }
 );
 
-// UODATE
-// export const updateShop = createAsyncThunk(
-//   "Shop/update",
-//   async ({ shopId, updatedShop }) => {
-//     try {
-//       const res = await putRequest(`Shop/${shopId}`, updatedShop);
-//       return res.data;
-//     } catch (error) {
-//       console.log({ error });
-//     }
-//   }
-// );
-
+// UPDATE
 export const updateShop = createAsyncThunk(
   "Shop/update",
   async ({ shopId, updatedShop }, { rejectWithValue }) => {
@@ -92,6 +99,9 @@ const shopSlice = createSlice({
     builder
       .addCase(getListShop.fulfilled, (state, action) => {
         state.listShop = action.payload;
+      })
+      .addCase(getShopByUserId.fulfilled, (state, action) => {
+        state.shopProfile = action.payload.shop;
       })
       .addCase(createShop.fulfilled, (state, action) => {
         state.listShop.push(action.payload);

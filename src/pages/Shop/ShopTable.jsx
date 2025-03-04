@@ -190,7 +190,7 @@ function ShopTable({ dataSource }) {
       <div className="w-full">
         <Spin spinning={loading} tip="Loading...">
           <Table
-            dataSource={paginatedData}
+            dataSource={!loading ? paginatedData : []}
             columns={columns}
             pagination={false}
             className="[&_.ant-table-thead_.ant-table-cell]:bg-[#fafafa] [&_.ant-table-thead_.ant-table-cell]:font-medium [&_.ant-table-cell]:py-4"

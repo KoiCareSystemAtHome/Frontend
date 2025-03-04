@@ -5,15 +5,19 @@ import membershipPackageSlice from "./slices/membershipPackageSlice";
 import shopSlice from "./slices/shopSlice";
 import productManagementSlice from "./slices/productManagementSlice";
 import diseasesSlice from "./slices/diseasesSlice";
+import parameterSlice from "./slices/parameterSlice";
+import memberSlice from "./slices/memberSlice";
 
 const store = configureStore({
   reducer: {
     testSlice: testSlice.reducer,
     authSlice: authSlice.reducer,
     membershipPackageSlice: membershipPackageSlice.reducer,
+    memberSlice: memberSlice.reducer,
     shopSlice: shopSlice.reducer,
     productManagementSlice: productManagementSlice.reducer,
     diseasesSlice: diseasesSlice.reducer,
+    parameterSlice: parameterSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

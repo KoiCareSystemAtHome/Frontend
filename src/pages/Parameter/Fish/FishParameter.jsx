@@ -1,11 +1,11 @@
 import React from "react";
-import MemberButton from "./MemberButton";
-import SearchTable from "../../components/SearchTable/searchTable";
-import MemberTable from "./MemberTable";
-import useMemberList from "../../hooks/useMemberList";
+import SearchTable from "../../../components/SearchTable/searchTable";
+import FishParameterButton from "./FishParameterButton";
+import FishParameterTable from "./FishParameterTable";
+import useParameterList from "../../../hooks/useParameterList";
 
-const Member = () => {
-  const memberList = useMemberList();
+const FishParameter = () => {
+  const parameterList = useParameterList("fish");
 
   return (
     <div>
@@ -17,14 +17,14 @@ const Member = () => {
           alignItems: "center",
         }}
       >
-        <div>Member</div>
+        <div>Fish Parameter</div>
 
         <div
           style={{
             display: "flex",
           }}
         >
-          <MemberButton />
+          <FishParameterButton />
         </div>
       </div>
 
@@ -33,10 +33,10 @@ const Member = () => {
       </div>
 
       <div className="tableContainer" style={{ marginTop: "10px" }}>
-        <MemberTable dataSource={memberList} />
+        <FishParameterTable dataSource={parameterList} />
       </div>
     </div>
   );
 };
 
-export default Member;
+export default FishParameter;

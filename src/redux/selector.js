@@ -12,3 +12,8 @@ export const getListDiseaseSelector = (state) =>
   state.diseasesSlice.listDisease;
 
 export const diseaseDetail = (state) => state.diseasesSlice.diseaseDetail;
+
+export const getListParameterSelector = (state) =>
+  state.parameterSlice.listParameter;
+
+export const getLissMemberSelector = (state) => state.memberSlice.listMember;

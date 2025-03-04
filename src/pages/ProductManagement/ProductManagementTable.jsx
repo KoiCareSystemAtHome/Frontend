@@ -1,14 +1,19 @@
 import { Image, Pagination, Spin, Table } from "antd";
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import useProductManagementList from "../../hooks/useProductManagementList";
-import { getListProductManagementSelector } from "../../redux/selector";
 import { EyeOutlined } from "@ant-design/icons";
+import UpdateProductManagement from "./UpdateProductManagement";
+import dayjs from "dayjs";
+
+const renderUpdateProductManagement = (record) => (
+  <UpdateProductManagement record={record} />
+);
 
 function ProductManagementTable({ dataSource }) {
   console.log("Datasource: ", dataSource);
-  const productList = useSelector(getListProductManagementSelector);
-  console.log("Product list", productList);
+  //const productList = useSelector(getListProductManagementSelector);
+  //console.log("Product list", productList);
   const dispatch = useDispatch();
 
   // pagination
@@ -72,16 +77,32 @@ function ProductManagementTable({ dataSource }) {
       title: "Manufacture Date",
       dataIndex: "manufactureDate",
       key: "manufactureDate",
+      render: (date) =>
+        date
+          ? dayjs.utc(date).tz("Asia/Ho_Chi_Minh").format("YYYY-MM-DD HH:mm:ss")
+          : "-",
     },
     {
       title: "Expiry Date",
       dataIndex: "expiryDate",
       key: "expiryDate",
+      render: (date) =>
+        date
+          ? dayjs.utc(date).tz("Asia/Ho_Chi_Minh").format("YYYY-MM-DD HH:mm:ss")
+          : "-",
     },
     {
       title: "Parameter Impactment",
       dataIndex: "parameterImpactment",
       key: "parameterImpactment",
+      render: (value) => {
+        try {
+          const parsedValue = JSON.parse(value);
+          return <pre>{JSON.stringify(parsedValue, null, 2)}</pre>;
+        } catch (error) {
+          return <pre>{JSON.stringify(value, null, 2)}</pre>; // Fallback if parsing fails
+        }
+      },
     },
     {
       title: "Shop ID",
@@ -138,6 +159,13 @@ function ProductManagementTable({ dataSource }) {
     //   dataIndex: "feedBacks",
     //   key: "feedBacks",
     // },
+    {
+      title: "Edit",
+      key: "edit",
+      render: (record) => {
+        return renderUpdateProductManagement(record);
+      },
+    },
   ];
 
   useEffect(() => {
@@ -169,7 +197,7 @@ function ProductManagementTable({ dataSource }) {
           pagination={false}
           className="[&_.ant-table-thead_.ant-table-cell]:bg-[#fafafa] [&_.ant-table-thead_.ant-table-cell]:font-medium [&_.ant-table-cell]:py-4"
           style={{ marginBottom: "1rem" }}
-          scroll={{ x: 4000 }}
+          scroll={{ x: 2500 }}
           onChange={GetListTable}
         />
       </Spin>

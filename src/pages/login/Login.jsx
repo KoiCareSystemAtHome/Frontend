@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Form, Input, Button, Checkbox, message } from "antd";
+import { Form, Input, Button, Checkbox, message, notification } from "antd";
 import LoginBackground from "../../assets/login-background.png";
 import Logo from "../../assets/logo.png";
 import { login } from "../../redux/slices/authSlice";
@@ -11,75 +11,56 @@ const LoginPage = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const [api, contextHolder] = notification.useNotification();
 
-  const onFinish = (e) => {
-    console.log("Form submitted:", e);
-
-    dispatch(login({ username, password }))
-      .then((res) => {
-        console.log("Response payload:", res.payload);
-        if (res.payload.status === 200) {
-          message.success("Login successful!");
-          if (res.payload?.data?.userInfo.roles === "Admin") {
-            navigate("/admin");
-          } else if (res.payload?.data?.userInfo.roles === "Shop") {
-            navigate("/");
-          } else {
-            message.error("Wrong username or password");
-          }
-        } else {
-        }
-      })
-      .catch((error) => {
-        console.error("Login failed:", error);
-        message.error("Login failed. Please try again.");
-      });
+  const openNotification = (type, message) => {
+    api[type]({
+      message: message,
+      placement: "top",
+      duration: 5,
+    });
   };
 
-  // const handleLogin = () => {
-  //   dispatch(login({ username, password }))
-  //     .then((res) => {
-  //       console.log("Response payload:", res.payload);
-  //       if (res.payload.status === 200) {
-  //         message.success("Login successful!");
-  //         if (res.payload?.data?.userInfo.roles === "Admin") {
-  //           navigate("/admin");
-  //         } else if (res.payload?.data?.userInfo.roles === "Shop") {
-  //           navigate("/");
-  //         } else {
-  //           message.error("Wrong username or password");
-  //         }
-  //       } else {
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       console.error("Login failed:", error);
-  //       message.error("Login failed. Please try again.");
-  //     });
-  // };
+  const onFinish = async (values) => {
+    try {
+      console.log("Form submitted:", values);
 
-  // const handleLogin = () => {
-  //   console.log("Username:", username);
-  //   console.log("Password:", password);
+      // Dispatch the login action
+      const response = await dispatch(login(values)).unwrap();
 
-  //   dispatch(login({ username, password }))
-  //     .then((res) => {
-  //       console.log(res);
-  //       if (res.payload.status === 200) {
-  //         message.success("Login successful!");
-  //       } else {
-  //         message.error("Invalid credentials.");
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       console.error("Login failed:", error);
-  //       message.error("Login failed. Please try again.");
-  //     });
-  // };
+      if (response && response.token) {
+        const role = response.role; // Extracted role from token
+
+        // Store the token and role for later use
+        localStorage.setItem("token", response.token);
+        localStorage.setItem("role", role);
+
+        console.log("User role:", role);
+
+        // Show success notification
+        openNotification("success", "Login successful! Redirecting...");
+
+        // Delay navigation slightly to show the notification
+        setTimeout(() => {
+          if (role === "Admin") {
+            navigate("/admin/dashboard"); // Navigate to Admin Dashboard
+          } else {
+            navigate("/shop/dashboard"); // Default route
+          }
+        }, 1000); // 1-second delay for better UX
+      }
+    } catch (error) {
+      console.error("Login failed:", error);
+
+      // Show error notification
+      openNotification("error", "Invalid email or password!");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-cyan-50 flex items-center justify-center p-4 font-title">
       {/* Decorative Background */}
+      {contextHolder}
       <div className="absolute inset-0 overflow-hidden">
         <img
           src={LoginBackground}
@@ -239,3 +220,68 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
+
+// const onFinish = (e) => {
+//   console.log("Form submitted:", e);
+
+//   dispatch(login({ username, password }))
+//     .then((res) => {
+//       console.log("Response payload:", res.payload);
+//       if (res.payload.status === 200) {
+//         message.success("Login successful!");
+//         if (res.payload?.data?.userInfo.roles === "Admin") {
+//           navigate("/admin");
+//         } else if (res.payload?.data?.userInfo.roles === "Member") {
+//           navigate("/shop");
+//         } else {
+//           message.error("Wrong username or password");
+//         }
+//       } else {
+//       }
+//     })
+//     .catch((error) => {
+//       console.error("Login failed:", error);
+//       message.error("Login failed. Please try again.");
+//     });
+// };
+
+// const handleLogin = () => {
+//   dispatch(login({ username, password }))
+//     .then((res) => {
+//       console.log("Response payload:", res.payload);
+//       if (res.payload.status === 200) {
+//         message.success("Login successful!");
+//         if (res.payload?.data?.userInfo.roles === "Admin") {
+//           navigate("/admin");
+//         } else if (res.payload?.data?.userInfo.roles === "Shop") {
+//           navigate("/");
+//         } else {
+//           message.error("Wrong username or password");
+//         }
+//       } else {
+//       }
+//     })
+//     .catch((error) => {
+//       console.error("Login failed:", error);
+//       message.error("Login failed. Please try again.");
+//     });
+// };
+
+// const handleLogin = () => {
+//   console.log("Username:", username);
+//   console.log("Password:", password);
+
+//   dispatch(login({ username, password }))
+//     .then((res) => {
+//       console.log(res);
+//       if (res.payload.status === 200) {
+//         message.success("Login successful!");
+//       } else {
+//         message.error("Invalid credentials.");
+//       }
+//     })
+//     .catch((error) => {
+//       console.error("Login failed:", error);
+//       message.error("Login failed. Please try again.");
+//     });
+// };

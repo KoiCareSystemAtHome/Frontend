@@ -1,6 +1,9 @@
 import { BellOutlined, SearchOutlined } from "@ant-design/icons";
 import React, { useState } from "react";
 import logoutIcon from "../../assets/logout.png";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router";
+import { logout } from "../../redux/slices/authSlice";
 
 const Icon = ({ children, color = "text-blue-400" }) => (
   <div className={`w-5 h-5 ${color} flex items-center justify-center`}>
@@ -10,6 +13,25 @@ const Icon = ({ children, color = "text-blue-400" }) => (
 
 const HeaderLayout = ({ title }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const user = useSelector((state) => state.authSlice?.user);
+  const role = useSelector((state) => state.authSlice?.role);
+
+  console.log("User from Redux:", user);
+  console.log("Role from Redux:", role);
+
+  // const handleLogout = () => {
+  //   dispatch(logout());
+  //   navigate("/"); // Redirect to login page after logout
+  // };
+
+  const handleLogout = () => {
+    dispatch(logout());
+    localStorage.removeItem("selectedShopMenuKey");
+    localStorage.removeItem("shopHeaderTitle");
+    navigate("/"); // Redirect to login page after logout
+  };
 
   return (
     <header className="flex items-center justify-between h-16 px-4 bg-white border-b">
@@ -33,6 +55,7 @@ const HeaderLayout = ({ title }) => {
 
       {/* Right section */}
       <div className="flex items-center gap-4">
+        {/* Notifications */}
         <div className="relative">
           <button className="p-2 hover:bg-gray-100 rounded-lg">
             <BellOutlined className="h-5 w-5 text-gray-500" />
@@ -46,6 +69,8 @@ const HeaderLayout = ({ title }) => {
             <img src={logoutIcon} alt="" className="h-5 w-5 text-gray-500" />
           </button>
         </div>
+
+        {/* User Profile Dropdown */}
         <div className="relative">
           <button
             onClick={() => setIsOpen(!isOpen)}
@@ -57,8 +82,8 @@ const HeaderLayout = ({ title }) => {
               alt="profile"
             />
             <div className="text-left">
-              <div className="text-gray-900 font-medium">Moni Roy</div>
-              <div className="text-gray-500 text-sm">ADMIN</div>
+              <div className="text-gray-900 font-medium">{user?.name}</div>
+              <div className="text-gray-500 text-sm">{role}</div>
             </div>
             <svg
               className={`w-4 h-4 transition-transform ${
@@ -138,7 +163,10 @@ const HeaderLayout = ({ title }) => {
 
               <div className="border-t my-1"></div>
 
-              <button className="w-full px-4 py-3 text-gray-700 hover:bg-gray-50 flex items-center gap-3">
+              <button
+                onClick={handleLogout}
+                className="w-full px-4 py-3 text-gray-700 hover:bg-gray-50 flex items-center gap-3"
+              >
                 <Icon color="text-red-400">
                   <svg
                     viewBox="0 0 24 24"

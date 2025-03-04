@@ -1,16 +1,50 @@
 import { EditOutlined } from "@ant-design/icons";
-import { Button, Col, Form, Input, Modal, Popover, Row, Select } from "antd";
+import {
+  Button,
+  Col,
+  DatePicker,
+  Form,
+  Input,
+  Modal,
+  notification,
+  Popover,
+  Row,
+  Select,
+} from "antd";
 import React, { useState } from "react";
 import "../../Styles/Modal.css";
-//import { useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
+import {
+  getListMembershipPackage,
+  updatePackage,
+} from "../../redux/slices/membershipPackageSlice";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 
-const UpdateMembership = () => {
-  //const { record } = props;
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+const UpdateMembership = (props) => {
+  const { record } = props;
   const [form] = Form.useForm();
-  //const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [api, contextHolder] = notification.useNotification();
 
   const showEditModal = () => {
+    form.setFieldsValue({
+      packageTitle: record.packageTitle,
+      packageDescription: record.packageDescription,
+      packagePrice: record.packagePrice,
+      type: record.type,
+      startDate: record.startDate
+        ? dayjs.utc(record.startDate).tz("Asia/Ho_Chi_Minh").startOf("day")
+        : null,
+      endDate: record.endDate
+        ? dayjs.utc(record.endDate).tz("Asia/Ho_Chi_Minh").startOf("day")
+        : null,
+    });
     setIsEditOpen(true);
   };
 
@@ -23,10 +57,68 @@ const UpdateMembership = () => {
     setIsEditOpen(false);
   };
 
-  const handleEditSubmit = () => {};
+  const openNotification = (type, message) => {
+    api[type]({
+      message: message,
+      placement: "top",
+      duration: 5,
+    });
+  };
+  console.log("Updating package with ID:", record.packageId);
+
+  const handleEditSubmit = () => {
+    form.validateFields().then((values) => {
+      console.log("Original startDate:", record.startDate);
+      console.log("Parsed as UTC:", dayjs.utc(record.startDate).format());
+      console.log(
+        "Converted to Vietnam Time:",
+        dayjs.utc(record.startDate).tz("Asia/Ho_Chi_Minh").format()
+      );
+      console.log(
+        "Final UTC before saving:",
+        dayjs(record.startDate).tz("Asia/Ho_Chi_Minh").utc().format()
+      );
+
+      const formattedValues = {
+        ...values,
+        startDate: values.startDate
+          ? dayjs(values.startDate).tz("Asia/Ho_Chi_Minh", true).utc().format()
+          : null,
+        endDate: values.endDate
+          ? dayjs(values.endDate).tz("Asia/Ho_Chi_Minh", true).utc().format()
+          : null,
+      };
+
+      console.log("Formatted Values:", formattedValues); // Debugging
+
+      dispatch(
+        updatePackage({
+          updatedMembership: {
+            ...formattedValues,
+            packageId: record.packageId,
+          },
+        })
+      )
+        .unwrap()
+        .then(() => {
+          form.resetFields();
+          setIsEditOpen(false);
+          openNotification(
+            "success",
+            `Updated package with ID: "${record.packageId}" successfully!`
+          );
+          dispatch(getListMembershipPackage());
+        })
+        .catch((error) => {
+          console.error("Update error:", error);
+          openNotification("warning", error.message || "Update failed!");
+        });
+    });
+  };
 
   return (
     <div>
+      {contextHolder}
       <Popover content="Edit" trigger="hover">
         <Button
           type="text"
@@ -55,24 +147,26 @@ const UpdateMembership = () => {
           <Row style={{ justifyContent: "space-between" }}>
             {/* 1st column */}
             <Col>
-              <p className="modalContent">Package Name</p>
+              <p className="modalContent">Package Title</p>
               <Form.Item
-                name="packageName"
+                name="packageTitle"
+                initialValue={record.packageTitle}
                 rules={[
                   {
                     required: true,
-                    message: "Please enter package name!",
+                    message: "Please enter package title!",
                   },
                 ]}
               >
-                <Input placeholder="Package Name"></Input>
+                <Input placeholder="Package Title"></Input>
               </Form.Item>
             </Col>
             {/* 2nd column */}
             <Col>
               <p className="modalContent">Description</p>
               <Form.Item
-                name="description"
+                name="packageDescription"
+                initialValue={record.packageDescription}
                 rules={[
                   {
                     required: true,
@@ -85,43 +179,10 @@ const UpdateMembership = () => {
             </Col>
             {/* 3rd column */}
             <Col>
-              <p className="modalContent">Period</p>
-              <Form.Item
-                name="period"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please select period!",
-                  },
-                ]}
-              >
-                <Select placeholder="Period"></Select>
-              </Form.Item>
-            </Col>
-          </Row>
-
-          {/* 2nd Row */}
-          <Row style={{ justifyContent: "space-between" }}>
-            {/* 1st column */}
-            <Col>
-              <p className="modalContent">Package Type</p>
-              <Form.Item
-                name="packageType"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please select package type!",
-                  },
-                ]}
-              >
-                <Select placeholder="Package Type"></Select>
-              </Form.Item>
-            </Col>
-            {/* 2nd column */}
-            <Col>
               <p className="modalContent">Price</p>
               <Form.Item
-                name="price"
+                name="packagePrice"
+                initialValue={record.packagePrice}
                 rules={[
                   {
                     required: true,
@@ -132,19 +193,76 @@ const UpdateMembership = () => {
                 <Input placeholder="Price"></Input>
               </Form.Item>
             </Col>
-            {/* 3rd column */}
+          </Row>
+
+          {/* 2nd Row */}
+          <Row style={{ justifyContent: "space-between" }}>
+            {/* 1st column */}
             <Col>
-              <p className="modalContent">Status</p>
+              <p className="modalContent">Package Type</p>
               <Form.Item
-                name="status"
+                name="type"
+                initialValue={record.type}
                 rules={[
                   {
                     required: true,
-                    message: "Please select status!",
+                    message: "Please select package type!",
                   },
                 ]}
               >
-                <Select placeholder="Status"></Select>
+                <Input placeholder="Package Type"></Input>
+              </Form.Item>
+            </Col>
+            {/* 2nd column */}
+            <Col>
+              <p className="modalContent">Start Date</p>
+              <Form.Item
+                name="startDate"
+                initialValue={
+                  record.startDate
+                    ? dayjs
+                        .utc(record.startDate)
+                        .tz("Asia/Ho_Chi_Minh")
+                        .startOf("day")
+                    : null
+                }
+                rules={[
+                  {
+                    required: true,
+                    message: "Please select start date!",
+                  },
+                ]}
+              >
+                <DatePicker
+                  style={{ width: "270px" }}
+                  placeholder="Start Date"
+                ></DatePicker>
+              </Form.Item>
+            </Col>
+            {/* 3rd column */}
+            <Col>
+              <p className="modalContent">End Date</p>
+              <Form.Item
+                name="endDate"
+                initialValue={
+                  record.endDate
+                    ? dayjs
+                        .utc(record.endDate)
+                        .tz("Asia/Ho_Chi_Minh")
+                        .startOf("day")
+                    : null
+                }
+                rules={[
+                  {
+                    required: true,
+                    message: "Please select end date!",
+                  },
+                ]}
+              >
+                <DatePicker
+                  style={{ width: "270px" }}
+                  placeholder="End Date"
+                ></DatePicker>
               </Form.Item>
             </Col>
           </Row>
