@@ -28,7 +28,9 @@ const HeaderLayout = ({ title }) => {
 
   const handleLogout = () => {
     dispatch(logout());
-    localStorage.removeItem("selectedShopMenuKey");
+    localStorage.removeItem("selectedAdminMenuKey"); // Clear menu selection
+    localStorage.removeItem("selectedShopMenuKey"); // Clear menu selection
+    localStorage.removeItem("navbarCollapsed"); // Clear navbar collapsed state
     localStorage.removeItem("shopHeaderTitle");
     navigate("/"); // Redirect to login page after logout
   };

@@ -71,8 +71,9 @@ const ShopLayout = ({ children }) => {
     const storedKey = localStorage.getItem("selectedMenuKey");
 
     if (!storedKey) {
-      setSelectedKey("/admin/dashboard");
-      navigate("/admin/dashboard", { replace: true });
+      setSelectedKey("/shop/dashboard");
+      localStorage.setItem("selectedShopMenuKey", "/shop/dashboard");
+      navigate("/shop/dashboard", { replace: true });
     }
   }, [navigate]);
 

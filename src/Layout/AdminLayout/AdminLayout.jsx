@@ -33,7 +33,7 @@ const AdminLayout = ({ children }) => {
     return savedState ? JSON.parse(savedState) : false;
   });
   const [selectedKey, setSelectedKey] = useState(() => {
-    return localStorage.getItem("selectedMenuKey") || "admin/dashboard";
+    return localStorage.getItem("selectedAdminMenuKey") || "/admin/dashboard";
   });
   const [headerTitle, setHeaderTitle] = useState(
     localStorage.getItem("headerTitle") || "Dashboard"
@@ -75,17 +75,18 @@ const AdminLayout = ({ children }) => {
   // }, [selectedKey, navigate]); // Run only once when component mounts
 
   useEffect(() => {
-    const storedKey = localStorage.getItem("selectedMenuKey");
+    const storedKey = localStorage.getItem("selectedAdminMenuKey");
 
     if (!storedKey) {
       setSelectedKey("/admin/dashboard");
+      localStorage.setItem("selectedAdminMenuKey", "/admin/dashboard");
       navigate("/admin/dashboard", { replace: true });
     }
   }, [navigate]);
 
   const handleMenuClick = ({ key }) => {
     setSelectedKey(key);
-    localStorage.setItem("selectedMenuKey", key);
+    localStorage.setItem("selectedAdminMenuKey", key);
 
     const newTitle = getMenuItemLabel(key);
     setHeaderTitle(newTitle);
