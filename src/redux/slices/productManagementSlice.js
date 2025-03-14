@@ -97,34 +97,182 @@ export const createProductManagement = createAsyncThunk(
 //   }
 // );
 
+// export const updateProductManagement = createAsyncThunk(
+//   "Product/update",
+//   async ({ updatedProduct }, { rejectWithValue }) => {
+//     try {
+//       if (!updatedProduct || !updatedProduct.productId) {
+//         console.error("❌ Missing Product ID in request body!", updatedProduct);
+//         return rejectWithValue("Product ID is required.");
+//       }
+
+//       console.log("📢 Updating Product with ID:", updatedProduct.productId);
+
+//       // Ensure parameterImpacts is an object
+//       let formattedProduct = {
+//         ...updatedProduct,
+//         parameterImpacts:
+//           typeof updatedProduct.parameterImpacts === "string"
+//             ? JSON.parse(updatedProduct.parameterImpacts)
+//             : updatedProduct.parameterImpacts, // Keep it as is if it's already an object
+//       };
+
+//       console.log(
+//         "Updated Parameter Impacts:",
+//         updatedProduct.parameterImpacts
+//       );
+
+//       console.log("🚀 Final API Payload:", formattedProduct);
+
+//       const res = await putRequest("Product/update-product", formattedProduct);
+
+//       if (!res || !res.data) {
+//         throw new Error("Invalid API response");
+//       }
+
+//       return res.data;
+//     } catch (error) {
+//       console.error("❌ Update failed:", error);
+
+//       if (error.response) {
+//         console.error("⚠️ Error response:", error.response.data);
+//         return rejectWithValue(error.response.data);
+//       } else if (error.request) {
+//         console.error("⚠️ No response received:", error.request);
+//         return rejectWithValue(error.request);
+//       } else {
+//         console.error("⚠️ Error setting up request:", error.message);
+//         return rejectWithValue(error.message);
+//       }
+//     }
+//   }
+// );
+
+// export const updateProductManagement = createAsyncThunk(
+//   "Product/update",
+//   async ({ updatedProduct }, { rejectWithValue }) => {
+//     try {
+//       if (!updatedProduct || !updatedProduct.productId) {
+//         console.error("❌ Missing Product ID in request body!", updatedProduct);
+//         return rejectWithValue("Product ID is required.");
+//       }
+
+//       console.log("📢 Updating Product with ID:", updatedProduct.productId);
+
+//       // Ensure parameterImpacts is an object
+//       let formattedProduct = {
+//         ...updatedProduct,
+//         parameterImpacts:
+//           typeof updatedProduct.parameterImpacts === "string"
+//             ? JSON.parse(updatedProduct.parameterImpacts)
+//             : updatedProduct.parameterImpacts, // Keep as-is if already an object
+//       };
+
+//       console.log(
+//         "Updated Parameter Impacts:",
+//         formattedProduct.parameterImpacts
+//       );
+
+//       // Convert object to query parameters
+//       const queryString = new URLSearchParams({
+//         productId: updatedProduct.productId,
+//         productName: updatedProduct.productName,
+//         description: updatedProduct.description,
+//         price: updatedProduct.price,
+//         stockQuantity: updatedProduct.stockQuantity,
+//         categoryId: updatedProduct.categoryId,
+//         brand: updatedProduct.brand,
+//         manufactureDate: updatedProduct.manufactureDate,
+//         expiryDate: updatedProduct.expiryDate,
+//       }).toString();
+
+//       console.log("🚀 Final Query String:", queryString);
+
+//       let formData = new FormData();
+
+//       // Convert JSON data to formData except image
+//       Object.keys(queryString).forEach((key) => {
+//         formData.append(key, queryString[key]);
+//       });
+
+//       // Only append the image if it's a file
+//       if (updatedProduct.image instanceof File) {
+//         formData.append("image", updatedProduct.image);
+//       }
+
+//       console.log("🚀 Final FormData Payload (With Image):", formData);
+
+//       // Send PUT request using query parameters
+//       //const res = await putRequest(`Product/update-product?${queryString}`);
+//       const res = await putRequest(
+//         `Product/update-product?${queryString}`,
+//         formData,
+//         {
+//           headers: { "Content-Type": "multipart/form-data" },
+//         }
+//       );
+
+//       if (!res || !res.data) {
+//         throw new Error("Invalid API response");
+//       }
+
+//       return res.data;
+//     } catch (error) {
+//       console.error("❌ Update failed:", error);
+
+//       if (error.response) {
+//         console.error("⚠️ Error response:", error.response.data);
+//         return rejectWithValue(error.response.data);
+//       } else if (error.request) {
+//         console.error("⚠️ No response received:", error.request);
+//         return rejectWithValue(error.request);
+//       } else {
+//         console.error("⚠️ Error setting up request:", error.message);
+//         return rejectWithValue(error.message);
+//       }
+//     }
+//   }
+// );
+
 export const updateProductManagement = createAsyncThunk(
   "Product/update",
   async ({ updatedProduct }, { rejectWithValue }) => {
     try {
+      console.log("📢 Updating Product with ID:", updatedProduct.productId);
+
       if (!updatedProduct || !updatedProduct.productId) {
         console.error("❌ Missing Product ID in request body!", updatedProduct);
         return rejectWithValue("Product ID is required.");
       }
 
-      console.log("📢 Updating Product with ID:", updatedProduct.productId);
+      // Extract image separately
+      const { image, ...queryParams } = updatedProduct;
 
-      // Ensure parameterImpacts is an object
-      let formattedProduct = {
-        ...updatedProduct,
-        parameterImpacts:
-          typeof updatedProduct.parameterImpacts === "string"
-            ? JSON.parse(updatedProduct.parameterImpacts)
-            : updatedProduct.parameterImpacts, // Keep it as is if it's already an object
-      };
+      // Convert query parameters to a URL-encoded string
+      const queryString = new URLSearchParams(queryParams).toString();
 
-      console.log(
-        "Updated Parameter Impacts:",
-        updatedProduct.parameterImpacts
+      let formData = new FormData();
+
+      if (image) {
+        if (image instanceof File) {
+          formData.append("image", image); // ✅ Append new image file
+        } else if (typeof image === "string" && image.startsWith("http")) {
+          formData.append("imageUrl", image); // ✅ Send old image URL if no new file is selected
+        }
+      } else {
+        console.warn(
+          "⚠️ No new image provided, backend should retain the old image."
+        );
+      }
+
+      console.log("🚀 Final FormData Payload:", [...formData.entries()]);
+      console.log("🔗 Query String:", queryString);
+
+      const res = await putRequest(
+        `Product/update-product?${queryString}`, // Send non-image fields as query parameters
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
       );
-
-      console.log("🚀 Final API Payload:", formattedProduct);
-
-      const res = await putRequest("Product/update-product", formattedProduct);
 
       if (!res || !res.data) {
         throw new Error("Invalid API response");

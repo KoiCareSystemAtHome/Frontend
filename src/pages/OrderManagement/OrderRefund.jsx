@@ -130,7 +130,7 @@ const OrderRefund = () => {
         type="link"
         icon={<ArrowLeftOutlined />}
         className="mb-4"
-        onClick={() => navigate("/shop/order-detail")}
+        onClick={() => navigate("/shop/order-detail/")}
       >
         Return
       </Button>

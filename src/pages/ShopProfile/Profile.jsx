@@ -1,8 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Form, Avatar } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { getShopByUserId } from "../../redux/slices/shopSlice";
+import LocationSelector from "./LocationSelector";
+import AddGhn from "./AddGhn";
 
 const Profile = () => {
   const dispatch = useDispatch();
@@ -21,6 +23,26 @@ const Profile = () => {
       dispatch(getShopByUserId(userId));
     }
   }, [dispatch, userId]);
+
+  // State to hold selected location
+  const [selectedLocation, setSelectedLocation] = useState({
+    province: shopProfile?.province_id || "",
+    district: shopProfile?.district_id || "",
+    ward: shopProfile?.ward_id || "",
+  });
+
+  // Handle location change
+  const handleLocationChange = (field, value) => {
+    setSelectedLocation((prev) => {
+      if (field === "province") {
+        return { province: value, district: "", ward: "" }; // ✅ Reset district & ward
+      }
+      if (field === "district") {
+        return { ...prev, district: value, ward: "" }; // ✅ Reset ward
+      }
+      return { ...prev, [field]: value };
+    });
+  };
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md">
@@ -65,7 +87,7 @@ const Profile = () => {
               name="address"
             >
               <div className="p-2 bg-gray-100 rounded border-0">
-                {shopProfile?.shopAddress}
+                {`${shopProfile?.shopAddress.wardName}, ${shopProfile?.shopAddress.districtName},${shopProfile?.shopAddress.provinceName}`}
               </div>
             </Form.Item>
           </div>
@@ -91,6 +113,21 @@ const Profile = () => {
             </Form.Item>
           </div>
         </div>
+
+        {/* Location Selector */}
+        {/* <div className="mt-6">
+          <h3 className="text-lg font-medium text-gray-800">Shop Location</h3>
+          <LocationSelector
+            selectedProvince={selectedLocation.province}
+            selectedDistrict={selectedLocation.district}
+            selectedWard={selectedLocation.ward}
+            onLocationChange={handleLocationChange}
+          />
+        </div> */}
+
+        {/* Create Ghn */}
+        <h2>Create Shop GHN</h2>
+        <AddGhn />
       </Form>
     </div>
   );

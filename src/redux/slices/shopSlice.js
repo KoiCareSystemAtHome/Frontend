@@ -23,6 +23,24 @@ export const getListShop = createAsyncThunk("Shop", async () => {
   }
 });
 
+// GET BY SHOP ID
+export const getShopByShopId = createAsyncThunk(
+  "Shop/getByShopId",
+  async (shopId, { rejectWithValue }) => {
+    try {
+      console.log("API Call: Fetching shop details for shopId:", shopId);
+      const res = await getRequest(`Shop/shop/${shopId}`);
+      console.log("API Response:", res.data);
+      return res.data;
+    } catch (error) {
+      console.error("API Error:", error.response?.data);
+      return rejectWithValue(
+        error.response?.data || "Failed to fetch shop details"
+      );
+    }
+  }
+);
+
 // GET BY USER ID
 export const getShopByUserId = createAsyncThunk(
   "Shop/getByUser",
@@ -102,6 +120,9 @@ const shopSlice = createSlice({
       })
       .addCase(getShopByUserId.fulfilled, (state, action) => {
         state.shopProfile = action.payload.shop;
+      })
+      .addCase(getShopByShopId.fulfilled, (state, action) => {
+        state.shopProfile = action.payload;
       })
       .addCase(createShop.fulfilled, (state, action) => {
         state.listShop.push(action.payload);

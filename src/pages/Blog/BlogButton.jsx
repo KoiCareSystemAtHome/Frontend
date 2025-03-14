@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import AddOrder from "./AddOrder";
+import AddBlog from "./AddBlog";
 
-const OrderManagementButton = () => {
+const BlogButton = () => {
   const [isAddOpen, setIsAddOpen] = useState(false);
 
   const handleOk = () => {
@@ -10,9 +10,9 @@ const OrderManagementButton = () => {
 
   return (
     <div>
-      <AddOrder onClose={handleOk} />
+      <AddBlog onClose={handleOk} />
     </div>
   );
 };
 
-export default OrderManagementButton;
+export default BlogButton;

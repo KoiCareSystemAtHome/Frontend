@@ -31,6 +31,16 @@ const LoginPage = () => {
       if (response && response.token) {
         const role = response.role; // Extracted role from token
 
+        // Check if role is allowed
+        if (role === "Member") {
+          openNotification("error", "Only Admin or Shop can log in!");
+          return; // Stop execution to prevent further actions
+        }
+
+        // 🔹 Reset Menu Selection
+        localStorage.setItem("selectedAdminMenuKey", "/admin/dashboard");
+        localStorage.setItem("headerTitle", "Dashboard");
+
         // Store the token and role for later use
         localStorage.setItem("token", response.token);
         localStorage.setItem("role", role);
@@ -44,8 +54,10 @@ const LoginPage = () => {
         setTimeout(() => {
           if (role === "Admin") {
             navigate("/admin/dashboard"); // Navigate to Admin Dashboard
-          } else {
+          } else if (role === "Shop") {
             navigate("/shop/dashboard"); // Default route
+          } else {
+            navigate("/");
           }
         }, 1000); // 1-second delay for better UX
       }

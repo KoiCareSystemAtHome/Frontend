@@ -52,3 +52,15 @@
 .ant-menu-submenu-open > .ant-menu-submenu-title .ant-menu-submenu-arrow {
   color: white !important; /* Arrow icon turns white */
 }
+
+.ant-menu-submenu-title {
+  color: white !important; /* Force parent items to stay white */
+}
+
+.ant-menu-submenu-title:hover {
+  color: #ffffff !important; /* Allow hover effect */
+}
+
+.ant-menu-item-selected {
+  color: black !important; /* Ensure selected child items turn black */
+}

@@ -76,12 +76,13 @@ const membershipPackageSlice = createSlice({
         state.listMembership.push(action.payload);
       })
       .addCase(updatePackage.fulfilled, (state, action) => {
-        const updatedMembership = action.payload;
-        state.listMembership = state.listMembership.map((membership) =>
-          membership.id === updatedMembership.id
-            ? updatedMembership
-            : membership
+        const updatePackage = action.payload;
+        const index = state.listMembership.findIndex(
+          (membership) => membership.id === updatePackage.id
         );
+        if (index !== -1) {
+          state.listMembership[index] = updatePackage;
+        }
       });
   },
 });

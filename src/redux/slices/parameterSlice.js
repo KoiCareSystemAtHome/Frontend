@@ -74,6 +74,9 @@ const parameterSlice = createSlice({
     builder.addCase(getListParameter.fulfilled, (state, action) => {
       state.listParameter = action.payload;
     });
+    builder.addCase(createParameter.fulfilled, (state, action) => {
+      state.listParameter = action.payload;
+    });
   },
 });
 

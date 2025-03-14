@@ -1,11 +1,11 @@
 import React from "react";
-import MemberButton from "./MemberButton";
+import BlogButton from "./BlogButton";
 import SearchTable from "../../components/SearchTable/searchTable";
-import MemberTable from "./MemberTable";
-import useMemberList from "../../hooks/useMemberList";
+import BlogTable from "./BlogTable";
+import useBlogList from "../../hooks/useBlogList";
 
-const Member = () => {
-  const memberList = useMemberList();
+const Blog = () => {
+  const blogList = useBlogList();
 
   return (
     <div>
@@ -17,14 +17,14 @@ const Member = () => {
           alignItems: "center",
         }}
       >
-        <div>Member</div>
+        <div>Blog</div>
 
         <div
           style={{
             display: "flex",
           }}
         >
-          {/* <MemberButton /> */}
+          <BlogButton />
         </div>
       </div>
 
@@ -33,10 +33,10 @@ const Member = () => {
       </div>
 
       <div className="tableContainer" style={{ marginTop: "10px" }}>
-        <MemberTable dataSource={memberList} />
+        <BlogTable dataSource={blogList} />
       </div>
     </div>
   );
 };
 
-export default Member;
+export default Blog;

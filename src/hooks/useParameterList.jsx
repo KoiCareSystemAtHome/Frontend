@@ -8,15 +8,9 @@ const useParameterList = (type) => {
   const parameterList = useSelector(getListParameterSelector);
 
   useEffect(() => {
-    const fetchParameter = async () => {
-      try {
-        if (type) dispatch(getListParameter(type));
-      } catch (error) {
-        console.error("Error fetching data", error);
-      }
-    };
+    if (!type) return;
 
-    fetchParameter();
+    dispatch(getListParameter({ type }));
   }, [dispatch, type]); // Added type as a dependency
 
   return parameterList;

@@ -18,6 +18,10 @@ import Member from "../../pages/Member/Member";
 import Shop from "../../pages/Shop/Shop";
 import CommonDiseases from "../../pages/CommonDiseases/CommonDiseases";
 import CommonDiseasesDetail from "../../pages/CommonDiseases/CommonDiseasesDetail";
+import dashboardIcon from "../../assets/dashboard.png";
+import membershipIcon from "../../assets/membership.png";
+import parameterIcon from "../../assets/parameter.png";
+import accountIcon from "../../assets/account.png";
 import fishIcon from "../../assets/fish.png";
 import pondIcon from "../../assets/pond.png";
 import diseaseIcon from "../../assets/diseases.png";
@@ -76,21 +80,34 @@ const AdminLayout = ({ children }) => {
 
   useEffect(() => {
     const storedKey = localStorage.getItem("selectedAdminMenuKey");
+    const isFirstLogin = sessionStorage.getItem("isFirstLogin");
 
-    if (!storedKey) {
+    if (!isFirstLogin) {
+      // First login detected: reset to dashboard
+      sessionStorage.setItem("isFirstLogin", "true");
+
       setSelectedKey("/admin/dashboard");
+      setHeaderTitle("Dashboard");
+
       localStorage.setItem("selectedAdminMenuKey", "/admin/dashboard");
+      localStorage.setItem("adminHeaderTitle", "Dashboard");
+
       navigate("/admin/dashboard", { replace: true });
+    } else if (storedKey) {
+      // Returning user: restore last selected menu item
+      setSelectedKey(storedKey);
+      setHeaderTitle(localStorage.getItem("adminHeaderTitle") || "Dashboard");
+
+      navigate(storedKey, { replace: true });
     }
-  }, [navigate]);
+  }, []);
 
   const handleMenuClick = ({ key }) => {
     setSelectedKey(key);
-    localStorage.setItem("selectedAdminMenuKey", key);
+    setHeaderTitle(getMenuItemLabel(key));
 
-    const newTitle = getMenuItemLabel(key);
-    setHeaderTitle(newTitle);
-    localStorage.setItem("headerTitle", newTitle);
+    localStorage.setItem("selectedAdminMenuKey", key);
+    localStorage.setItem("headerTitle", getMenuItemLabel(key));
 
     navigate(key);
   };
@@ -111,7 +128,14 @@ const AdminLayout = ({ children }) => {
             onClick={() => setCollapsed(!collapsed)}
             className="text-white bg-transparent border-none text-lg ml-2"
           />
-          {!collapsed && <h2 className="text-white text-lg ml-12">Admin</h2>}
+          {!collapsed && (
+            <h2
+              style={{ marginTop: "10px" }}
+              className="text-white text-lg ml-12"
+            >
+              Admin
+            </h2>
+          )}
         </div>
         <Menu
           mode="inline"
@@ -121,26 +145,72 @@ const AdminLayout = ({ children }) => {
           items={[
             {
               key: "/admin/dashboard",
-              icon: <DashboardOutlined style={{ color: "white" }} />,
               label: "Dashboard",
+              style: { color: "white" },
+              className: "group", // This makes the menu item act as a parent
+              icon: (
+                <span>
+                  <img
+                    src={dashboardIcon}
+                    alt="Dashboard Icon"
+                    className={`w-5 transition-all duration-200 
+                                    invert group-hover:invert-0 ${
+                                      selectedKey === "/admin/dashboard"
+                                        ? "invert-0"
+                                        : ""
+                                    }`}
+                  />
+                </span>
+              ),
             },
             {
               key: "/admin/membership",
-              icon: <TeamOutlined style={{ color: "white" }} />,
               label: "Membership",
+              style: { color: "white" },
+              className: "group", // This makes the menu item act as a parent
+              icon: (
+                <span>
+                  <img
+                    src={membershipIcon}
+                    alt="Membership Icon"
+                    className={`w-5 transition-all duration-200 
+                                    invert group-hover:invert-0 ${
+                                      selectedKey === "/admin/membership"
+                                        ? "invert-0"
+                                        : ""
+                                    }`}
+                  />
+                </span>
+              ),
             },
             {
               key: "/admin/account",
-              icon: <SettingOutlined style={{ color: "white" }} />,
               label: "Account",
+              className: "text-white",
+              icon: (
+                <span>
+                  <img
+                    src={accountIcon}
+                    alt="Membership Icon"
+                    className={`w-5 transition-all duration-200 
+                                    invert group-hover:invert-0 ${
+                                      selectedKey === "/admin/account"
+                                        ? "invert-0"
+                                        : ""
+                                    }`}
+                  />
+                </span>
+              ),
               children: [
                 {
                   key: "/admin/account/member",
+                  style: { color: "white" },
                   icon: <TeamOutlined style={{ color: "white" }} />,
                   label: "Member",
                 },
                 {
                   key: "/admin/account/shop",
+                  style: { color: "white" },
                   icon: <ShopOutlined style={{ color: "white" }} />,
                   label: "Shop",
                 },
@@ -148,12 +218,27 @@ const AdminLayout = ({ children }) => {
             },
             {
               key: "/admin/parameter",
-              icon: <ToolOutlined style={{ color: "white" }} />,
               label: "Parameter",
+              className: "text-white",
+              icon: (
+                <span>
+                  <img
+                    src={parameterIcon}
+                    alt="Membership Icon"
+                    className={`w-5 transition-all duration-200 
+                                    invert group-hover:invert-0 ${
+                                      selectedKey === "/admin/parameter"
+                                        ? "invert-0"
+                                        : ""
+                                    }`}
+                  />
+                </span>
+              ),
               children: [
                 {
                   key: "/admin/parameter/fish",
                   label: "Fish",
+                  style: { color: "white" },
                   className: "group", // This makes the menu item act as a parent
                   icon: (
                     <span>
@@ -173,6 +258,7 @@ const AdminLayout = ({ children }) => {
                 {
                   key: "/admin/parameter/pond",
                   label: "Pond",
+                  style: { color: "white" },
                   className: "group", // This makes the menu item act as a parent
                   icon: (
                     <span>
@@ -195,6 +281,7 @@ const AdminLayout = ({ children }) => {
               key: "/admin/diseases",
               className: "group",
               label: "Common Diseases",
+              style: { color: "white" },
               icon: (
                 <span>
                   <img

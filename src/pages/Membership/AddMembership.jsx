@@ -5,11 +5,12 @@ import {
   DatePicker,
   Form,
   Input,
+  InputNumber,
   Modal,
   notification,
   Row,
 } from "antd";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import "../../Styles/Modal.css";
 import { useDispatch } from "react-redux";
 import {
@@ -21,13 +22,13 @@ import {
 const AddMembership = ({ onClose }) => {
   const [isAddOpen, setIsAddOpen] = useState(false);
 
-  const showAddModal = () => {
+  const showAddModal = useCallback(() => {
     setIsAddOpen(true);
-  };
+  }, []);
 
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
     setIsAddOpen(false);
-  };
+  }, []);
 
   const dispatch = useDispatch();
 
@@ -44,13 +45,16 @@ const AddMembership = ({ onClose }) => {
   // Notification
   const [api, contextHolder] = notification.useNotification();
 
-  const openNotification = (type, message) => {
-    api[type]({
-      message: message,
-      placement: "top",
-      duration: 5,
-    });
-  };
+  const openNotification = useCallback(
+    (type, message) => {
+      api[type]({
+        message: message,
+        placement: "top",
+        duration: 5,
+      });
+    },
+    [api]
+  );
 
   const onFinish = (values) => {
     console.log(values);
@@ -58,26 +62,21 @@ const AddMembership = ({ onClose }) => {
     dispatch(createPackage(values))
       .unwrap()
       .then(() => {
-        // Close the Modal
-        onClose();
         openNotification("success", "Membership Created Successfully!");
         dispatch(getListMembershipPackage());
         handleCancel();
-        // Reset the form fields after dispatching the action
         form.resetFields();
+        onClose();
       })
       .catch((error) => {
-        openNotification("warning", error);
+        if (error.response) {
+          openNotification("warning", `Error: ${error.response.data.message}`);
+        } else if (error.request) {
+          openNotification("warning", "Network error, please try again later.");
+        } else {
+          openNotification("warning", `Unexpected error: ${error.message}`);
+        }
       });
-    // .finally(() => {
-    //   // Reset the form fields after dispatching the action
-    //   form.resetFields();
-    //   // Close the Modal
-    //   onClose();
-    //   dispatch(getListMembershipPackage());
-    //   openNotification("success", "Membership Created Successfully!");
-    //   handleCancel();
-    // });
   };
 
   return (
@@ -118,7 +117,7 @@ const AddMembership = ({ onClose }) => {
                   },
                 ]}
               >
-                <Input placeholder="Package Title"></Input>
+                <Input allowClear placeholder="Package Title"></Input>
               </Form.Item>
             </Col>
             {/* 2nd column */}
@@ -133,7 +132,7 @@ const AddMembership = ({ onClose }) => {
                   },
                 ]}
               >
-                <Input placeholder="Package Description"></Input>
+                <Input allowClear placeholder="Package Description"></Input>
               </Form.Item>
             </Col>
             {/* 3rd column */}
@@ -148,7 +147,10 @@ const AddMembership = ({ onClose }) => {
                   },
                 ]}
               >
-                <Input placeholder="Package Price"></Input>
+                <InputNumber
+                  style={{ width: "270px" }}
+                  placeholder="Package Price"
+                ></InputNumber>
               </Form.Item>
             </Col>
           </Row>
@@ -167,7 +169,7 @@ const AddMembership = ({ onClose }) => {
                   },
                 ]}
               >
-                <Input placeholder="Package Type"></Input>
+                <Input allowClear placeholder="Package Type"></Input>
               </Form.Item>
             </Col>
             {/* 2nd column */}
@@ -209,6 +211,18 @@ const AddMembership = ({ onClose }) => {
           </Row>
           <Row className="membershipButton">
             <Form.Item>
+              <Button
+                style={{
+                  width: "100px",
+                  height: "40px",
+                  padding: "8px",
+                  borderRadius: "10px",
+                  marginRight: "10px",
+                }}
+                onClick={handleCancel}
+              >
+                Cancel
+              </Button>
               <Button
                 htmlType="submit"
                 type="primary"

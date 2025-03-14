@@ -12,12 +12,13 @@ import {
   Upload,
 } from "antd";
 import dayjs from "dayjs";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import {
   getListProductManagement,
   updateProductManagement,
 } from "../../redux/slices/productManagementSlice";
+import axios from "axios";
 
 const UpdateProductManagement = (props) => {
   const { record } = props;
@@ -59,12 +60,63 @@ const UpdateProductManagement = (props) => {
     setIsEditOpen(false);
   };
 
-  // const [fileList, setFileList] = useState([]);
+  const [fileList, setFileList] = useState([]);
 
-  // const handleUploadChange = ({ fileList }) => {
-  //   setFileList(fileList);
-  //   form.setFieldsValue({ image: fileList });
-  // };
+  useEffect(() => {
+    if (record.image) {
+      setFileList([
+        {
+          uid: "-1",
+          name: "Uploaded Image",
+          status: "done",
+          url: record.image, // Ensure URL is valid
+        },
+      ]);
+      form.setFieldsValue({ image: record.image }); // Update form with the existing image
+    } else {
+      setFileList([]);
+      form.setFieldsValue({ image: null }); // Clear form value if no image
+    }
+  }, [record.image, form]);
+
+  const handleUploadChange = async ({ fileList }) => {
+    if (fileList.length === 0) {
+      setFileList([]);
+      form.setFieldsValue({ image: null }); // Update form value on deletion
+      return;
+    }
+
+    setFileList(fileList);
+
+    const file = fileList[0]?.originFileObj;
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await axios.post(
+        "http://14.225.206.203:5444/api/Account/test",
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+
+      const imageUrl = response.data.imageUrl; // Ensure this is the correct key
+      console.log("Uploaded Image URL:", imageUrl);
+
+      const newFile = {
+        uid: "-1",
+        name: file.name,
+        status: "done",
+        url: imageUrl,
+      };
+
+      setFileList([newFile]);
+      form.setFieldsValue({ image: newFile.url }); // ✅ Update the form with the new image URL
+    } catch (error) {
+      console.error("Upload Error:", error);
+    }
+  };
 
   const openNotification = (type, message) => {
     api[type]({
@@ -76,17 +128,7 @@ const UpdateProductManagement = (props) => {
 
   const handleEditSubmit = () => {
     form.validateFields().then((values) => {
-      console.log("Original manufacturedDate:", record.manufactureDate);
-      console.log("Parsed as UTC:", dayjs.utc(record.manufactureDate).format());
-      console.log(
-        "Converted to Vietnam Time:",
-        dayjs.utc(record.manufactureDate).tz("Asia/Ho_Chi_Minh").format()
-      );
-      console.log(
-        "Final UTC before saving:",
-        dayjs(record.manufactureDate).tz("Asia/Ho_Chi_Minh").utc().format()
-      );
-
+      const latestImage = fileList.length > 0 ? fileList[0].url : record.image; // ✅ Always take the latest uploaded image
       const formattedValues = {
         ...values,
         manufactureDate: values.manufactureDate
@@ -98,14 +140,46 @@ const UpdateProductManagement = (props) => {
         expiryDate: values.expiryDate
           ? dayjs(values.expiryDate).tz("Asia/Ho_Chi_Minh", true).utc().format()
           : null,
+        image: latestImage,
       };
 
-      console.log("Formatted Values:", formattedValues); // Debugging
+      console.log("Formatted Values (Including Image):", formattedValues);
+
+      //console.log("Formatted Values:", formattedValues); // Debugging
+
+      // Convert object to query parameters
+      const queryString = new URLSearchParams({
+        productId: record.productId,
+        productName: formattedValues.productName,
+        description: formattedValues.description,
+        price: formattedValues.price,
+        stockQuantity: formattedValues.stockQuantity,
+        categoryId: formattedValues.categoryId,
+        brand: formattedValues.brand,
+        manufactureDate: formattedValues.manufactureDate,
+        expiryDate: formattedValues.expiryDate,
+      }).toString();
+
+      // Create a FormData object for file upload
+      const formData = new FormData();
+      console.log(values);
+
+      console.log("Record Image:", record.image);
+      if (values.image && values.image.file) {
+        formData.append("image", values.image.file); // ✅ Append binary image file
+      } else if (record.image) {
+        formData.append("image", record.image); // Use existing image if not changed
+      } else {
+        console.error("Image is required!"); // Ensure image is always present
+        return;
+      }
 
       dispatch(
         updateProductManagement({
-          productId: record.productId,
-          updatedProduct: values,
+          updatedProduct: {
+            productId: record.productId, // ✅ Ensure productId is included
+            ...formattedValues,
+          },
         })
       )
         .unwrap()
@@ -114,7 +188,7 @@ const UpdateProductManagement = (props) => {
           setIsEditOpen(false);
           openNotification(
             "success",
-            `Updated product with ID: "${record.productId}" successfully!`
+            `Updated product "${record.productName}" successfully!`
           );
           dispatch(getListProductManagement());
         })
@@ -167,7 +241,7 @@ const UpdateProductManagement = (props) => {
                   },
                 ]}
               >
-                <Input disabled placeholder="Product ID"></Input>
+                <Input placeholder="Product ID"></Input>
               </Form.Item>
             </Col>
             {/* 2nd column */}
@@ -344,35 +418,6 @@ const UpdateProductManagement = (props) => {
               </Form.Item>
             </Col>
             {/* 2nd column */}
-            {/* <Col style={{ marginLeft: "6px" }}>
-              <p className="modalContent">Parameter Impacts</p>
-              <Form.Item
-                name="parameterImpacts"
-                initialValue={record.parameterImpacts}
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input parameter impacts!",
-                  },
-                  // {
-                  //   validator: (_, value) => {
-                  //     try {
-                  //       if (value) {
-                  //         JSON.parse(value); // Validate JSON format
-                  //       }
-                  //       return Promise.resolve();
-                  //     } catch {
-                  //       return Promise.reject(
-                  //         new Error("Invalid JSON format!")
-                  //       );
-                  //     }
-                  //   },
-                  // },
-                ]}
-              >
-                <Input placeholder="Parameter impacts" />
-              </Form.Item>
-            </Col> */}
             <Col style={{ marginLeft: "6px" }}>
               <p className="modalContent">Parameter Impacts</p>
               <Form.Item
@@ -387,18 +432,18 @@ const UpdateProductManagement = (props) => {
                     required: true,
                     message: "Please input parameter impacts!",
                   },
-                  {
-                    validator: (_, value) => {
-                      try {
-                        JSON.parse(value); // Validate JSON format
-                        return Promise.resolve();
-                      } catch {
-                        return Promise.reject(
-                          new Error("Invalid JSON format!")
-                        );
-                      }
-                    },
-                  },
+                  // {
+                  //   validator: (_, value) => {
+                  //     try {
+                  //       JSON.parse(value); // Validate JSON format
+                  //       return Promise.resolve();
+                  //     } catch {
+                  //       return Promise.reject(
+                  //         new Error("Invalid JSON format!")
+                  //       );
+                  //     }
+                  //   },
+                  // },
                 ]}
               >
                 <Input.TextArea
@@ -415,7 +460,7 @@ const UpdateProductManagement = (props) => {
               </Form.Item>
             </Col>
           </Row>
-          {/* <Col>
+          <Col>
             <p className="modalContent">Image</p>
             <Form.Item
               name="image"
@@ -433,27 +478,19 @@ const UpdateProductManagement = (props) => {
                 onChange={handleUploadChange}
                 multiple={false}
                 accept="image/*"
+                listType="picture" // Display as an image
               >
-                <p className="ant-upload-drag-icon">
-                  <InboxOutlined />
-                </p>
-                <p className="ant-upload-text">Click or drag file to upload</p>
+                {fileList.length === 0 ? (
+                  <>
+                    <p className="ant-upload-drag-icon">
+                      <InboxOutlined />
+                    </p>
+                    <p className="ant-upload-text">
+                      Click or drag file to upload
+                    </p>
+                  </>
+                ) : null}
               </Upload.Dragger>
-            </Form.Item>
-          </Col> */}
-          <Col>
-            <p className="modalContent">Image</p>
-            <Form.Item
-              name="image"
-              initialValue={record.image}
-              rules={[
-                {
-                  required: true,
-                  message: "Please input image!",
-                },
-              ]}
-            >
-              <Input placeholder="Image"></Input>
             </Form.Item>
           </Col>
           <Row className="membershipButton">
@@ -482,3 +519,43 @@ const UpdateProductManagement = (props) => {
 };
 
 export default UpdateProductManagement;
+
+// const handleEditSubmit = () => {
+//   form.validateFields().then((values) => {
+//     const formattedValues = {
+//       ...values,
+//       manufactureDate: values.manufactureDate
+//         ? dayjs(values.manufactureDate)
+//             .tz("Asia/Ho_Chi_Minh", true)
+//             .utc()
+//             .format()
+//         : null,
+//       expiryDate: values.expiryDate
+//         ? dayjs(values.expiryDate).tz("Asia/Ho_Chi_Minh", true).utc().format()
+//         : null,
+//     };
+
+//     console.log("Formatted Values:", formattedValues); // Debugging
+
+//     dispatch(
+//       updateProductManagement({
+//         productId: record.productId,
+//         updatedProduct: values,
+//       })
+//     )
+//       .unwrap()
+//       .then(() => {
+//         form.resetFields();
+//         setIsEditOpen(false);
+//         openNotification(
+//           "success",
+//           `Updated product "${record.productName}" successfully!`
+//         );
+//         dispatch(getListProductManagement());
+//       })
+//       .catch((error) => {
+//         console.error("Update error:", error); // Debugging
+//         openNotification("warning", error.message || "Update failed!");
+//       });
+//   });
+// };

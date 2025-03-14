@@ -7,6 +7,7 @@ const ShopButton = () => {
   const handleOk = () => {
     setIsAddOpen(false);
   };
+
   return (
     <div>
       <AddShop onClose={handleOk} />

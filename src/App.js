@@ -4,6 +4,7 @@ import { Route, Routes } from "react-router";
 import LoginPage from "./pages/login/Login";
 import RegisterPage from "./pages/register/register";
 import ShopLayout from "./Layout/ShopLayout/ShopLayout";
+import "antd/dist/reset.css"; // For Ant Design v5
 
 function App() {
   return (

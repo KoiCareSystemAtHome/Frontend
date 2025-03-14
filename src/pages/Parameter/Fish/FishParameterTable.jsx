@@ -140,7 +140,7 @@ function FishParameterTable({ dataSource }) {
       <Spin spinning={loading} tip="Loading...">
         <Table
           scroll={{ x: 3000 }}
-          dataSource={!loading ? paginatedData : []} // Show empty data while loading
+          dataSource={paginatedData}
           columns={columns}
           pagination={false}
           className="[&_.ant-table-thead_.ant-table-cell]:bg-[#fafafa] [&_.ant-table-thead_.ant-table-cell]:font-medium [&_.ant-table-cell]:py-4"

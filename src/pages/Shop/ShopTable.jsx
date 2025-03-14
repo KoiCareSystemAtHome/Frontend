@@ -106,11 +106,25 @@ function ShopTable({ dataSource }) {
       title: "Shop Address",
       dataIndex: "shopAddress",
       key: "shopAddress",
+      render: (shopAddress) => {
+        if (!shopAddress) return "N/A"; // Handle missing address
+        try {
+          const address = JSON.parse(shopAddress);
+          return `${address.WardName}, ${address.DistrictName}, ${address.ProvinceName}`;
+        } catch (error) {
+          return "Invalid Address"; // Handle parsing errors
+        }
+      },
     },
     {
       title: "License",
       dataIndex: "bizLicences",
       key: "bizLicences",
+    },
+    {
+      title: "GHN ID",
+      dataIndex: "ghnId",
+      key: "ghnId",
     },
     {
       title: "Status",
@@ -190,7 +204,8 @@ function ShopTable({ dataSource }) {
       <div className="w-full">
         <Spin spinning={loading} tip="Loading...">
           <Table
-            dataSource={!loading ? paginatedData : []}
+            scroll={{ x: 1000 }}
+            dataSource={paginatedData}
             columns={columns}
             pagination={false}
             className="[&_.ant-table-thead_.ant-table-cell]:bg-[#fafafa] [&_.ant-table-thead_.ant-table-cell]:font-medium [&_.ant-table-cell]:py-4"

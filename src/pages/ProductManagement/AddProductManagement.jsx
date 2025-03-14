@@ -83,6 +83,7 @@ const AddProductManagement = ({ onClose }) => {
   //     console.error("Upload Error:", error);
   //     openNotification("error", "Image upload failed.");
   //   }
+  // }
 
   const beforeUpload = (file) => {
     setSelectedImage(file); // Save file for later upload

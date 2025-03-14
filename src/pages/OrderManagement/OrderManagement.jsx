@@ -2,8 +2,10 @@ import React from "react";
 import Filter from "../../components/Filter/Filter";
 import OrderManagementButton from "./OrderManagementButton";
 import OrdermanagementTable from "./OrdermanagementTable";
+import useOrderList from "../../hooks/useOrderList";
 
 const OrderManagement = () => {
+  const orderList = useOrderList();
   return (
     <div>
       <div>
@@ -31,7 +33,7 @@ const OrderManagement = () => {
         </div>
 
         <div className="tableContainer" style={{ marginTop: "10px" }}>
-          <OrdermanagementTable />
+          <OrdermanagementTable dataSource={orderList} />
         </div>
       </div>
     </div>

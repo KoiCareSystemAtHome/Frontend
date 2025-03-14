@@ -111,7 +111,10 @@ const authSlice = createSlice({
       localStorage.removeItem("user");
       localStorage.removeItem("role");
 
-      notification.success({ message: "Logged out successfully" });
+      notification.success({
+        message: "Logged out successfully",
+        placement: "top",
+      });
     },
   },
   extraReducers: (builder) => {

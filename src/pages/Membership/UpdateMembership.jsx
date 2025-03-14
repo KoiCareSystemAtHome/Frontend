@@ -5,13 +5,13 @@ import {
   DatePicker,
   Form,
   Input,
+  InputNumber,
   Modal,
   notification,
   Popover,
   Row,
-  Select,
 } from "antd";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import "../../Styles/Modal.css";
 import { useDispatch } from "react-redux";
 import {
@@ -32,7 +32,7 @@ const UpdateMembership = (props) => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [api, contextHolder] = notification.useNotification();
 
-  const showEditModal = () => {
+  const showEditModal = useCallback(() => {
     form.setFieldsValue({
       packageTitle: record.packageTitle,
       packageDescription: record.packageDescription,
@@ -46,74 +46,72 @@ const UpdateMembership = (props) => {
         : null,
     });
     setIsEditOpen(true);
-  };
+  }, [form, record, setIsEditOpen]);
 
-  const handleEditCancel = () => {
+  const handleEditCancel = useCallback(() => {
     form.resetFields();
     setIsEditOpen(false);
-  };
+  }, [form, setIsEditOpen]);
 
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
     setIsEditOpen(false);
-  };
+  }, [setIsEditOpen]);
 
-  const openNotification = (type, message) => {
-    api[type]({
-      message: message,
-      placement: "top",
-      duration: 5,
-    });
-  };
-  console.log("Updating package with ID:", record.packageId);
+  const openNotification = useCallback(
+    (type, message) => {
+      api[type]({
+        message: message,
+        placement: "top",
+        duration: 5,
+      });
+    },
+    [api]
+  );
 
-  const handleEditSubmit = () => {
-    form.validateFields().then((values) => {
-      console.log("Original startDate:", record.startDate);
-      console.log("Parsed as UTC:", dayjs.utc(record.startDate).format());
-      console.log(
-        "Converted to Vietnam Time:",
-        dayjs.utc(record.startDate).tz("Asia/Ho_Chi_Minh").format()
-      );
-      console.log(
-        "Final UTC before saving:",
-        dayjs(record.startDate).tz("Asia/Ho_Chi_Minh").utc().format()
-      );
+  const handleEditSubmit = (values) => {
+    form
+      .validateFields()
+      .then(() => {
+        const formattedValues = {
+          ...values,
+          startDate: values.startDate
+            ? dayjs(values.startDate)
+                .tz("Asia/Ho_Chi_Minh", true)
+                .utc()
+                .format()
+            : null,
+          endDate: values.endDate
+            ? dayjs(values.endDate).tz("Asia/Ho_Chi_Minh", true).utc().format()
+            : null,
+        };
 
-      const formattedValues = {
-        ...values,
-        startDate: values.startDate
-          ? dayjs(values.startDate).tz("Asia/Ho_Chi_Minh", true).utc().format()
-          : null,
-        endDate: values.endDate
-          ? dayjs(values.endDate).tz("Asia/Ho_Chi_Minh", true).utc().format()
-          : null,
-      };
-
-      console.log("Formatted Values:", formattedValues); // Debugging
-
-      dispatch(
-        updatePackage({
-          updatedMembership: {
-            ...formattedValues,
-            packageId: record.packageId,
-          },
-        })
-      )
-        .unwrap()
-        .then(() => {
-          form.resetFields();
-          setIsEditOpen(false);
-          openNotification(
-            "success",
-            `Updated package with ID: "${record.packageId}" successfully!`
-          );
-          dispatch(getListMembershipPackage());
-        })
-        .catch((error) => {
-          console.error("Update error:", error);
-          openNotification("warning", error.message || "Update failed!");
-        });
-    });
+        dispatch(
+          updatePackage({
+            updatedMembership: {
+              ...formattedValues,
+              packageId: record.packageId,
+            },
+          })
+        )
+          .unwrap()
+          .then(() => {
+            handleEditCancel();
+            openNotification(
+              "success",
+              `Updated package "${record.packageTitle}" successfully!`
+            );
+            dispatch(getListMembershipPackage());
+          })
+          .catch((error) => {
+            openNotification("warning", error.message || "Update failed!");
+          });
+      })
+      .catch((validationError) => {
+        openNotification(
+          "error",
+          "Validation failed: " + validationError.message
+        );
+      });
   };
 
   return (
@@ -190,7 +188,10 @@ const UpdateMembership = (props) => {
                   },
                 ]}
               >
-                <Input placeholder="Price"></Input>
+                <InputNumber
+                  style={{ width: "270px" }}
+                  placeholder="Price"
+                ></InputNumber>
               </Form.Item>
             </Col>
           </Row>

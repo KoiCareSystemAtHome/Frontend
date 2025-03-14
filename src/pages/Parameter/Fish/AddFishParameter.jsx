@@ -9,7 +9,11 @@ import {
   Modal,
   message,
 } from "antd";
-import { CloudUploadOutlined, InboxOutlined } from "@ant-design/icons";
+import {
+  CloudUploadOutlined,
+  InboxOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { createParameter } from "../../../redux/slices/parameterSlice";
 
@@ -25,7 +29,7 @@ const AddFishParameter = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [file, setFile] = useState(null);
 
-  const showModal = () => {
+  const showAddModal = () => {
     setIsModalVisible(true);
   };
 
@@ -41,6 +45,14 @@ const AddFishParameter = () => {
     setIsModalVisible(false);
   };
 
+  const buttonStyle = {
+    height: "40px",
+    width: "160px",
+    borderRadius: "10px",
+    margin: "0px 5px",
+    padding: "7px 0px 10px 0px",
+  };
+
   const uploadProps = {
     accept: ".xlsx,.xls",
     beforeUpload: (file) => {
@@ -52,8 +64,15 @@ const AddFishParameter = () => {
 
   return (
     <div>
-      <Button type="primary" onClick={showModal}>
-        Open Parameter Settings
+      <Button
+        size="small"
+        className="addBtn"
+        type="primary"
+        icon={<PlusOutlined />}
+        style={buttonStyle}
+        onClick={showAddModal}
+      >
+        Add Parameter
       </Button>
 
       <Modal

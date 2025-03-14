@@ -28,6 +28,7 @@ const UpdateShop = (props) => {
       shopDescription: record.shopDescription,
       shopAddress: record.shopAddress,
       bizLicences: record.bizLicences,
+      ghnId: record.ghnId,
       isActivate: record.isActivate,
     });
     setIsEditOpen(true);
@@ -50,16 +51,15 @@ const UpdateShop = (props) => {
     });
   };
 
-  const handleEditSubmit = () => {
-    form.validateFields().then((values) => {
+  const handleEditSubmit = (values) => {
+    form.validateFields().then(() => {
       dispatch(updateShop({ shopId: record.shopId, updatedShop: values }))
         .unwrap()
         .then(() => {
-          form.resetFields();
-          setIsEditOpen(false);
+          handleEditCancel();
           openNotification(
             "success",
-            `Updated shop with ID: "${record.shopId}" successfully!`
+            `Updated shop "${record.shopName}" successfully!`
           );
           dispatch(getListShop());
         })
@@ -180,6 +180,22 @@ const UpdateShop = (props) => {
                 ]}
               >
                 <Input placeholder="License"></Input>
+              </Form.Item>
+            </Col>
+            {/* 2nd column */}
+            <Col>
+              <p className="modalContent">GHN ID</p>
+              <Form.Item
+                name="ghnId"
+                initialValue={record.ghnId}
+                rules={[
+                  {
+                    required: true,
+                    message: "Please enter ghn id!",
+                  },
+                ]}
+              >
+                <Input placeholder="GHN ID"></Input>
               </Form.Item>
             </Col>
             {/* 3rd column */}
