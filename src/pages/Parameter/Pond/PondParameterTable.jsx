@@ -25,9 +25,10 @@ function FishParameterTable({ dataSource }) {
 
   const columns = [
     {
-      title: "Parameter ID",
-      dataIndex: "parameterId",
+      title: "",
+      //dataIndex: "parameterId",
       key: "parameterId",
+      render: (_, __, index) => index + 1 + (currentPage - 1) * pageSize,
     },
     {
       title: "Parameter Name",

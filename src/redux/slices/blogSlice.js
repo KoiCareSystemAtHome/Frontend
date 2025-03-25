@@ -54,6 +54,25 @@ export const createBlog = createAsyncThunk(
     }
   }
 );
+// export const createBlog = createAsyncThunk(
+//   "Blog/createBlog",
+//   async (formData, { rejectWithValue }) => {
+//     try {
+//       const res = await axios.post(
+//         "http://14.225.206.203:8080/api/Blog/create-blog",
+//         formData,
+//         {
+//           headers: {
+//             "Content-Type": "multipart/form-data",
+//           },
+//         }
+//       );
+//       return res.data;
+//     } catch (error) {
+//       return rejectWithValue(error.response?.data || "Failed to create blog.");
+//     }
+//   }
+// );
 
 // APPROVE BLOG
 export const approveBlog = createAsyncThunk(

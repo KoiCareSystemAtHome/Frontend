@@ -24,13 +24,11 @@ const OrderManagement = () => {
               display: "flex",
             }}
           >
-            <OrderManagementButton />
+            {/* <OrderManagementButton /> */}
           </div>
         </div>
 
-        <div className="searchContainer">
-          <Filter />
-        </div>
+        <div className="searchContainer">{/* <Filter /> */}</div>
 
         <div className="tableContainer" style={{ marginTop: "10px" }}>
           <OrdermanagementTable dataSource={orderList} />

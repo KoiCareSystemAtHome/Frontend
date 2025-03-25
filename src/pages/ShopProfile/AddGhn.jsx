@@ -103,7 +103,7 @@ const AddGhn = () => {
       </Form.Item>
 
       <Button type="primary" onClick={handleSubmit} loading={loading}>
-        Create Ghn
+        Register GHN
       </Button>
     </Form>
   );

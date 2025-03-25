@@ -1,4 +1,8 @@
-import { BellOutlined, SearchOutlined } from "@ant-design/icons";
+import {
+  BellOutlined,
+  LogoutOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
 import React, { useState } from "react";
 import logoutIcon from "../../assets/logout.png";
 import { useDispatch, useSelector } from "react-redux";
@@ -32,6 +36,7 @@ const HeaderLayout = ({ title }) => {
     localStorage.removeItem("selectedShopMenuKey"); // Clear menu selection
     localStorage.removeItem("navbarCollapsed"); // Clear navbar collapsed state
     localStorage.removeItem("shopHeaderTitle");
+    localStorage.removeItem("adminHeaderTitle");
     navigate("/"); // Redirect to login page after logout
   };
 
@@ -39,12 +44,12 @@ const HeaderLayout = ({ title }) => {
     <header className="flex items-center justify-between h-16 px-4 bg-white border-b">
       {/* Left section */}
       <div className="flex items-center gap-4">
-        <h1 className="text-lg font-medium">{title}</h1>
+        {/* <h1 className="text-lg font-medium">{title}</h1> */}
         {/* Display the header title */}
       </div>
 
       {/* Middle section - Search */}
-      <div className="flex-1 max-w-xl mx-4">
+      {/* <div className="flex-1 max-w-xl mx-4">
         <div className="relative">
           <input
             type="text"
@@ -53,7 +58,7 @@ const HeaderLayout = ({ title }) => {
           />
           <SearchOutlined className="absolute left-3 top-1.5 h-5 w-5 text-gray-400" />
         </div>
-      </div>
+      </div> */}
 
       {/* Right section */}
       <div className="flex items-center gap-4">
@@ -68,7 +73,12 @@ const HeaderLayout = ({ title }) => {
         </div>
         <div className="relative">
           <button className="p-2 hover:bg-gray-100 rounded-lg">
-            <img src={logoutIcon} alt="" className="h-5 w-5 text-gray-500" />
+            <img
+              src={logoutIcon}
+              alt=""
+              className="h-5 w-5 text-gray-500"
+              onClick={handleLogout}
+            />
           </button>
         </div>
 

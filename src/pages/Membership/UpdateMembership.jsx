@@ -195,7 +195,6 @@ const UpdateMembership = (props) => {
               </Form.Item>
             </Col>
           </Row>
-
           {/* 2nd Row */}
           <Row style={{ justifyContent: "space-between" }}>
             {/* 1st column */}
@@ -264,6 +263,25 @@ const UpdateMembership = (props) => {
                   style={{ width: "270px" }}
                   placeholder="End Date"
                 ></DatePicker>
+              </Form.Item>
+            </Col>
+          </Row>
+          {/* 3rd Row */}
+          <Row>
+            {/* 1st column */}
+            <Col>
+              <p className="modalContent">Period</p>
+              <Form.Item
+                name="peiod"
+                initialValue={record.peiod}
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input period!",
+                  },
+                ]}
+              >
+                <Input placeholder="Period"></Input>
               </Form.Item>
             </Col>
           </Row>

@@ -64,7 +64,7 @@ export const createOrderGHN = createAsyncThunk(
   "Ghn/CreateOrderGHN",
   async (shopId, { rejectWithValue }) => {
     try {
-      console.log("shopDaata", shopId?.orderData);
+      console.log("shopData", shopId?.orderData);
       const response = await postRequest(
         `Ghn/create-order/${shopId?.ghnId}`,
         shopId?.ghnRequest
@@ -127,7 +127,7 @@ export const fetchOrderTracking = createAsyncThunk(
   async (order_code, { rejectWithValue }) => {
     try {
       const response = await postRequest("Ghn/tracking-order", { order_code }); // ✅ Sends JSON body
-      console.log("API Response:", response.data.data.status); // 🔍 Debugging log
+      console.log("API Response:", response.data); // 🔍 Debugging log
       return response.data.data;
     } catch (error) {
       return rejectWithValue(

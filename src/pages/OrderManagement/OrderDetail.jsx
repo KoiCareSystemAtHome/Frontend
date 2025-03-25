@@ -19,17 +19,6 @@ function OrderDetail() {
     error,
   } = useSelector((state) => state.orderSlice || {});
 
-  //const trackingData = useSelector((state) => state.ghnSlice.orderTracking);
-
-  // useEffect(() => {
-  //   if (order?.oder_code) {
-  //     console.log("Fetching tracking info for:", order.oder_code);
-  //     dispatch(fetchOrderTracking(order.oder_code));
-  //   } else {
-  //     console.log("No order_code found, useEffect will not run.");
-  //   }
-  // }, [dispatch, order]);
-
   useEffect(() => {
     console.log("Fetching order details for ID:", orderId);
     if (orderId) {
@@ -38,96 +27,6 @@ function OrderDetail() {
       });
     }
   }, [dispatch, orderId]);
-
-  // useEffect(() => {
-  //   if (order?.oder_code) {
-  //     dispatch(fetchOrderTracking(order.oder_code));
-  //   }
-  // }, [dispatch, order]);
-
-  // useEffect(() => {
-  //   if (trackingData && trackingData.status) {
-  //     let newStatus = null;
-
-  //     if (trackingData.status !== "ready-to-pick") {
-  //       newStatus = "In Progress";
-  //     }
-  //     if (trackingData.status === "delivered") {
-  //       newStatus = "Completed";
-  //     }
-  //     if (trackingData.status === "delivered_fail") {
-  //       newStatus = "Fail";
-  //     }
-
-  //     if (newStatus && newStatus !== order.status) {
-  //       dispatch(updateOrderStatus({ orderId: order.id, status: newStatus }));
-  //     }
-  //   }
-  // }, [trackingData, order, dispatch]);
-
-  useEffect(() => {
-    if (order?.oder_code) {
-      dispatch(fetchOrderTracking(order.oder_code))
-        .unwrap()
-        .then((trackingInfo) => {
-          console.log("Tracking Info for order", order.id, ":", trackingInfo);
-
-          let newStatus = null;
-
-          // More explicit status mapping based on tracking status
-          if (trackingInfo.status === "delivered") {
-            newStatus = "Completed";
-            console.log(
-              "Setting status to Completed because tracking status is delivered"
-            );
-          } else if (trackingInfo.status === "delivery_fail") {
-            newStatus = "Fail";
-            console.log(
-              "Setting status to Fail because tracking status is delivered_fail"
-            );
-          } else if (trackingInfo.status === "ready_to_pick") {
-            // Special case: don't change from Confirmed to InProgress
-            if (order.status !== "Confirmed") {
-              newStatus = "In Progress";
-              console.log(
-                "Setting status to InProgress because tracking status is ready_to_pick"
-              );
-            } else {
-              console.log("Keeping status as Confirmed despite ready_to_pick");
-            }
-          } else if (trackingInfo.status !== "ready_to_pick") {
-            // Any other status besides ready_to_pick
-            newStatus = "In Progress";
-            console.log(
-              `Setting status to InProgress because tracking status is ${trackingInfo.status}`
-            );
-          }
-
-          // Only update if we have a new status and it's different
-          if (newStatus && newStatus !== order.status) {
-            console.log(
-              `Updating status from ${order.status} to ${newStatus} based on tracking status: ${trackingInfo.status}`
-            );
-            dispatch(
-              updateOrderStatus({
-                orderId: order.id,
-                status: newStatus,
-              })
-            );
-          } else {
-            console.log(`Keeping status as ${order.status} - no change needed`);
-          }
-        })
-        .catch((error) => {
-          console.error(
-            "Error fetching tracking info for order",
-            order.id,
-            ":",
-            error
-          );
-        });
-    }
-  }, [order, dispatch]);
 
   if (status === "loading") return <p>Loading order details...</p>;
   if (status === "failed") return <p>Error: {error}</p>;

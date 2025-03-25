@@ -6,6 +6,7 @@ import useParameterList from "../../../hooks/useParameterList";
 
 const FishParameter = () => {
   const parameterList = useParameterList("fish");
+  console.log("Parameter List in FishParameter:", parameterList); // Add logging
 
   return (
     <div>

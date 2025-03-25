@@ -10,6 +10,9 @@ import memberSlice from "./slices/memberSlice";
 import blogSlice from "./slices/blogSlice";
 import ghnSlice from "./slices/ghnSlice";
 import orderSlice from "./slices/orderSlice";
+import reportSlice from "./slices/reportSlice";
+import categorySlice from "./slices/categorySlice";
+import transactionSlice from "./slices/transactionSlice";
 
 const store = configureStore({
   reducer: {
@@ -24,6 +27,9 @@ const store = configureStore({
     parameterSlice: parameterSlice.reducer,
     blogSlice: blogSlice.reducer,
     orderSlice: orderSlice.reducer,
+    reportSlice: reportSlice.reducer,
+    categorySlice: categorySlice.reducer,
+    transactionSlice: transactionSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

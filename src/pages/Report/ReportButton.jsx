@@ -1,17 +1,18 @@
 import React, { useState } from "react";
-import AddPondParameter from "./AddPondParameter";
+import AddReport from "./AddReport";
 
-const PondParameterButton = () => {
+const ReportButton = () => {
   const [isAddOpen, setIsAddOpen] = useState(false);
 
   const handleOk = () => {
     setIsAddOpen(false);
   };
+
   return (
     <div>
-      <AddPondParameter onClose={handleOk} />
+      <AddReport onClose={handleOk} />
     </div>
   );
 };
 
-export default PondParameterButton;
+export default ReportButton;

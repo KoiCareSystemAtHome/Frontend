@@ -90,7 +90,7 @@ const AddMembership = ({ onClose }) => {
         style={buttonStyle}
         onClick={showAddModal}
       >
-        Add Membership
+        Create Membership
       </Button>
 
       <Modal
@@ -154,7 +154,6 @@ const AddMembership = ({ onClose }) => {
               </Form.Item>
             </Col>
           </Row>
-
           {/* 2nd Row */}
           <Row style={{ justifyContent: "space-between" }}>
             {/* 1st column */}
@@ -206,6 +205,24 @@ const AddMembership = ({ onClose }) => {
                   style={{ width: "270px" }}
                   placeholder="End Date"
                 ></DatePicker>
+              </Form.Item>
+            </Col>
+          </Row>
+          {/* 3rd Row */}
+          <Row>
+            {/* 1st Column */}
+            <Col>
+              <p className="modalContent">Period</p>
+              <Form.Item
+                name="peiod"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please enter period!",
+                  },
+                ]}
+              >
+                <Input placeholder="Period"></Input>
               </Form.Item>
             </Col>
           </Row>

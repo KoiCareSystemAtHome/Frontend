@@ -21,3 +21,8 @@ export const getLissMemberSelector = (state) => state.memberSlice.listMember;
 export const getListBlogSelector = (state) => state.blogSlice.listBlog;
 
 export const getListOrderSelector = (state) => state.orderSlice.listOrder;
+
+export const getListReportSelector = (state) => state.reportSlice.listReport;
+
+export const getListCategorySelector = (state) =>
+  state.categorySlice.listCategory;

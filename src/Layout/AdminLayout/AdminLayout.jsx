@@ -7,6 +7,7 @@ import {
   MenuUnfoldOutlined,
   ShopOutlined,
   ToolOutlined,
+  MessageOutlined,
 } from "@ant-design/icons";
 import { Layout, Menu, Button } from "antd";
 import { Route, Routes, useNavigate } from "react-router-dom";
@@ -25,8 +26,11 @@ import accountIcon from "../../assets/account.png";
 import fishIcon from "../../assets/fish.png";
 import pondIcon from "../../assets/pond.png";
 import diseaseIcon from "../../assets/diseases.png";
+import reportIcon from "../../assets/report.png";
 import PondParameter from "../../pages/Parameter/Pond/PondParameter";
 import FishParameter from "../../pages/Parameter/Fish/FishParameter";
+import Report from "../../pages/Report/Report";
+import ReportDetail from "../../pages/Report/ReportDetail";
 
 const { Sider, Content } = Layout;
 
@@ -40,7 +44,7 @@ const AdminLayout = ({ children }) => {
     return localStorage.getItem("selectedAdminMenuKey") || "/admin/dashboard";
   });
   const [headerTitle, setHeaderTitle] = useState(
-    localStorage.getItem("headerTitle") || "Dashboard"
+    localStorage.getItem("adminHeaderTitle") || "Dashboard"
   ); // Get the header title from localStorage, or default to "Dashboard"
 
   const navigate = useNavigate();
@@ -61,6 +65,8 @@ const AdminLayout = ({ children }) => {
       { key: "/admin/feedback", label: "Feedback" },
       { key: "/admin/diseases", label: "Common Diseases" },
       { key: "/admin/diseases-detail", label: "Common Diseases Detail" },
+      { key: "/admin/report", label: "Report" },
+      { key: "/admin/report-detail", label: "Report Detail" },
     ];
 
     const menuItem = menuItems.find((item) => item.key === key);
@@ -297,11 +303,26 @@ const AdminLayout = ({ children }) => {
                 </span>
               ),
             },
-            // {
-            //   key: "/admin/feedback",
-            //   icon: <MessageOutlined style={{ color: "white" }} />,
-            //   label: "Feedback",
-            // },
+            {
+              key: "/admin/report",
+              label: "Report",
+              style: { color: "white" },
+              className: "group",
+              icon: (
+                <span>
+                  <img
+                    src={reportIcon}
+                    alt="Report Icon"
+                    className={`w-5 transition-all duration-200 
+                                    invert group-hover:invert-0 ${
+                                      selectedKey === "/admin/report"
+                                        ? "invert-0"
+                                        : ""
+                                    }`}
+                  />
+                </span>
+              ),
+            },
           ]}
         />
       </Sider>
@@ -325,6 +346,8 @@ const AdminLayout = ({ children }) => {
               path="diseases-detail/:diseaseId"
               element={<CommonDiseasesDetail />}
             />
+            <Route path="report" element={<Report />} />
+            <Route path="report-detail/:reportId" element={<ReportDetail />} />
             {/* <Route path="feedback" element={<Feedback />} /> */}
           </Routes>
         </Content>

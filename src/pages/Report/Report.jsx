@@ -1,12 +1,11 @@
 import React from "react";
 import SearchTable from "../../components/SearchTable/searchTable";
-//import ShopButton from "./ShopButton";
-import ShopTable from "./ShopTable";
-import useShopList from "../../hooks/useShopList";
+import ReportTable from "./ReportTable";
+import useReportList from "../../hooks/useReportList";
+import ReportButton from "./ReportButton";
 
-const Shop = () => {
-  const shopList = useShopList();
-
+const Report = () => {
+  const reportList = useReportList();
   return (
     <div>
       <div
@@ -17,24 +16,24 @@ const Shop = () => {
           alignItems: "center",
         }}
       >
-        <div>Shop</div>
+        <div>Report</div>
 
         <div
           style={{
             display: "flex",
           }}
         >
-          {/* <ShopButton /> */}
+          {/* <ReportButton /> */}
         </div>
       </div>
 
       <div className="searchContainer">{/* <SearchTable /> */}</div>
 
       <div className="tableContainer" style={{ marginTop: "10px" }}>
-        <ShopTable dataSource={shopList} />
+        <ReportTable dataSource={reportList} />
       </div>
     </div>
   );
 };
 
-export default Shop;
+export default Report;

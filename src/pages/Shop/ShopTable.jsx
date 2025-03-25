@@ -1,21 +1,24 @@
 import {
   Button,
+  Input,
   notification,
   Pagination,
   Popconfirm,
+  Select,
+  Space,
   Spin,
   Table,
   Tag,
 } from "antd";
 import React, { useEffect, useState } from "react";
 import UpdateShop from "./UpdateShop";
-import { useDispatch, useSelector } from "react-redux";
-import { getListShopSelector } from "../../redux/selector";
+import { useDispatch } from "react-redux";
 import useShopList from "../../hooks/useShopList";
 import {
   CheckCircleOutlined,
   CloseCircleOutlined,
   DeleteOutlined,
+  SearchOutlined,
 } from "@ant-design/icons";
 import { deleteShop, getListShop } from "../../redux/slices/shopSlice";
 
@@ -23,8 +26,8 @@ const renderUpdateShop = (record) => <UpdateShop record={record} />;
 
 function ShopTable({ dataSource }) {
   console.log("Datasource: ", dataSource);
-  const shopList = useSelector(getListShopSelector);
-  console.log("shop list", shopList);
+  // const shopList = useSelector(getListShopSelector);
+  // console.log("shop list", shopList);
   const dispatch = useDispatch();
 
   // pagination
@@ -32,8 +35,44 @@ function ShopTable({ dataSource }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
+  // State for search filters
+  const [searchShopName, setSearchShopName] = useState("");
+  const [searchShopAddress, setSearchShopAddress] = useState("");
+  const [searchStatus, setSearchStatus] = useState("all"); // "all", "active", "inactive"
+
+  // Filter the data based on search criteria
+  const filteredData = dataSource.filter((shop) => {
+    // Shop Name filter (case-insensitive)
+    const matchesShopName = searchShopName
+      ? shop.shopName.toLowerCase().includes(searchShopName.toLowerCase())
+      : true;
+
+    // Shop Address filter (case-insensitive)
+    let shopAddressText = "N/A";
+    if (shop.shopAddress) {
+      try {
+        const address = JSON.parse(shop.shopAddress);
+        shopAddressText = `${address.WardName}, ${address.DistrictName}, ${address.ProvinceName}`;
+      } catch (error) {
+        shopAddressText = "Invalid Address";
+      }
+    }
+    const matchesShopAddress = searchShopAddress
+      ? shopAddressText.toLowerCase().includes(searchShopAddress.toLowerCase())
+      : true;
+
+    // Status filter
+    const isActive = shop.isActivate === true || shop.isActivate === "true";
+    const matchesStatus =
+      searchStatus === "all" ||
+      (searchStatus === "active" && isActive) ||
+      (searchStatus === "inactive" && !isActive);
+
+    return matchesShopName && matchesShopAddress && matchesStatus;
+  });
+
   // Compute paginated data
-  const paginatedData = dataSource.slice(
+  const paginatedData = filteredData.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
@@ -81,11 +120,20 @@ function ShopTable({ dataSource }) {
       });
   };
 
+  const handleResetFilters = () => {
+    setSearchShopName("");
+    setSearchShopAddress("");
+    setSearchStatus("all");
+    setCurrentPage(1); // Reset to the first page
+    setPageSize(10); // Reset page size to default
+  };
+
   const columns = [
     {
-      title: "Shop ID",
-      dataIndex: "shopId",
+      title: "",
+      // dataIndex: "shopId",
       key: "shopId",
+      render: (_, __, index) => index + 1 + (currentPage - 1) * pageSize,
     },
     {
       title: "Shop Name",
@@ -134,14 +182,18 @@ function ShopTable({ dataSource }) {
         const isActive = isActivate === true || isActivate === "true"; // Ensure boolean
         return isActive ? (
           <Tag
-            style={{ width: "75px" }}
+            style={{ width: "80px", fontSize: "14px", padding: "5px" }}
             icon={<CheckCircleOutlined />}
             color="green"
           >
             Active
           </Tag>
         ) : (
-          <Tag icon={<CloseCircleOutlined />} color="red">
+          <Tag
+            style={{ width: "80px", fontSize: "14px", padding: "5px" }}
+            icon={<CloseCircleOutlined />}
+            color="red"
+          >
             Inactive
           </Tag>
         );
@@ -184,7 +236,14 @@ function ShopTable({ dataSource }) {
     setTimeout(() => {
       setLoading(false);
     }, 2000);
-  }, [dataSource, currentPage, pageSize]);
+  }, [
+    dataSource,
+    currentPage,
+    pageSize,
+    searchShopName,
+    searchShopAddress,
+    searchStatus,
+  ]);
 
   // Get List
   const GetListTable = () => {
@@ -201,6 +260,40 @@ function ShopTable({ dataSource }) {
 
   return (
     <div>
+      {/* Search Filters */}
+      <Space style={{ marginBottom: 16, width: "100%" }} wrap>
+        <Input
+          placeholder="Search Shop Name"
+          value={searchShopName}
+          onChange={(e) => setSearchShopName(e.target.value)}
+          prefix={<SearchOutlined />}
+          style={{ width: 200 }}
+        />
+        <Input
+          placeholder="Search Shop Address"
+          value={searchShopAddress}
+          onChange={(e) => setSearchShopAddress(e.target.value)}
+          prefix={<SearchOutlined />}
+          style={{ width: 200 }}
+        />
+        <Select
+          value={searchStatus}
+          onChange={(value) => setSearchStatus(value)}
+          style={{ width: 150 }}
+        >
+          <Select.Option value="all">All Status</Select.Option>
+          <Select.Option value="active">Active</Select.Option>
+          <Select.Option value="inactive">Inactive</Select.Option>
+        </Select>
+        <Button
+          type="default"
+          onClick={handleResetFilters}
+          //disabled={!searchTitle && !searchDate && !searchStatus} // Disable when no filters applied
+        >
+          Reset Filters
+        </Button>
+      </Space>
+
       <div className="w-full">
         <Spin spinning={loading} tip="Loading...">
           <Table
@@ -213,7 +306,7 @@ function ShopTable({ dataSource }) {
             onChange={GetListTable}
           />
           <Pagination
-            total={dataSource.length}
+            total={filteredData.length}
             pageSize={pageSize}
             current={currentPage}
             showSizeChanger

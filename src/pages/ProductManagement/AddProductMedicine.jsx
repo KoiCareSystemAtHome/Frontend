@@ -13,16 +13,20 @@ import {
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getListProductManagement } from "../../redux/slices/productManagementSlice";
-import { DeleteOutlined, InboxOutlined, PlusOutlined } from "@ant-design/icons";
-import { getListCategorySelector } from "../../redux/selector";
 import { getListCategory } from "../../redux/slices/categorySlice";
-import { Option } from "antd/es/mentions";
+import { InboxOutlined, PlusOutlined, DeleteOutlined } from "@ant-design/icons";
+import dayjs from "dayjs";
+import { getListCategorySelector } from "../../redux/selector";
 
-const AddProductManagement = ({ onClose, shopId }) => {
+const AddProductMedicine = ({ onClose, shopId }) => {
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isLoadingCategories, setIsLoadingCategories] = useState(false);
   const [isLoadingParameters, setIsLoadingParameters] = useState(false); // New state for loading parameters
+  const [isLoadingPondParams, setIsLoadingPondParams] = useState(false); // New state for loading pond parameters
+  const [isLoadingSymptoms, setIsLoadingSymptoms] = useState(false); // New state for loading symptoms
   const [parameters, setParameters] = useState([]); // New state to store pond-required-param data
+  const [pondParams, setPondParams] = useState([]); // New state to store pond parameters from type=pond
+  const [symptoms, setSymptoms] = useState([]); // New state to store symptoms from /api/Symptomp/type
   const loggedInUser = useSelector((state) => state.authSlice.user);
   const CategoryList = useSelector(getListCategorySelector);
   const currentShopId = shopId || loggedInUser?.shopId;
@@ -30,7 +34,6 @@ const AddProductManagement = ({ onClose, shopId }) => {
   const showAddModal = () => {
     form.setFieldsValue({ ShopId: currentShopId });
     console.log("shopId:", currentShopId);
-    console.log("cate: ", CategoryList);
     setIsAddOpen(true);
   };
 
@@ -64,7 +67,7 @@ const AddProductManagement = ({ onClose, shopId }) => {
     });
   };
 
-  // Fetch categories and set initial ShopId and Parameters
+  // Fetch categories, initial ShopId, pond-required-param, pond parameters and symptoms
   useEffect(() => {
     if (currentShopId) {
       form.setFieldsValue({ ShopId: currentShopId });
@@ -106,7 +109,49 @@ const AddProductManagement = ({ onClose, shopId }) => {
       }
     };
 
+    // Fetch parameters for type=pond for Pond Param ID dropdown
+    const fetchPondParams = async () => {
+      setIsLoadingPondParams(true);
+      try {
+        const response = await fetch(
+          "http://14.225.206.203:8080/api/Parameter/type?type=pond"
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch pond parameters");
+        }
+        const data = await response.json();
+        setPondParams(data);
+        setIsLoadingPondParams(false);
+      } catch (error) {
+        console.error("Failed to fetch pond parameters:", error);
+        setIsLoadingPondParams(false);
+        openNotification("error", "Failed to load pond parameters");
+      }
+    };
+
+    // Fetch symptoms from /api/Symptomp/type
+    const fetchSymptoms = async () => {
+      setIsLoadingSymptoms(true);
+      try {
+        const response = await fetch(
+          "http://14.225.206.203:8080/api/Symptomp/type"
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch symptoms");
+        }
+        const data = await response.json();
+        setSymptoms(data);
+        setIsLoadingSymptoms(false);
+      } catch (error) {
+        console.error("Failed to fetch symptoms:", error);
+        setIsLoadingSymptoms(false);
+        openNotification("error", "Failed to load symptoms");
+      }
+    };
+
     fetchParameters();
+    fetchPondParams();
+    fetchSymptoms();
   }, [currentShopId, form, dispatch, CategoryList]);
 
   const [selectedImage, setSelectedImage] = useState(null); // Store the selected file
@@ -114,14 +159,18 @@ const AddProductManagement = ({ onClose, shopId }) => {
   const [fileList, setFileList] = useState([]); // Control the Upload.Dragger file list
 
   const beforeUpload = (file) => {
-    // Validate file type (optional)
+    // Validate file type
     const isImage = file.type.startsWith("image/");
     if (!isImage) {
       openNotification("error", "You can only upload image files!");
       return false;
     }
 
-    setSelectedImage(file); // Save file for later upload
+    // Set the selected image
+    setSelectedImage(file);
+
+    // Update the file list for Upload.Dragger
+    //setFileList([file]);
 
     // Generate a preview URL
     const reader = new FileReader();
@@ -136,10 +185,11 @@ const AddProductManagement = ({ onClose, shopId }) => {
     return false; // Prevent automatic upload
   };
 
-  // Function to remove the selected image and clear the preview
+  // Function to handle removal (used by both the "Remove Image" button and Upload.Dragger)
   const handleRemoveImage = () => {
     setSelectedImage(null);
     setPreviewUrl(null);
+    setFileList([]); // Clear the file list in Upload.Dragger
     form.setFieldsValue({ Image: undefined }); // Clear the form field
   };
 
@@ -198,10 +248,15 @@ const AddProductManagement = ({ onClose, shopId }) => {
       {}
     );
 
-    // Step 3: Convert the Type value to an integer
-    const typeValue = parseInt(values.Type, 10); // Convert "0", "1", or "2" to 0, 1, or 2
+    // Step 3: Format dates in ISO 8601 format
+    const manufactureDate = values.ManufactureDate
+      ? dayjs(values.ManufactureDate).toISOString()
+      : null;
+    const expiryDate = values.ExpiryDate
+      ? dayjs(values.ExpiryDate).toISOString()
+      : null;
 
-    // Step 3: Construct the payload for create-product with the image URL
+    // Step 4: Construct the payload for create-medicine
     const payload = {
       productName: values.ProductName,
       description: values.Description,
@@ -210,19 +265,25 @@ const AddProductManagement = ({ onClose, shopId }) => {
       shopId: values.ShopId,
       categoryId: values.CategoryId,
       brand: values.Brand,
-      manufactureDate: values.ManufactureDate,
-      expiryDate: values.ExpiryDate,
-      ParameterImpacts: parameterImpactsObj, // Send as a flat object
-      //type: typeValue, // Send the type as an integer (0, 1, or 2)
-      image: imageUrl, // Use the image URL instead of base64
+      manufactureDate: manufactureDate,
+      expiryDate: expiryDate,
+      parameterImpacts: parameterImpactsObj, // Send as a flat object
+      image: imageUrl, // Use the image URL
+      medicineName: values.MedicineName,
+      dosageForm: values.DosageForm,
+      symptoms: values.Symptoms,
+      pondParamId: values.PondParamId,
     };
 
-    console.log("Create Product Payload:", JSON.stringify(payload, null, 2));
+    console.log(
+      "Create ProductMedicine Payload:",
+      JSON.stringify(payload, null, 2)
+    );
 
-    // Step 4: Send the create-product request
+    // Step 5: Send the create-medicine request
     try {
       const response = await fetch(
-        "http://14.225.206.203:8080/api/Product/create-product",
+        "http://14.225.206.203:8080/api/Product/create-medicine",
         {
           method: "POST",
           headers: {
@@ -235,7 +296,7 @@ const AddProductManagement = ({ onClose, shopId }) => {
       // The API returns text/plain ("Success") for a 200 response
       const result = await response.text();
       if (response.ok) {
-        openNotification("success", "Product Created Successfully!");
+        openNotification("success", "Product Medicine Created Successfully!");
         dispatch(getListProductManagement());
         handleCancel();
         form.resetFields();
@@ -244,15 +305,16 @@ const AddProductManagement = ({ onClose, shopId }) => {
         let errorMessage = result;
         try {
           const errorJson = JSON.parse(result);
-          errorMessage = errorJson.message || "Failed to create product.";
+          errorMessage =
+            errorJson.message || "Failed to create product medicine.";
         } catch (e) {
           // If parsing fails, use the raw text as the error message
-          errorMessage = result || "Failed to create product.";
+          errorMessage = result || "Failed to create product medicine.";
         }
         openNotification("error", errorMessage);
       }
     } catch (error) {
-      console.error("Error creating product:", error);
+      console.error("Error creating product medicine:", error);
       openNotification("error", "Network error, try again later.");
     }
   };
@@ -268,13 +330,13 @@ const AddProductManagement = ({ onClose, shopId }) => {
         style={buttonStyle}
         onClick={showAddModal}
       >
-        Create Accessory
+        Create Medicine
       </Button>
 
       <Modal
         className="custom-modal"
         centered
-        title="Create New Accessory"
+        title="Create Medicine"
         open={isAddOpen}
         onCancel={handleCancel}
         width={870}
@@ -295,7 +357,7 @@ const AddProductManagement = ({ onClose, shopId }) => {
                   },
                 ]}
               >
-                <Input placeholder="Product Name"></Input>
+                <Input placeholder="Product Name" />
               </Form.Item>
             </Col>
             {/* 2nd column */}
@@ -310,7 +372,7 @@ const AddProductManagement = ({ onClose, shopId }) => {
                   },
                 ]}
               >
-                <Input placeholder="Description"></Input>
+                <Input placeholder="Description" />
               </Form.Item>
             </Col>
             {/* 3rd column */}
@@ -325,7 +387,7 @@ const AddProductManagement = ({ onClose, shopId }) => {
                   },
                 ]}
               >
-                <Input placeholder="Price"></Input>
+                <Input placeholder="Price" type="number" />
               </Form.Item>
             </Col>
           </Row>
@@ -343,39 +405,10 @@ const AddProductManagement = ({ onClose, shopId }) => {
                   },
                 ]}
               >
-                <Input placeholder="Stock Quantity"></Input>
+                <Input placeholder="Stock Quantity" type="number" />
               </Form.Item>
             </Col>
             {/* 2nd column */}
-            <Col>
-              <p className="modalContent">Category</p>
-              <Form.Item
-                name="CategoryId"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input category ID!",
-                  },
-                ]}
-              >
-                <Select
-                  allowClear
-                  placeholder="Select Category"
-                  style={{ width: "270px" }}
-                  loading={isLoadingCategories}
-                >
-                  {CategoryList?.map((category) => (
-                    <Select.Option
-                      key={category.categoryId}
-                      value={category.categoryId}
-                    >
-                      {category.name}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Col>
-            {/* 3rd column */}
             <Col>
               <p className="modalContent">Brand</p>
               <Form.Item
@@ -387,13 +420,27 @@ const AddProductManagement = ({ onClose, shopId }) => {
                   },
                 ]}
               >
-                <Input placeholder="Brand"></Input>
+                <Input placeholder="Brand" />
               </Form.Item>
             </Col>
-            {/* 4th column */}
+            {/* 3rd column - Medicine Name */}
+            <Col>
+              <p className="modalContent">Medicine Name</p>
+              <Form.Item
+                name="MedicineName"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input medicine name!",
+                  },
+                ]}
+              >
+                <Input placeholder="Medicine Name" />
+              </Form.Item>
+            </Col>
           </Row>
           {/* 3rd Row */}
-          <Row>
+          <Row style={{ justifyContent: "space-between" }}>
             {/* 1st Column */}
             <Col>
               <p className="modalContent">Manufacture Date</p>
@@ -409,11 +456,11 @@ const AddProductManagement = ({ onClose, shopId }) => {
                 <DatePicker
                   style={{ width: "270px" }}
                   placeholder="Manufacture Date"
-                ></DatePicker>
+                />
               </Form.Item>
             </Col>
             {/* 2nd Column */}
-            <Col style={{ marginLeft: "6px" }}>
+            <Col>
               <p className="modalContent">Expiry Date</p>
               <Form.Item
                 name="ExpiryDate"
@@ -427,34 +474,104 @@ const AddProductManagement = ({ onClose, shopId }) => {
                 <DatePicker
                   style={{ width: "270px" }}
                   placeholder="Expiry Date"
-                ></DatePicker>
+                />
               </Form.Item>
             </Col>
-            {/* 3rd Column */}
-            {/* <Col>
-              <p className="modalContent">Type</p>
+            {/* 3rd Column - Category */}
+            <Col>
+              <p className="modalContent">Category</p>
               <Form.Item
-                name="Type"
+                name="CategoryId"
                 rules={[
                   {
                     required: true,
-                    message: "Please select a type!",
+                    message: "Please select a category!",
                   },
                 ]}
               >
                 <Select
                   allowClear
-                  placeholder="Select Type"
+                  placeholder="Select Category"
                   style={{ width: "270px" }}
                 >
-                  <Select.Option value="0">Food</Select.Option>
-                  <Select.Option value="1">Accessory</Select.Option>
-                  <Select.Option value="2">Medicine</Select.Option>
+                  {CategoryList?.map((category) => (
+                    <Select.Option
+                      key={category.categoryId}
+                      value={category.categoryId}
+                    >
+                      {category.name}
+                    </Select.Option>
+                  ))}
                 </Select>
               </Form.Item>
-            </Col> */}
+            </Col>
           </Row>
           {/* 4th Row */}
+          <Row style={{ justifyContent: "space-between" }}>
+            {/* 1st Column - Dosage Form */}
+            <Col>
+              <p className="modalContent">Dosage Form</p>
+              <Form.Item
+                name="DosageForm"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input dosage form!",
+                  },
+                ]}
+              >
+                <Input placeholder="Dosage Form" />
+              </Form.Item>
+            </Col>
+            {/* 2nd Column - Symptoms */}
+            <Col>
+              <p className="modalContent">Symptoms</p>
+              <Form.Item
+                name="Symptoms"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input symptoms!",
+                  },
+                ]}
+              >
+                <Select
+                  allowClear
+                  placeholder="Select Symptom"
+                  style={{ width: "270px" }}
+                  loading={isLoadingSymptoms}
+                >
+                  {symptoms.map((symptom) => (
+                    <Select.Option key={symptom.symptomId} value={symptom.name}>
+                      {symptom.name} / ({symptom.type})
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+            {/* 3rd Column - Pond Param ID */}
+            <Col>
+              <p className="modalContent">Pond Parameter</p>
+              <Form.Item name="PondParamId">
+                <Select
+                  allowClear
+                  placeholder="Select Pond Parameter (Optional)"
+                  style={{ width: "270px" }}
+                  loading={isLoadingPondParams}
+                >
+                  {pondParams.map((param) => (
+                    <Select.Option
+                      key={param.parameterId}
+                      value={param.parameterId}
+                    >
+                      {param.parameterName}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+          </Row>
+          {/* 5th Row */}
           <Row>
             <Col style={{ marginRight: "6px" }}>
               <p className="modalContent">Parameter Impacts</p>
@@ -514,8 +631,12 @@ const AddProductManagement = ({ onClose, shopId }) => {
                               style={{ width: "120px" }}
                               placeholder="Increased or Decreased"
                             >
-                              <Option value="increased">Increased</Option>
-                              <Option value="decreased">Decreased</Option>
+                              <Select.Option value="increased">
+                                Increased
+                              </Select.Option>
+                              <Select.Option value="decreased">
+                                Decreased
+                              </Select.Option>
                             </Select>
                           </Form.Item>
                         </Col>
@@ -554,11 +675,10 @@ const AddProductManagement = ({ onClose, shopId }) => {
               </Form.List>
             </Col>
           </Row>
-          {/* 5th Row */}
+          {/* 6th Row */}
           <Row>
             {/* 1st column */}
             <Col>
-              {/* <p className="modalContent">Shop ID</p> */}
               <Form.Item
                 name="ShopId"
                 rules={[
@@ -568,7 +688,7 @@ const AddProductManagement = ({ onClose, shopId }) => {
                   },
                 ]}
               >
-                <Input hidden placeholder="Shop ID"></Input>
+                <Input hidden placeholder="Shop ID" />
               </Form.Item>
             </Col>
           </Row>
@@ -641,7 +761,7 @@ const AddProductManagement = ({ onClose, shopId }) => {
                 }}
               >
                 <PlusOutlined />
-                Create Accessory
+                Create Medicine
               </Button>
             </Form.Item>
           </Row>
@@ -651,112 +771,4 @@ const AddProductManagement = ({ onClose, shopId }) => {
   );
 };
 
-export default AddProductManagement;
-
-{
-  /* <Col style={{ marginRight: "6px" }}>
-              <p className="modalContent">Parameter Impacts</p>
-              <Form.Item
-                name="ParameterImpacts"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input parameter impacts!",
-                  },
-                  // {
-                  //   validator: (_, value) => {
-                  //     try {
-                  //       if (value) {
-                  //         JSON.parse(value); // Validate JSON format
-                  //       }
-                  //       return Promise.resolve();
-                  //     } catch {
-                  //       return Promise.reject(
-                  //         new Error("Invalid JSON format!")
-                  //       );
-                  //     }
-                  //   },
-                  // },
-                ]}
-              >
-                <Input.TextArea
-                  rows={4}
-                  placeholder="Enter parameter impacts in JSON format"
-                  onChange={(e) => {
-                    try {
-                      JSON.parse(e.target.value); // Check JSON validity
-                    } catch {
-                      console.error("Invalid JSON format");
-                    }
-                  }}
-                />
-              </Form.Item>
-            </Col> */
-}
-
-// const onFinish = async (values) => {
-//   if (!selectedImage) {
-//     openNotification("error", "Please upload an image!");
-//     return;
-//   }
-
-//   // Transform ParameterImpacts into a nested object
-//   const parameterImpactsObj = (values.ParameterImpacts || []).reduce(
-//     (acc, item) => {
-//       if (item.impact && item.effect) {
-//         acc[item.impact] = item.effect;
-//       }
-//       return acc;
-//     },
-//     {}
-//   );
-//   const nestedParameterImpacts = {
-//     ParameterImpacts: parameterImpactsObj,
-//   };
-
-//   // Construct query parameters
-//   const queryParams = new URLSearchParams({
-//     ProductName: values.ProductName,
-//     Description: values.Description,
-//     Price: values.Price,
-//     StockQuantity: values.StockQuantity,
-//     ShopId: values.ShopId,
-//     CategoryId: values.CategoryId,
-//     Brand: values.Brand,
-//     ManufactureDate: values.ManufactureDate,
-//     ExpiryDate: values.ExpiryDate,
-//     //ParameterImpacts: nestedParameterImpacts,
-//     ParameterImpacts: JSON.stringify(nestedParameterImpacts),
-//   });
-//   console.log("Query Params String:", queryParams.toString()); // Log the final query string
-
-//   const formData = new FormData();
-//   //formData.append("ParameterImpacts", values.ParameterImpacts); // Send as raw value
-//   formData.append("image", selectedImage);
-
-//   try {
-//     const response = await fetch(
-//       `http://14.225.206.203:8080/api/Product/create-product?${queryParams}`,
-//       {
-//         method: "POST",
-//         body: formData,
-//       }
-//     );
-
-//     const result = await response.json();
-//     if (response.ok) {
-//       openNotification("success", "Product Created Successfully!");
-//       dispatch(getListProductManagement());
-//       handleCancel();
-//       form.resetFields();
-//     } else {
-//       openNotification(
-//         "error",
-//         result.message || "Failed to create product."
-//       );
-//     }
-//   } catch (error) {
-//     console.error("Error:", error);
-//     openNotification("error", "Network error, try again later.");
-//   }
-// };
+export default AddProductMedicine;

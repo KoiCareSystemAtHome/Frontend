@@ -3,6 +3,7 @@ import { getRequest, postRequest } from "../../services/httpMethods";
 
 const initialState = {
   token: "",
+  diseases: [],
   listDisease: [],
   diseaseDetail: null,
   loading: false,
@@ -52,6 +53,21 @@ export const createDisease = createAsyncThunk(
 );
 
 // UPDATE
+export const updateDisease = createAsyncThunk(
+  "diseases/updateDisease",
+  async (diseaseData) => {
+    const response = await fetch(
+      `http://14.225.206.203:8080/api/Diseases/update`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(diseaseData),
+      }
+    );
+    if (!response.ok) throw new Error("Failed to update disease");
+    return await response.json();
+  }
+);
 
 const diseasesSlice = createSlice({
   name: "diseases",
@@ -79,6 +95,12 @@ const diseasesSlice = createSlice({
         state.loading = false;
         state.error = action.payload || "Failed to fetch disease details.";
       });
+    // .addCase(updateDisease.fulfilled, (state, action) => {
+    //   state.diseaseDetail = action.payload; // ✅ Update Redux state immediately
+    // })
+    // .addCase(updateDisease.rejected, (state, action) => {
+    //   state.error = action.payload;
+    // });
   },
 });
 

@@ -12,10 +12,10 @@ import {
   Select,
 } from "antd";
 import dayjs from "dayjs";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactQuill from "react-quill";
 import { useDispatch } from "react-redux";
-import { updateBlog } from "../../redux/slices/blogSlice";
+import { getListBlog, updateBlog } from "../../redux/slices/blogSlice";
 
 const UpdateBlog = (props) => {
   const { record } = props;
@@ -24,19 +24,32 @@ const UpdateBlog = (props) => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [api, contextHolder] = notification.useNotification();
   const [content, setContent] = useState(""); // State for blog content
-  const [quillKey, setQuillKey] = useState(0);
+  const [products, setProducts] = useState([]); // State to store fetched products
 
-  const openModal = () => {
-    setQuillKey((prev) => prev + 1); // 🔥 Generate a new key each time
-    setIsEditOpen(true);
-  };
+  // Fetch products from the API
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch("http://14.225.206.203:8080/api/Product");
+        const data = await response.json();
+        setProducts(data); // Store the fetched products
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        openNotification("warning", "Failed to fetch products.");
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   const showEditModal = () => {
     form.setFieldsValue({
       ...record,
-      productIds: record.productIds,
+      productIds: record.products
+        ? record.products.map((p) => p.productId)
+        : [], // Ensure it's always an array
       reportedDate: record.reportedDate ? dayjs(record.reportedDate) : null, // Convert date if needed
-      isApproved: record.isApproved ? "true" : "false", // Ensure it's a string for Select
+      isApproved: record.isApproved, // Boolean value directly
     });
     setContent(record.content || ""); // Ensure content is set before opening modal
     setIsEditOpen(true);
@@ -62,20 +75,48 @@ const UpdateBlog = (props) => {
 
   const handleEditSubmit = (values) => {
     const formattedValues = {
-      ...values,
-      blogId: values.blogId, // ✅ Ensure the ID is included
-      productIds: Array.isArray(values.productIds)
-        ? values.productIds
-        : values.productIds.split(",").map((id) => id.trim()),
-      isApproved: values.isApproved === "true" || values.isApproved === true, // ✅ Convert to boolean
+      blogId: values.blogId,
+      title: values.title,
+      content: values.content,
+      images: values.images,
+      tag: values.tag,
+      isApproved: values.isApproved, // Already a boolean from Select
+      reportedBy: values.reportedBy,
+      reportedDate: values.reportedDate
+        ? dayjs(values.reportedDate).toISOString()
+        : record.reportedDate && dayjs(record.reportedDate).isValid()
+        ? dayjs(record.reportedDate).toISOString()
+        : null,
+      type: values.type,
+      shopId: values.shopId,
+      productIds:
+        values.productIds ||
+        (record.products ? record.products.map((p) => p.productId) : []),
     };
 
     console.log("Submitting:", formattedValues);
-    dispatch(updateBlog(formattedValues)); // Adjust according to your Redux action
+    dispatch(updateBlog(formattedValues))
+      .unwrap()
+      .then(() => {
+        openNotification("success", "Blog Updated Successfully!");
+        dispatch(getListBlog());
+        handleCancel();
+        form.resetFields();
+      })
+      .catch((error) => {
+        if (error.response) {
+          openNotification("warning", `Error: ${error.response.data.message}`);
+        } else if (error.request) {
+          openNotification("warning", "Network error, please try again later.");
+        } else {
+          openNotification("warning", `Unexpected error: ${error.message}`);
+        }
+      });
   };
 
   return (
     <div>
+      {contextHolder}
       <Popover content="Edit" trigger="hover">
         <Button
           type="text"
@@ -165,7 +206,7 @@ const UpdateBlog = (props) => {
                   },
                 ]}
               >
-                <Input placeholder="Tag"></Input>
+                <Input disabled placeholder="Tag"></Input>
               </Form.Item>
             </Col>
             {/* 2nd column */}
@@ -182,8 +223,8 @@ const UpdateBlog = (props) => {
                 ]}
               >
                 <Select placeholder="Status">
-                  <Select.Option value="true">Approved</Select.Option>
-                  <Select.Option value="false">Rejected</Select.Option>
+                  <Select.Option value={true}>Approved</Select.Option>
+                  <Select.Option value={false}>Rejected</Select.Option>
                 </Select>
               </Form.Item>
             </Col>
@@ -208,7 +249,7 @@ const UpdateBlog = (props) => {
           {/* 3rd Row */}
           <Row style={{ justifyContent: "space-between" }}>
             {/* 1st Column */}
-            <Col>
+            {/* <Col>
               <p className="modalContent">Reported By</p>
               <Form.Item
                 name="reportedBy"
@@ -222,7 +263,7 @@ const UpdateBlog = (props) => {
               >
                 <Input placeholder="Reporter"></Input>
               </Form.Item>
-            </Col>
+            </Col> */}
             {/* 2nd Column */}
             <Col>
               <p className="modalContent">Shop ID</p>
@@ -241,29 +282,47 @@ const UpdateBlog = (props) => {
             </Col>
             {/* 3rd Column */}
             <Col>
-              <p className="modalContent">Product ID</p>
+              <p className="modalContent">Product Name</p>
               <Form.Item
                 name="productIds"
-                initialValue={record.productIds}
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input product ID!",
-                  },
-                ]}
+                initialValue={
+                  record.products ? record.products.map((p) => p.productId) : []
+                }
+                // rules={[
+                //   {
+                //     required: true,
+                //     message: "Please select a product!",
+                //   },
+                // ]}
               >
-                <Input placeholder="Product ID"></Input>
+                <Select mode="multiple" placeholder="Select Product">
+                  {products.map((product) => (
+                    <Select.Option
+                      key={product.productId}
+                      value={product.productId}
+                    >
+                      {product.productName}
+                    </Select.Option>
+                  ))}
+                </Select>
               </Form.Item>
             </Col>
           </Row>
 
           {/* 4th Row */}
           <Row>
-            <Col>
+            {/* <Col>
               <p className="modalContent">Reported Date</p>
               <Form.Item
                 name="reportedDate"
-                initialValue={record.reportedDate}
+                initialValue={
+                  record.reportedDate
+                    ? dayjs
+                        .utc(record.reportedDate)
+                        .tz("Asia/Ho_Chi_Minh")
+                        .startOf("day")
+                    : null
+                }
                 rules={[
                   {
                     required: true,
@@ -276,7 +335,7 @@ const UpdateBlog = (props) => {
                   placeholder="Reported Date"
                 ></DatePicker>
               </Form.Item>
-            </Col>
+            </Col> */}
           </Row>
 
           {/* 5th Row */}

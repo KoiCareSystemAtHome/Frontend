@@ -87,7 +87,7 @@ const Profile = () => {
               name="address"
             >
               <div className="p-2 bg-gray-100 rounded border-0">
-                {`${shopProfile?.shopAddress.wardName}, ${shopProfile?.shopAddress.districtName},${shopProfile?.shopAddress.provinceName}`}
+                {`${shopProfile?.shopAddress.wardName} , ${shopProfile?.shopAddress.districtName} , ${shopProfile?.shopAddress.provinceName}`}
               </div>
             </Form.Item>
           </div>
@@ -126,7 +126,7 @@ const Profile = () => {
         </div> */}
 
         {/* Create Ghn */}
-        <h2>Create Shop GHN</h2>
+        <h2>Regiter GHN</h2>
         <AddGhn />
       </Form>
     </div>

@@ -27,9 +27,7 @@ const ProductManagement = () => {
         </div>
       </div>
 
-      <div className="searchContainer">
-        <Filter />
-      </div>
+      <div className="searchContainer">{/* <Filter /> */}</div>
 
       <div className="tableContainer" style={{ marginTop: "10px" }}>
         <ProductManagementTable dataSource={productManagementList} />

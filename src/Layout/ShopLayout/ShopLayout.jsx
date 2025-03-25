@@ -193,12 +193,12 @@ const ShopLayout = ({ children }) => {
                 </span>
               ),
             },
-            {
-              key: "/shop/promotionManagement",
-              icon: <DollarCircleOutlined style={{ color: "white" }} />,
-              label: "Promotion",
-              style: { color: "white" },
-            },
+            // {
+            //   key: "/shop/promotionManagement",
+            //   icon: <DollarCircleOutlined style={{ color: "white" }} />,
+            //   label: "Promotion",
+            //   style: { color: "white" },
+            // },
             {
               key: "/shop/blog",
               label: "Blog",

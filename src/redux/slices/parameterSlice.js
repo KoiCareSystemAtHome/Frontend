@@ -4,22 +4,12 @@ import { getRequest, postRequest } from "../../services/httpMethods";
 const initialState = {
   token: "",
   listParameter: [],
+  loading: false,
+  success: false,
+  error: null,
 };
 
 // GET
-// export const getListParameter = createAsyncThunk(
-//   "Parameter/type",
-//   async (type) => {
-//     try {
-//       const res = await getRequest(`Parameter/type?type=${type}`);
-//       console.log("res", res);
-//       return res.data;
-//     } catch (error) {
-//       console.log("Error", error);
-//     }
-//   }
-// );
-
 export const getListParameter = createAsyncThunk(
   "Parameter/type",
   async ({ type }) => {
@@ -36,32 +26,44 @@ export const getListParameter = createAsyncThunk(
 // POST
 // export const createParameter = createAsyncThunk(
 //   "Parameter/create",
-//   async (newParameter) => {
+//   async ({ type, file }) => {
 //     try {
-//       const res = await getRequest("Parameter/upsert-from-excel", newParameter);
+//       const formData = new FormData();
+//       formData.append("file", file);
+//       formData.append("type", type); // Fish or Pond
+
+//       const res = await postRequest("Parameter/upsert-from-excel", formData, {
+//         headers: { "Content-Type": "multipart/form-data" },
+//       });
+
+//       console.log(`Created ${type} parameters`, res);
 //       return res.data;
 //     } catch (error) {
-//       console.log("Error", error);
+//       console.error(`Error uploading ${type} parameters`, error);
 //     }
 //   }
 // );
 
 export const createParameter = createAsyncThunk(
-  "Parameter/create",
-  async ({ type, file }) => {
+  "parameter/createParameter",
+  async ({ type, file }, { rejectWithValue, dispatch }) => {
     try {
       const formData = new FormData();
+      formData.append("type", type);
       formData.append("file", file);
-      formData.append("type", type); // Fish or Pond
-
-      const res = await postRequest("Parameter/upsert-from-excel", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-
-      console.log(`Created ${type} parameters`, res);
-      return res.data;
+      const response = await fetch(
+        "http://14.225.206.203:8080/api/Parameter/upsert-from-excel",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+      const data = await response.json();
+      // After successful upsert, fetch the updated list of parameters
+      await dispatch(getListParameter({ type })).unwrap();
+      return data;
     } catch (error) {
-      console.error(`Error uploading ${type} parameters`, error);
+      return rejectWithValue(error.message);
     }
   }
 );
@@ -69,15 +71,51 @@ export const createParameter = createAsyncThunk(
 const parameterSlice = createSlice({
   name: "parameter",
   initialState,
-  reducers: {},
+  reducers: {
+    resetStatus: (state) => {
+      state.loading = false;
+      state.success = false;
+      state.error = null;
+    },
+    clearListParameter: (state) => {
+      state.listParameter = [];
+    },
+  },
   extraReducers: (builder) => {
-    builder.addCase(getListParameter.fulfilled, (state, action) => {
-      state.listParameter = action.payload;
-    });
-    builder.addCase(createParameter.fulfilled, (state, action) => {
-      state.listParameter = action.payload;
-    });
+    // Handle getListParameter
+    builder
+      .addCase(getListParameter.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getListParameter.fulfilled, (state, action) => {
+        state.loading = false;
+        state.listParameter = action.payload || []; // Ensure it's an array
+      })
+      .addCase(getListParameter.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to fetch parameters";
+      });
+
+    // Handle createParameter
+    builder
+      .addCase(createParameter.pending, (state) => {
+        state.loading = true;
+        state.success = false;
+        state.error = null;
+      })
+      .addCase(createParameter.fulfilled, (state, action) => {
+        state.loading = false;
+        state.success = true;
+        // Do not update listParameter here; getListParameter handles it
+      })
+      .addCase(createParameter.rejected, (state, action) => {
+        state.loading = false;
+        state.success = false;
+        state.error = action.payload || "Failed to create parameter";
+      });
   },
 });
 
+export const { resetStatus, clearListParameter } = parameterSlice.actions;
 export default parameterSlice;

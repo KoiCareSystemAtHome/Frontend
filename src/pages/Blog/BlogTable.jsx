@@ -1,4 +1,16 @@
-import { Image, Modal, notification, Pagination, Spin, Table, Tag } from "antd";
+import {
+  Button,
+  DatePicker,
+  Image,
+  Input,
+  Modal,
+  notification,
+  Pagination,
+  Select,
+  Spin,
+  Table,
+  Tag,
+} from "antd";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import useBlogList from "../../hooks/useBlogList";
@@ -10,6 +22,7 @@ import {
 import { useNavigate } from "react-router";
 import { approveBlog, getListBlog } from "../../redux/slices/blogSlice";
 import UpdateBlog from "./UpdateBlog";
+import dayjs from "dayjs";
 
 function BlogTable({ dataSource }) {
   console.log("Datasource: ", dataSource);
@@ -23,8 +36,35 @@ function BlogTable({ dataSource }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
+  // Search filter states
+  const [searchTitle, setSearchTitle] = useState("");
+  const [searchDate, setSearchDate] = useState(null);
+  const [searchStatus, setSearchStatus] = useState(null);
+
+  // Ensure dataSource is an array, default to empty array if undefined
+  const safeDataSource = Array.isArray(dataSource) ? dataSource : [];
+
+  // Filter data based on search criteria
+  const filteredData = safeDataSource.filter((item) => {
+    // Safeguard for title: default to empty string if undefined
+    const title = item.title || "";
+    const titleMatch = title.toLowerCase().includes(searchTitle.toLowerCase());
+
+    const dateMatch = searchDate
+      ? dayjs(item.reportedDate).isSame(searchDate, "day")
+      : true;
+
+    const statusMatch =
+      searchStatus !== null
+        ? (item.isApproved === true || item.isApproved === "true") ===
+          (searchStatus === "approved")
+        : true;
+
+    return titleMatch && dateMatch && statusMatch;
+  });
+
   // Compute paginated data
-  const paginatedData = dataSource.slice(
+  const paginatedData = filteredData.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
@@ -68,11 +108,21 @@ function BlogTable({ dataSource }) {
     });
   };
 
+  // Reset all filters
+  const handleResetFilters = () => {
+    setSearchTitle("");
+    setSearchDate(null);
+    setSearchStatus(null);
+    setCurrentPage(1); // Reset to the first page
+    setPageSize(10); // Reset page size to default
+  };
+
   const columns = [
     {
-      title: "Blog ID",
-      dataIndex: "blogId",
+      title: "",
+      //dataIndex: "blogId",
       key: "blogId",
+      render: (_, __, index) => index + 1 + (currentPage - 1) * pageSize,
     },
     {
       title: "Title",
@@ -101,21 +151,21 @@ function BlogTable({ dataSource }) {
       dataIndex: "type",
       key: "type",
     },
-    {
-      title: "Report By",
-      dataIndex: "reportedBy",
-      key: "reportedBy",
-    },
-    {
-      title: "Reported Date",
-      dataIndex: "reportedDate",
-      key: "reportedDate",
-    },
-    {
-      title: "Shop",
-      dataIndex: ["shop", "name"],
-      key: "name",
-    },
+    // {
+    //   title: "Report By",
+    //   dataIndex: "reportedBy",
+    //   key: "reportedBy",
+    // },
+    // {
+    //   title: "Reported Date",
+    //   dataIndex: "reportedDate",
+    //   key: "reportedDate",
+    // },
+    // {
+    //   title: "Shop",
+    //   dataIndex: ["shop", "name"],
+    //   key: "name",
+    // },
     {
       title: "View",
       dataIndex: "view",
@@ -159,7 +209,14 @@ function BlogTable({ dataSource }) {
     setTimeout(() => {
       setLoading(false);
     }, 2000);
-  }, [dataSource, currentPage, pageSize]);
+  }, [
+    dataSource,
+    currentPage,
+    pageSize,
+    searchTitle,
+    searchDate,
+    searchStatus,
+  ]);
 
   // Get List
   const GetListTable = () => {
@@ -176,8 +233,58 @@ function BlogTable({ dataSource }) {
 
   return (
     <div className="w-full">
+      {/* Search Filters */}
+      <div
+        style={{
+          marginBottom: "1rem",
+          display: "flex",
+          gap: "1rem",
+          flexWrap: "wrap",
+        }}
+      >
+        <Input
+          placeholder="Search by title"
+          value={searchTitle}
+          onChange={(e) => {
+            setSearchTitle(e.target.value);
+            setCurrentPage(1); // Reset to first page on search
+          }}
+          style={{ width: 200 }}
+        />
+        <DatePicker
+          placeholder="Select report date"
+          value={searchDate}
+          onChange={(date) => {
+            setSearchDate(date);
+            setCurrentPage(1);
+          }}
+          style={{ width: 200 }}
+        />
+        <Select
+          placeholder="Select status"
+          value={searchStatus}
+          onChange={(value) => {
+            setSearchStatus(value);
+            setCurrentPage(1);
+          }}
+          style={{ width: 200 }}
+          allowClear
+        >
+          <Select.Option value="approved">Approved</Select.Option>
+          <Select.Option value="rejected">Rejected</Select.Option>
+        </Select>
+        <Button
+          type="default"
+          onClick={handleResetFilters}
+          //disabled={!searchTitle && !searchDate && !searchStatus} // Disable when no filters applied
+        >
+          Reset Filters
+        </Button>
+      </div>
+
       <Spin spinning={loading} tip="Loading...">
         <Table
+          scroll={{ x: "1500px" }}
           dataSource={paginatedData}
           columns={columns}
           pagination={false}
@@ -187,7 +294,7 @@ function BlogTable({ dataSource }) {
         />
       </Spin>
       <Pagination
-        total={dataSource.length}
+        total={filteredData.length}
         pageSize={pageSize}
         current={currentPage}
         showSizeChanger

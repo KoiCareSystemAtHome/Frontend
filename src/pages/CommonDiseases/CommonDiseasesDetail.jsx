@@ -1,9 +1,22 @@
-import React, { useEffect } from "react";
-import { Typography, Button, Spin } from "antd";
+import React, { useEffect, useState } from "react";
+import {
+  Typography,
+  Button,
+  Spin,
+  Input,
+  Form,
+  message,
+  Card,
+  List,
+  Empty,
+} from "antd";
 import { LeftOutlined } from "@ant-design/icons";
 import { useNavigate, useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { getDiseaseDetail } from "../../redux/slices/diseasesSlice"; // Adjust the path accordingly
+import { useDispatch, useSelector } from "react-redux"; // Correct import for useSelector
+import {
+  getDiseaseDetail,
+  updateDisease,
+} from "../../redux/slices/diseasesSlice";
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -17,35 +30,94 @@ const CommonDiseasesDetail = () => {
     loading,
     error,
   } = useSelector((state) => state.diseasesSlice || {});
+  console.log("Disease Data in Component:", disease);
 
-  //console.log("Redux diseaseDetail in component:", disease);
+  const [editMode, setEditMode] = useState(false);
+  const [form] = Form.useForm();
+  const [formData, setFormData] = useState({
+    diseaseId: "",
+    name: "",
+    description: "",
+    foodModifyPercent: 0,
+    saltModifyPercent: 0,
+  });
 
   useEffect(() => {
-    //console.log("Fetching disease details for ID:", diseaseId);
     if (diseaseId) {
       dispatch(getDiseaseDetail(diseaseId)).then((res) => {
-        //console.log("Fetched Disease Detail:", res);
+        console.log("Fetched Disease Data:", res.payload);
+        if (res.payload) {
+          setFormData({
+            diseaseId: res.payload.diseaseId,
+            name: res.payload.name,
+            description: res.payload.description,
+            foodModifyPercent: res.payload.foodModifyPercent,
+            saltModifyPercent: res.payload.saltModifyPercent,
+          });
+          form.setFieldsValue(res.payload);
+        }
       });
     }
-  }, [dispatch, diseaseId]);
+  }, [dispatch, diseaseId, form]);
+
+  const handleEditClick = () => setEditMode(true);
+  const handleCancelEdit = () => {
+    setEditMode(false);
+    form.setFieldsValue(formData);
+  };
+
+  const handleSave = async () => {
+    try {
+      const values = await form.validateFields();
+      const updatedData = { ...disease, ...values, diseaseId };
+
+      console.log("Updating Disease with ID:", diseaseId);
+      console.log("Updated Data:", updatedData);
+
+      const response = await dispatch(updateDisease(updatedData));
+      if (response.error) throw new Error(response.error.message);
+
+      setFormData(updatedData);
+      setEditMode(false);
+      dispatch(getDiseaseDetail(diseaseId));
+      message.success("Disease updated successfully!");
+    } catch (error) {
+      message.error("Failed to update disease!");
+    }
+  };
+
+  const cardStyle = {
+    borderRadius: "12px",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+    width: "100%", // Ensure the card takes the full width
+    height: "675px", // Remove fixed height
+  };
 
   return (
-    <div>
-      {/* Header with back button */}
-      <div>
-        <div className="align-content-start">
+    <div className="min-h-screen bg-gray-100">
+      {/* Header with Back Button */}
+      <div className="flex justify-between items-center p-6">
+        <Button
+          type="text"
+          icon={<LeftOutlined />}
+          onClick={() => navigate("/admin/diseases")}
+          className="flex items-center text-gray-700 hover:text-blue-600"
+        >
+          Back
+        </Button>
+        {!editMode && (
           <Button
-            type="text"
-            icon={<LeftOutlined />}
-            onClick={() => navigate("/admin/diseases")}
-            className="flex items-center"
+            style={{ height: "40px", width: "160px", borderRadius: "10px" }}
+            type="primary"
+            className="ml-4"
+            onClick={handleEditClick}
           >
-            Back
+            Edit
           </Button>
-        </div>
+        )}
       </div>
 
-      {/* Handle loading and error states */}
+      {/* Loading and Error Handling */}
       {loading ? (
         <div className="flex justify-center mt-10">
           <Spin size="large" />
@@ -54,58 +126,162 @@ const CommonDiseasesDetail = () => {
         <div className="text-red-500 text-center mt-10">
           {error || "Failed to load data"}
         </div>
+      ) : !disease ? (
+        <div className="text-gray-500 text-center mt-10">
+          No disease data available
+        </div>
       ) : (
-        <div className="pt-16">
-          <div className="max-w-8xl mx-auto p-4 md:p-6">
-            <div className="flex flex-col md:flex-row gap-8">
-              {/* Image Section */}
-              <div className="md:w-1/3">
+        <div className="px-4 sm:px-6 lg:px-8">
+          <Title level={2} className="text-gray-800 mb-6">
+            Disease Detail
+          </Title>
+          {/* Single Card with Two Columns */}
+          <Card style={cardStyle} className="bg-white">
+            <div className="flex flex-col md:flex-row gap-6 p-4">
+              {/* Image Section (Left) */}
+              <div className="md:w-1/2">
                 <img
-                  src={disease?.image || "https://via.placeholder.com/300"}
                   alt={disease?.name || "Disease Image"}
-                  className="w-full rounded-lg shadow-md"
+                  src={disease?.image || "https://via.placeholder.com/300"}
+                  className="w-full h-96 object-cover rounded-lg"
                 />
               </div>
 
-              {/* Content Section */}
-              <div className="md:w-1/3">
-                <Title level={3} className="text-gray-800">
-                  {disease?.name || "Disease Name"}
-                </Title>
-
-                {/* <div className="mb-6">
-                  <Text strong className="text-green-600 text-lg">
-                    + Nguyên Nhân Gây Bệnh
+              {/* Details Section (Right) */}
+              <div className="md:w-1/2 space-y-4">
+                {/* Name */}
+                <div>
+                  <Text strong className="text-green-600">
+                    Name
                   </Text>
-                  <Paragraph className="pl-4 mt-2">
-                    {disease?.cause || "No cause information available."}
-                  </Paragraph>
-                </div> */}
-
-                <div className="mb-6">
-                  <Text strong className="text-green-600 text-lg">
-                    + Disease Description
-                  </Text>
-                  <Paragraph className="pl-4 mt-2">
-                    {disease?.description ||
-                      "No symptom information available."}
-                  </Paragraph>
+                  {editMode ? (
+                    <Form form={form} layout="vertical">
+                      <Form.Item
+                        name="name"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Please enter disease name",
+                          },
+                        ]}
+                      >
+                        <Input placeholder="Enter disease name" />
+                      </Form.Item>
+                    </Form>
+                  ) : (
+                    <Paragraph className="pl-2 mt-2 text-gray-700 text-4xl">
+                      {disease?.name || "No name available."}
+                    </Paragraph>
+                  )}
                 </div>
+
+                {/* Description */}
+                <div>
+                  <Text strong className="text-green-600">
+                    Description
+                  </Text>
+                  {editMode ? (
+                    <Form form={form} layout="vertical">
+                      <Form.Item name="description">
+                        <Input.TextArea
+                          rows={4}
+                          placeholder="Enter disease description"
+                        />
+                      </Form.Item>
+                    </Form>
+                  ) : (
+                    <Paragraph className="pl-2 mt-2 text-gray-700">
+                      {disease?.description || "No description available."}
+                    </Paragraph>
+                  )}
+                </div>
+
+                {/* Food Percentage */}
+                <div>
+                  <Text strong className="text-green-600">
+                    Food Percentage
+                  </Text>
+                  {editMode ? (
+                    <Form form={form} layout="vertical">
+                      <Form.Item name="foodModifyPercent">
+                        <Input
+                          type="number"
+                          suffix="g"
+                          placeholder="Enter food percentage"
+                        />
+                      </Form.Item>
+                    </Form>
+                  ) : (
+                    <Text className="pl-2 text-gray-700">
+                      {disease?.foodModifyPercent || 0} g
+                    </Text>
+                  )}
+                </div>
+
+                {/* Salt Percentage */}
+                <div>
+                  <Text strong className="text-green-600">
+                    Salt Percentage
+                  </Text>
+                  {editMode ? (
+                    <Form form={form} layout="vertical">
+                      <Form.Item name="saltModifyPercent">
+                        <Input
+                          type="number"
+                          suffix="g"
+                          placeholder="Enter salt percentage"
+                        />
+                      </Form.Item>
+                    </Form>
+                  ) : (
+                    <Text className="pl-2 text-gray-700">
+                      {disease?.saltModifyPercent || 0} g
+                    </Text>
+                  )}
+                </div>
+
+                {/* Medicines */}
+                <div>
+                  <Text strong className="text-green-600">
+                    Medicines
+                  </Text>
+                  {disease?.medicines && disease.medicines.length > 0 ? (
+                    <List
+                      dataSource={disease.medicines}
+                      renderItem={(medicine) => (
+                        <List.Item className="pl-2">
+                          <Text className="text-gray-700">
+                            • {medicine.name || "Unnamed Medicine"}
+                          </Text>
+                        </List.Item>
+                      )}
+                      className="mt-2"
+                    />
+                  ) : (
+                    <Empty
+                      image={Empty.PRESENTED_IMAGE_SIMPLE}
+                      description={
+                        <Text className="text-gray-500">
+                          No medicines available
+                        </Text>
+                      }
+                      className="mt-2"
+                    />
+                  )}
+                </div>
+
+                {/* Save & Cancel Buttons */}
+                {editMode && (
+                  <div className="flex gap-4 mt-4">
+                    <Button type="primary" onClick={handleSave}>
+                      Save
+                    </Button>
+                    <Button onClick={handleCancelEdit}>Cancel</Button>
+                  </div>
+                )}
               </div>
             </div>
-          </div>
-
-          {/* Treatment Methods */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {disease?.treatments?.map((treatment, index) => (
-              <div key={index} className="m-10">
-                <Title level={4} className="text-blue-600">
-                  {treatment.method}
-                </Title>
-                <Paragraph>{treatment.description}</Paragraph>
-              </div>
-            ))}
-          </div>
+          </Card>
         </div>
       )}
     </div>

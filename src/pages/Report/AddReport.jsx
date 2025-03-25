@@ -11,9 +11,9 @@ import {
 } from "antd";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { createShop, getListShop } from "../../redux/slices/shopSlice";
+import { createReport, getListReport } from "../../redux/slices/reportSlice";
 
-const AddShop = ({ onClose }) => {
+const AddReport = ({ onClose }) => {
   const [isAddOpen, setIsAddOpen] = useState(false);
 
   const showAddModal = () => {
@@ -48,22 +48,14 @@ const AddShop = ({ onClose }) => {
   };
 
   const onFinish = (values) => {
-    const payload = {
-      ...values,
-      isActivate:
-        values.isActivate === "true" || values.isActivate === true
-          ? true
-          : false, // Ensure boolean type
-    };
-    console.log(payload);
     // Dispatch the createShop action with the form values
-    dispatch(createShop(payload))
+    dispatch(createReport(values))
       .unwrap()
       .then(() => {
         // Close the Modal
         onClose();
-        openNotification("success", "Shop Created Successfully!");
-        dispatch(getListShop());
+        openNotification("success", "Report Created Successfully!");
+        dispatch(getListReport());
         handleCancel();
         // Reset the form fields after dispatching the action
         form.resetFields();
@@ -84,13 +76,13 @@ const AddShop = ({ onClose }) => {
         style={buttonStyle}
         onClick={showAddModal}
       >
-        Add Shop
+        Add Report
       </Button>
 
       <Modal
         className="custom-modal"
         centered
-        title="Create Shop"
+        title="Create Report"
         open={isAddOpen}
         onCancel={handleCancel}
         width={870}
@@ -101,98 +93,47 @@ const AddShop = ({ onClose }) => {
           <Row style={{ justifyContent: "space-between" }}>
             {/* 1st column */}
             <Col>
-              <p className="modalContent">Shop Name</p>
+              <p className="modalContent">Order ID</p>
               <Form.Item
-                name="shopName"
+                name="orderId"
                 rules={[
                   {
                     required: true,
-                    message: "Please enter shop name!",
+                    message: "Please enter order ID!",
                   },
                 ]}
               >
-                <Input placeholder="Shop Name"></Input>
+                <Input placeholder="Order ID"></Input>
               </Form.Item>
             </Col>
             {/* 2nd column */}
             <Col>
-              <p className="modalContent">Shop Rate</p>
+              <p className="modalContent">Reason</p>
               <Form.Item
-                name="shopRate"
+                name="reason"
                 rules={[
                   {
                     required: true,
-                    message: "Please enter shop rate!",
+                    message: "Please enter reason!",
                   },
                 ]}
               >
-                <Input placeholder="Shop Rate"></Input>
+                <Input placeholder="Reason"></Input>
               </Form.Item>
             </Col>
             {/* 3rd column */}
             <Col>
-              <p className="modalContent">Shop Description</p>
+              <p className="modalContent">Image</p>
               <Form.Item
-                name="shopDescription"
+                name="image"
                 rules={[
                   {
                     required: true,
-                    message: "Please enter shop description!",
+                    message: "Please enter image!",
                   },
                 ]}
               >
-                <Input placeholder="Shop Description"></Input>
-              </Form.Item>
-            </Col>
-          </Row>
-          {/* 2nd Row */}
-          <Row style={{ justifyContent: "space-between" }}>
-            {/* 1st column */}
-            <Col>
-              <p className="modalContent">Shop Address</p>
-              <Form.Item
-                name="shopAddress"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please enter shop address!",
-                  },
-                ]}
-              >
-                <Input placeholder="Shop Address"></Input>
-              </Form.Item>
-            </Col>
-            {/* 2nd column */}
-            <Col>
-              <p className="modalContent">License</p>
-              <Form.Item
-                name="bizLicences"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please enter liscense!",
-                  },
-                ]}
-              >
-                <Input placeholder="License"></Input>
-              </Form.Item>
-            </Col>
-            {/* 3rd column */}
-            <Col>
-              <p className="modalContent">Status</p>
-              <Form.Item
-                name="isActivate"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please select status!",
-                  },
-                ]}
-              >
-                <Select placeholder="Select status">
-                  <Select.Option value="true">Active</Select.Option>
-                  <Select.Option value="false">Inactive</Select.Option>
-                </Select>
+                <Input placeholder="Image"></Input>
               </Form.Item>
             </Col>
           </Row>
@@ -209,7 +150,7 @@ const AddShop = ({ onClose }) => {
                 }}
               >
                 <PlusOutlined />
-                Create Shop
+                Create Report
               </Button>
             </Form.Item>
           </Row>
@@ -219,4 +160,4 @@ const AddShop = ({ onClose }) => {
   );
 };
 
-export default AddShop;
+export default AddReport;

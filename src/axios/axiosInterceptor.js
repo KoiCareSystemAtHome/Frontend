@@ -6,7 +6,7 @@ let isRefreshing = false;
 let refreshPromise = null;
 
 export const axiosClientVer2 = axios.create({
-  baseURL: "http://14.225.206.203:5444/api/",
+  baseURL: "http://14.225.206.203:8080/api/",
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",

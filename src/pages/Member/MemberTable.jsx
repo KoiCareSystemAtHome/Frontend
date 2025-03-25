@@ -25,9 +25,10 @@ function MemberTable({ dataSource }) {
 
   const columns = [
     {
-      title: "Member ID",
-      dataIndex: ["member", "memberId"],
+      title: "",
+      // dataIndex: ["member", "memberId"],
       key: "memberId",
+      render: (_, __, index) => index + 1 + (currentPage - 1) * pageSize,
     },
     {
       title: "Member Name",
@@ -48,6 +49,24 @@ function MemberTable({ dataSource }) {
       title: "Address",
       dataIndex: ["member", "address"],
       key: "address",
+      render: (address) => {
+        if (!address) return "N/A"; // Handle missing or null address
+
+        try {
+          // Parse the stringified JSON
+          const parsedAddress = JSON.parse(address);
+
+          // Extract values
+          const { WardName, DistrictName, ProvinceName } = parsedAddress || {};
+
+          // Return formatted address, ignoring empty values
+          return [WardName, DistrictName, ProvinceName]
+            .filter(Boolean)
+            .join(", ");
+        } catch (error) {
+          return "Invalid Address";
+        }
+      },
     },
     // {
     //   title: "Membership Type",

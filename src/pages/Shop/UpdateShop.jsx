@@ -10,9 +10,14 @@ import {
   Row,
   Select,
 } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getListShop, updateShop } from "../../redux/slices/shopSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchDistricts,
+  fetchProvinces,
+  fetchWards,
+} from "../../redux/slices/ghnSlice";
 
 const UpdateShop = (props) => {
   const { record } = props;
@@ -20,6 +25,34 @@ const UpdateShop = (props) => {
   const dispatch = useDispatch();
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [api, contextHolder] = notification.useNotification();
+
+  // Redux state for location data
+  const { provinces, districts, wards } = useSelector(
+    (state) => state.ghnSlice
+  );
+
+  // Local state for selected location
+  const [selectedProvince, setSelectedProvince] = useState(
+    record.shopAddress?.provinceId || ""
+  );
+  const [selectedDistrict, setSelectedDistrict] = useState(
+    record.shopAddress?.districtId || ""
+  );
+  const [selectedWard, setSelectedWard] = useState(
+    record.shopAddress?.wardId || ""
+  );
+
+  useEffect(() => {
+    dispatch(fetchProvinces()); // Load provinces on mount
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (selectedProvince) dispatch(fetchDistricts(selectedProvince));
+  }, [dispatch, selectedProvince]);
+
+  useEffect(() => {
+    if (selectedDistrict) dispatch(fetchWards(selectedDistrict));
+  }, [dispatch, selectedDistrict]);
 
   const showEditModal = () => {
     form.setFieldsValue({
@@ -31,6 +64,9 @@ const UpdateShop = (props) => {
       ghnId: record.ghnId,
       isActivate: record.isActivate,
     });
+    setSelectedProvince(record.shopAddress?.provinceId || "");
+    setSelectedDistrict(record.shopAddress?.districtId || "");
+    setSelectedWard(record.shopAddress?.wardId || "");
     setIsEditOpen(true);
   };
 
@@ -53,7 +89,24 @@ const UpdateShop = (props) => {
 
   const handleEditSubmit = (values) => {
     form.validateFields().then(() => {
-      dispatch(updateShop({ shopId: record.shopId, updatedShop: values }))
+      const updatedShop = {
+        ...values,
+        shopAddress: {
+          provinceId: String(selectedProvince),
+          provinceName:
+            provinces.find((p) => p.ProvinceID === selectedProvince)
+              ?.ProvinceName || "",
+          districtId: String(selectedDistrict),
+          districtName:
+            districts.find((d) => d.DistrictID === selectedDistrict)
+              ?.DistrictName || "",
+          wardId: selectedWard,
+          wardName:
+            wards.find((w) => w.WardCode === selectedWard)?.WardName || "",
+        },
+      };
+
+      dispatch(updateShop({ shopId: record.shopId, updatedShop }))
         .unwrap()
         .then(() => {
           handleEditCancel();
@@ -64,7 +117,7 @@ const UpdateShop = (props) => {
           dispatch(getListShop());
         })
         .catch((error) => {
-          console.error("Update error:", error); // Debugging
+          console.error("Update error:", error);
           openNotification("warning", error.message || "Update failed!");
         });
     });
@@ -148,24 +201,111 @@ const UpdateShop = (props) => {
               </Form.Item>
             </Col>
           </Row>
-          {/* 2nd Row */}
+
           <Row style={{ justifyContent: "space-between" }}>
-            {/* 1st column */}
             <Col>
-              <p className="modalContent">Shop Address</p>
+              <p className="modalContent">Province</p>
               <Form.Item
-                name="shopAddress"
-                initialValue={record.shopAddress}
+                name="province"
+                initialValue={record?.shopAddress?.provinceId}
                 rules={[
                   {
                     required: true,
-                    message: "Please enter shop address!",
+                    message: "Please select shop province!",
                   },
                 ]}
               >
-                <Input placeholder="Shop Address"></Input>
+                <Select
+                  allowClear
+                  style={{ width: "270px" }}
+                  value={selectedProvince}
+                  onChange={(value) => {
+                    setSelectedProvince(value);
+                    setSelectedDistrict(""); // Reset district when province changes
+                    setSelectedWard(""); // Reset ward when province changes
+                    form.setFieldsValue({
+                      province: value,
+                      district: "",
+                      ward: "",
+                    });
+                  }}
+                  placeholder="Select Province"
+                >
+                  {provinces.map((p) => (
+                    <Select.Option key={p.ProvinceID} value={p.ProvinceID}>
+                      {p.ProvinceName}
+                    </Select.Option>
+                  ))}
+                </Select>
               </Form.Item>
             </Col>
+
+            <Col>
+              <p className="modalContent">District</p>
+              <Form.Item
+                name="district"
+                initialValue={record?.shopAddress?.districtId}
+                rules={[
+                  {
+                    required: true,
+                    message: "Please select shop district!",
+                  },
+                ]}
+              >
+                <Select
+                  allowClear
+                  style={{ width: "270px" }}
+                  value={selectedDistrict}
+                  onChange={(value) => {
+                    setSelectedDistrict(value);
+                    setSelectedWard(""); // Reset ward when district changes
+                    form.setFieldsValue({ district: value, ward: "" });
+                  }}
+                  placeholder="Select District"
+                >
+                  {districts.map((d) => (
+                    <Select.Option key={d.DistrictID} value={d.DistrictID}>
+                      {d.DistrictName}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+
+            <Col>
+              <p className="modalContent">Ward</p>
+              <Form.Item
+                name="ward"
+                initialValue={record?.shopAddress?.wardId}
+                rules={[
+                  {
+                    required: true,
+                    message: "Please select shop ward!",
+                  },
+                ]}
+              >
+                <Select
+                  allowClear
+                  style={{ width: "270px" }}
+                  value={selectedWard}
+                  onChange={(value) => {
+                    setSelectedWard(value);
+                    form.setFieldsValue({ ward: value });
+                  }}
+                  placeholder="Select Ward"
+                >
+                  {wards.map((w) => (
+                    <Select.Option key={w.WardCode} value={w.WardCode}>
+                      {w.WardName}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+          </Row>
+
+          {/* 2nd Row */}
+          <Row style={{ justifyContent: "space-between" }}>
             {/* 2nd column */}
             <Col>
               <p className="modalContent">License</p>
@@ -218,6 +358,32 @@ const UpdateShop = (props) => {
               </Form.Item>
             </Col>
           </Row>
+          <Row>
+            {/* 1st column */}
+            <Col>
+              <p className="modalContent">Shop Address</p>
+              <Form.Item
+                name="shopAddress"
+                initialValue={record.shopAddress}
+                rules={[
+                  {
+                    required: true,
+                    message: "Please enter shop address!",
+                  },
+                ]}
+              >
+                <Input
+                  style={{ width: "820px" }}
+                  placeholder="Shop Address"
+                  value={`${selectedWard ? selectedWard.WardName + ", " : ""}${
+                    selectedDistrict ? selectedDistrict.DistrictName + ", " : ""
+                  }${selectedProvince ? selectedProvince.ProvinceName : ""}`}
+                  readOnly
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+
           <Row className="membershipButton">
             <Form.Item>
               <Button
@@ -244,3 +410,22 @@ const UpdateShop = (props) => {
 };
 
 export default UpdateShop;
+
+// const handleEditSubmit = (values) => {
+//   form.validateFields().then(() => {
+//     dispatch(updateShop({ shopId: record.shopId, updatedShop: values }))
+//       .unwrap()
+//       .then(() => {
+//         handleEditCancel();
+//         openNotification(
+//           "success",
+//           `Updated shop "${record.shopName}" successfully!`
+//         );
+//         dispatch(getListShop());
+//       })
+//       .catch((error) => {
+//         console.error("Update error:", error); // Debugging
+//         openNotification("warning", error.message || "Update failed!");
+//       });
+//   });
+// };
