@@ -132,7 +132,7 @@ const HeaderLayout = ({ title }) => {
                     />
                   </svg>
                 </Icon>
-                Manage Account
+                Quản Lý Tài Khoản
               </button>
 
               <button className="w-full px-4 py-3 text-gray-700 hover:bg-gray-50 flex items-center gap-3">
@@ -151,7 +151,7 @@ const HeaderLayout = ({ title }) => {
                     />
                   </svg>
                 </Icon>
-                Change Password
+                Đổi Mật Khẩu
               </button>
 
               <button className="w-full px-4 py-3 text-gray-700 hover:bg-gray-50 flex items-center gap-3">
@@ -170,7 +170,7 @@ const HeaderLayout = ({ title }) => {
                     />
                   </svg>
                 </Icon>
-                Activity Log
+                Nhật Ký Hoạt Động
               </button>
 
               <div className="border-t my-1"></div>
@@ -194,7 +194,7 @@ const HeaderLayout = ({ title }) => {
                     />
                   </svg>
                 </Icon>
-                Log out
+                Đăng Xuất
               </button>
             </div>
           )}

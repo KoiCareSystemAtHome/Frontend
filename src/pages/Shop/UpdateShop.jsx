@@ -110,15 +110,12 @@ const UpdateShop = (props) => {
         .unwrap()
         .then(() => {
           handleEditCancel();
-          openNotification(
-            "success",
-            `Updated shop "${record.shopName}" successfully!`
-          );
+          openNotification("success", `Cập Nhật Cửa Hàng Thành Công!`);
           dispatch(getListShop());
         })
         .catch((error) => {
           console.error("Update error:", error);
-          openNotification("warning", error.message || "Update failed!");
+          openNotification("warning", error.message || "Cập Nhật Thất Bại!");
         });
     });
   };
@@ -143,7 +140,7 @@ const UpdateShop = (props) => {
       <Modal
         className="custom-modal"
         centered
-        title="Edit Shop"
+        title="Chỉnh Sửa Thông Tin Cửa Hàng"
         open={isEditOpen}
         onCancel={handleEditCancel}
         width={870}
@@ -154,64 +151,64 @@ const UpdateShop = (props) => {
           <Row style={{ justifyContent: "space-between" }}>
             {/* 1st column */}
             <Col>
-              <p className="modalContent">Shop Name</p>
+              <p className="modalContent">Tên Cửa Hàng</p>
               <Form.Item
                 name="shopName"
                 initialValue={record.shopName}
                 rules={[
                   {
                     required: true,
-                    message: "Please enter shop name!",
+                    message: "Vui lòng nhập tên cửa hàng!",
                   },
                 ]}
               >
-                <Input placeholder="Shop Name"></Input>
+                <Input placeholder="Tên Cửa Hàng"></Input>
               </Form.Item>
             </Col>
             {/* 2nd column */}
             <Col>
-              <p className="modalContent">Shop Rate</p>
+              <p className="modalContent">Đánh Giá</p>
               <Form.Item
                 name="shopRate"
                 initialValue={record.shopRate}
                 rules={[
                   {
                     required: true,
-                    message: "Please enter owner name!",
+                    message: "Vui lòng nhập đánh giá!",
                   },
                 ]}
               >
-                <Input placeholder="Owner Name"></Input>
+                <Input placeholder="Đánh Giá"></Input>
               </Form.Item>
             </Col>
             {/* 3rd column */}
             <Col>
-              <p className="modalContent">Shop Description</p>
+              <p className="modalContent">Mô Tả</p>
               <Form.Item
                 name="shopDescription"
                 initialValue={record.shopDescription}
                 rules={[
                   {
                     required: true,
-                    message: "Please enter shop description!",
+                    message: "Vui lòng nhập mô tả!",
                   },
                 ]}
               >
-                <Input placeholder="Shop Description"></Input>
+                <Input placeholder="Mô Tả"></Input>
               </Form.Item>
             </Col>
           </Row>
 
           <Row style={{ justifyContent: "space-between" }}>
             <Col>
-              <p className="modalContent">Province</p>
+              <p className="modalContent">Thành Phố/Tỉnh</p>
               <Form.Item
                 name="province"
                 initialValue={record?.shopAddress?.provinceId}
                 rules={[
                   {
                     required: true,
-                    message: "Please select shop province!",
+                    message: "Vui lòng nhập thành phố/tỉnh!",
                   },
                 ]}
               >
@@ -229,7 +226,7 @@ const UpdateShop = (props) => {
                       ward: "",
                     });
                   }}
-                  placeholder="Select Province"
+                  placeholder="Vui lòng nhập thành phố/tình"
                 >
                   {provinces.map((p) => (
                     <Select.Option key={p.ProvinceID} value={p.ProvinceID}>
@@ -241,14 +238,14 @@ const UpdateShop = (props) => {
             </Col>
 
             <Col>
-              <p className="modalContent">District</p>
+              <p className="modalContent">Quận/Huyện</p>
               <Form.Item
                 name="district"
                 initialValue={record?.shopAddress?.districtId}
                 rules={[
                   {
                     required: true,
-                    message: "Please select shop district!",
+                    message: "Vui lòng nhập quận/huyện!",
                   },
                 ]}
               >
@@ -261,7 +258,7 @@ const UpdateShop = (props) => {
                     setSelectedWard(""); // Reset ward when district changes
                     form.setFieldsValue({ district: value, ward: "" });
                   }}
-                  placeholder="Select District"
+                  placeholder="Quận/Huyện"
                 >
                   {districts.map((d) => (
                     <Select.Option key={d.DistrictID} value={d.DistrictID}>
@@ -273,14 +270,14 @@ const UpdateShop = (props) => {
             </Col>
 
             <Col>
-              <p className="modalContent">Ward</p>
+              <p className="modalContent">Phường/Xã</p>
               <Form.Item
                 name="ward"
                 initialValue={record?.shopAddress?.wardId}
                 rules={[
                   {
                     required: true,
-                    message: "Please select shop ward!",
+                    message: "Vui lòng nhập phường/xã!",
                   },
                 ]}
               >
@@ -292,7 +289,7 @@ const UpdateShop = (props) => {
                     setSelectedWard(value);
                     form.setFieldsValue({ ward: value });
                   }}
-                  placeholder="Select Ward"
+                  placeholder="Phường/Xã"
                 >
                   {wards.map((w) => (
                     <Select.Option key={w.WardCode} value={w.WardCode}>
@@ -308,52 +305,52 @@ const UpdateShop = (props) => {
           <Row style={{ justifyContent: "space-between" }}>
             {/* 2nd column */}
             <Col>
-              <p className="modalContent">License</p>
+              <p className="modalContent">Giấy Phép Kinh Doanh</p>
               <Form.Item
                 name="bizLicences"
                 initialValue={record.bizLicences}
                 rules={[
                   {
                     required: true,
-                    message: "Please enter license!",
+                    message: "Vui lòng nhập giấy phép kinh doanh!",
                   },
                 ]}
               >
-                <Input placeholder="License"></Input>
+                <Input placeholder="Giấy Phép Kinh Doanh"></Input>
               </Form.Item>
             </Col>
             {/* 2nd column */}
             <Col>
-              <p className="modalContent">GHN ID</p>
+              <p className="modalContent">Mã GHN</p>
               <Form.Item
                 name="ghnId"
                 initialValue={record.ghnId}
                 rules={[
                   {
                     required: true,
-                    message: "Please enter ghn id!",
+                    message: "Vui lòng nhập mã GHN!",
                   },
                 ]}
               >
-                <Input placeholder="GHN ID"></Input>
+                <Input placeholder="Mã GHN"></Input>
               </Form.Item>
             </Col>
             {/* 3rd column */}
             <Col>
-              <p className="modalContent">Status</p>
+              <p className="modalContent">Trạng Thái</p>
               <Form.Item
                 name="isActivate"
                 initialValue={record.isActivate} // Ensure initial value is a boolean
                 rules={[
                   {
                     required: true,
-                    message: "Please select status!",
+                    message: "Vui lòng chọn trạng thái!",
                   },
                 ]}
               >
-                <Select placeholder="Select Status">
-                  <Select.Option value={true}>Active</Select.Option>
-                  <Select.Option value={false}>Inactive</Select.Option>
+                <Select placeholder="Trạng Thái">
+                  <Select.Option value={true}>Kích Hoạt</Select.Option>
+                  <Select.Option value={false}>Vô Hiệu</Select.Option>
                 </Select>
               </Form.Item>
             </Col>
@@ -361,20 +358,20 @@ const UpdateShop = (props) => {
           <Row>
             {/* 1st column */}
             <Col>
-              <p className="modalContent">Shop Address</p>
+              <p className="modalContent">Địa Chỉ</p>
               <Form.Item
                 name="shopAddress"
                 initialValue={record.shopAddress}
                 rules={[
                   {
                     required: true,
-                    message: "Please enter shop address!",
+                    message: "Vui lòng nhập địa chỉ!",
                   },
                 ]}
               >
                 <Input
                   style={{ width: "820px" }}
-                  placeholder="Shop Address"
+                  placeholder="Địa Chỉ"
                   value={`${selectedWard ? selectedWard.WardName + ", " : ""}${
                     selectedDistrict ? selectedDistrict.DistrictName + ", " : ""
                   }${selectedProvince ? selectedProvince.ProvinceName : ""}`}
@@ -399,7 +396,7 @@ const UpdateShop = (props) => {
                 }}
               >
                 <EditOutlined />
-                Edit Shop
+                Chỉnh Sửa
               </Button>
             </Form.Item>
           </Row>

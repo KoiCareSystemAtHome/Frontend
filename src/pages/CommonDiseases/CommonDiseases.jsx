@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Card, Input, Button, Spin, Modal, Form } from "antd";
-import { SearchOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+  SearchOutlined,
+  PlusOutlined,
+  ReloadOutlined,
+} from "@ant-design/icons";
 import { useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -52,7 +56,7 @@ const CommonDiseases = () => {
   return (
     <div className="mx-auto p-4">
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-semibold">Common Diseases</h1>
+        <h1 className="text-2xl font-semibold">Bệnh Thường Gặp</h1>
         {/* Create Button */}
         <AddCommonDiseases onClose={handleCloseModal} />
       </div>
@@ -61,18 +65,19 @@ const CommonDiseases = () => {
       <div>
         <Input
           style={{ width: "200px", marginRight: "10px" }}
-          placeholder="Search by Disease Name"
+          placeholder="Tên Bệnh"
           prefix={<SearchOutlined />}
           className="mb-6"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
         <Button
+          icon={<ReloadOutlined />}
           type="default"
           onClick={handleResetFilters}
           //disabled={!searchTitle && !searchDate && !searchStatus} // Disable when no filters applied
         >
-          Reset Filters
+          Cài lại bộ lọc
         </Button>
       </div>
 
@@ -104,7 +109,7 @@ const CommonDiseases = () => {
                       block
                       onClick={() => handleViewDetails(disease.diseaseId)}
                     >
-                      View Details
+                      Xem chi tiết
                     </Button>
                   </div>
                 </Card>

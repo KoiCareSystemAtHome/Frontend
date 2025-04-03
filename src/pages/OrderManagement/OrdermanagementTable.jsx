@@ -1,4 +1,4 @@
-import { EyeOutlined } from "@ant-design/icons";
+import { EyeOutlined, ReloadOutlined } from "@ant-design/icons";
 import { Button, Pagination, Select, Spin, Table, Tag, message } from "antd";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -53,26 +53,51 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
 
   // Mapping of GHN statuses to shipType
   const ghnStatusToShipType = {
-    ready_to_pick: "ready_to_pick",
-    picking: "picked",
-    money_collect_picking: "picked",
-    picked: "picked",
-    storing: "storing",
-    transporting: "transporting",
-    sorting: "sorting",
-    delivering: "delivering",
-    money_collect_delivering: "delivering",
-    delivered: "delivered",
-    delivery_fail: "delivery_fail",
-    waiting_to_return: "waiting_to_return",
-    return: "returning",
-    return_transporting: "returning",
-    return_sorting: "returning",
-    returning: "returning",
-    return_fail: "return_fail",
-    returned: "returned",
-    cancel: "cancel",
+    ready_to_pick: "Mới tạo đơn",
+    picking: "Đang lấy hàng",
+    money_collect_picking: "Thu tiền người gửi",
+    picked: "Đã lấy hàng",
+    storing: "Nằm trong kho",
+    transporting: "Đang luân chuyển hàng",
+    sorting: "Đang phân loại hàng",
+    delivering: "Đang giao hàng",
+    money_collect_delivering: "Đang thu tiền",
+    delivered: "Giao hàng thành công",
+    delivery_fail: "Giao hàng thất bại",
+    waiting_to_return: "Đang đợi trả hàng",
+    return: "Trả hàng",
+    return_transporting: "Đang luân chuyển hàng trả",
+    return_sorting: "Đang phân loại hàng trả",
+    returning: "Đang đi trả hàng",
+    return_fail: "Trả hàng thất bại",
+    returned: "Trả hàng thành công",
+    cancel: "Hủy đơn hàng",
+    exception: "Đơn hàng ngoại lệ",
+    damage: "Hàng bị hư hỏng",
+    lost: "Hàng bị mất",
   };
+
+  // const ghnStatusToShipType = {
+  //   ready_to_pick: "ready_to_pick",
+  //   picking: "picked",
+  //   money_collect_picking: "picked",
+  //   picked: "picked",
+  //   storing: "storing",
+  //   transporting: "transporting",
+  //   sorting: "sorting",
+  //   delivering: "delivering",
+  //   money_collect_delivering: "delivering",
+  //   delivered: "delivered",
+  //   delivery_fail: "delivery_fail",
+  //   waiting_to_return: "waiting_to_return",
+  //   return: "returning",
+  //   return_transporting: "returning",
+  //   return_sorting: "returning",
+  //   returning: "returning",
+  //   return_fail: "return_fail",
+  //   returned: "returned",
+  //   cancel: "cancel",
+  // };
 
   useEffect(() => {
     dispatch(fetchProvinces());
@@ -345,7 +370,7 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
       // Update order status to "Confirmed"
       await dispatch(updateOrderStatus({ orderId, status: "Confirmed" }));
 
-      message.success("Order confirmed and updated successfully");
+      message.success("Đơn hàng đã được xác nhận và cập nhật thành công.");
 
       // Refresh the order list
       const updatedOrders = await dispatch(
@@ -403,37 +428,37 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
       render: (_, __, index) => index + 1 + (currentPage - 1) * pageSize,
     },
     {
-      title: "Customer Name",
+      title: "Tên Thành Viên",
       dataIndex: "customerName",
       key: "customerName",
     },
     {
-      title: "Province Name",
+      title: "Thành Phố/Tỉnh",
       dataIndex: ["customerAddress", "provinceName"],
       key: "provinceName",
     },
     {
-      title: "District Name",
+      title: "Quận/Huyện",
       dataIndex: ["customerAddress", "districtName"],
       key: "districtName",
     },
     {
-      title: "Ward Name",
+      title: "Phường/Xã",
       dataIndex: ["customerAddress", "wardName"],
       key: "wardName",
     },
     {
-      title: "Ship Type",
+      title: "Loại Ship",
       dataIndex: "shipType",
       key: "shipType",
     },
     {
-      title: "Order Code",
+      title: "Mã Đơn Hàng",
       dataIndex: "oder_code",
       key: "oder_code",
     },
     {
-      title: "Status",
+      title: "Trạng Thái",
       dataIndex: "computedStatus",
       key: "computedStatus",
       render: (status) => (
@@ -453,7 +478,7 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
       ),
     },
     {
-      title: "Ship Fee",
+      title: "Phí Ship",
       dataIndex: "shipFee",
       key: "shipFee",
       render: (shipFee) => (
@@ -461,7 +486,7 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
       ),
     },
     {
-      title: "Note",
+      title: "Ghi Chú",
       dataIndex: "note",
       key: "note",
     },
@@ -487,8 +512,8 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
             record.status === "In Progress" ||
             record.status === "Completed" ||
             record.status === "Fail"
-              ? "Confirmed"
-              : "Confirm"}
+              ? "Đã Xác Nhận"
+              : "Xác Nhận"}
           </Button>
           {["In Progress", "Confirmed", "Completed", "Fail"].includes(
             record.computedStatus
@@ -524,7 +549,7 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
       {/* Search Dropdowns */}
       <div className="flex space-x-3 mb-4">
         <Select
-          placeholder="Select Province"
+          placeholder="Thành Phố/Tỉnh"
           value={selectedProvince}
           onChange={setSelectedProvince}
           allowClear
@@ -536,7 +561,7 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
           }))}
         />
         <Select
-          placeholder="Select District"
+          placeholder="Quận/Huyện"
           value={selectedDistrict}
           onChange={setSelectedDistrict}
           allowClear
@@ -549,7 +574,7 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
           }))}
         />
         <Select
-          placeholder="Select Ward"
+          placeholder="Phường/Xã"
           value={selectedWard}
           onChange={setSelectedWard}
           allowClear
@@ -562,7 +587,7 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
           }))}
         />
         <Select
-          placeholder="Select Status"
+          placeholder="Trạng Thái"
           allowClear
           style={{ width: 200 }}
           value={selectedStatus}
@@ -575,11 +600,12 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
           ]}
         />
         <Button
+          icon={<ReloadOutlined />}
           onClick={resetFilters}
           type="default"
           style={{ marginLeft: 10 }}
         >
-          Reset Filters
+          Đặt lại bộ lọc
         </Button>
       </div>
 
@@ -601,7 +627,7 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
         showSizeChanger
         align="end"
         showTotal={(total, range) =>
-          `${range[0]}-${range[1]} of ${total} items`
+          `${range[0]}-${range[1]} / ${total} sản phẩm`
         }
         onChange={(page, pageSize) => {
           setCurrentPage(page);

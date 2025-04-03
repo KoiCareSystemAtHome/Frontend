@@ -171,7 +171,7 @@ const AdminLayout = ({ children }) => {
             },
             {
               key: "/admin/membership",
-              label: "Membership",
+              label: "Gói Thành Viên",
               style: { color: "white" },
               className: "group", // This makes the menu item act as a parent
               icon: (
@@ -191,7 +191,7 @@ const AdminLayout = ({ children }) => {
             },
             {
               key: "/admin/account",
-              label: "Account",
+              label: "Tài Khoản",
               className: "text-white",
               icon: (
                 <span>
@@ -212,19 +212,19 @@ const AdminLayout = ({ children }) => {
                   key: "/admin/account/member",
                   style: { color: "white" },
                   icon: <TeamOutlined style={{ color: "white" }} />,
-                  label: "Member",
+                  label: "Thành Viên",
                 },
                 {
                   key: "/admin/account/shop",
                   style: { color: "white" },
                   icon: <ShopOutlined style={{ color: "white" }} />,
-                  label: "Shop",
+                  label: "Cửa Hàng",
                 },
               ],
             },
             {
               key: "/admin/parameter",
-              label: "Parameter",
+              label: "Thông Số",
               className: "text-white",
               icon: (
                 <span>
@@ -243,7 +243,7 @@ const AdminLayout = ({ children }) => {
               children: [
                 {
                   key: "/admin/parameter/fish",
-                  label: "Fish",
+                  label: "Cá",
                   style: { color: "white" },
                   className: "group", // This makes the menu item act as a parent
                   icon: (
@@ -263,7 +263,7 @@ const AdminLayout = ({ children }) => {
                 },
                 {
                   key: "/admin/parameter/pond",
-                  label: "Pond",
+                  label: "Hồ",
                   style: { color: "white" },
                   className: "group", // This makes the menu item act as a parent
                   icon: (
@@ -286,7 +286,7 @@ const AdminLayout = ({ children }) => {
             {
               key: "/admin/diseases",
               className: "group",
-              label: "Common Diseases",
+              label: "Bệnh Thường Gặp",
               style: { color: "white" },
               icon: (
                 <span>
@@ -305,7 +305,7 @@ const AdminLayout = ({ children }) => {
             },
             {
               key: "/admin/report",
-              label: "Report",
+              label: "Báo Cáo",
               style: { color: "white" },
               className: "group",
               icon: (

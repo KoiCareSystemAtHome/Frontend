@@ -84,47 +84,61 @@ function Membership({ dataSource }) {
       render: (_, __, index) => index + 1 + (currentPage - 1) * pageSize,
     },
     {
-      title: "Package Title",
+      title: "Tên Gói",
       dataIndex: "packageTitle",
       key: "packageTitle",
     },
     {
-      title: "Description",
+      title: "Mô Tả",
       dataIndex: "packageDescription",
       key: "packageDescription",
     },
     {
-      title: "Package Price",
+      title: "Giá Gói",
       dataIndex: "packagePrice",
       key: "packagePrice",
+      width: 100,
+      render: (price) => {
+        // Check if price is a valid number, otherwise return a fallback
+        return price && !isNaN(price)
+          ? price.toLocaleString("vi-VN", {
+              style: "currency",
+              currency: "VND",
+            })
+          : "N/A"; // Or any fallback value like 0 or an empty string
+      },
     },
     {
-      title: "Package Type",
+      title: "Loại Gói",
       dataIndex: "type",
       key: "type",
+      width: 150,
     },
     {
-      title: "Start Date",
+      title: "Ngày Bắt Đầu",
       dataIndex: "startDate",
       key: "startDate",
+      width: 150,
       render: (date) =>
         date
-          ? dayjs.utc(date).tz("Asia/Ho_Chi_Minh").format("YYYY-MM-DD")
+          ? dayjs.utc(date).tz("Asia/Ho_Chi_Minh").format("DD-MM-YYYY")
           : "-",
     },
     {
-      title: "End Date",
+      title: "Ngày Kết Thúc",
       dataIndex: "endDate",
       key: "endDate",
+      width: 150,
       render: (date) =>
         date
-          ? dayjs.utc(date).tz("Asia/Ho_Chi_Minh").format("YYYY-MM-DD")
+          ? dayjs.utc(date).tz("Asia/Ho_Chi_Minh").format("DD-MM-YYYY")
           : "-",
     },
     {
-      title: "Period",
+      title: "Giai Đoạn",
       dataIndex: "peiod",
       key: "peiod",
+      width: 100,
       render: (text) => `${text} Days`, // Optional: Appends "Days" to the data dynamically
     },
     // {
@@ -153,8 +167,9 @@ function Membership({ dataSource }) {
     //   },
     // },
     {
-      title: "Edit",
+      title: "Chỉnh Sửa",
       key: "edit",
+      width: 100,
       render: (record) => {
         return renderUpdateMembership(record);
       },
@@ -203,14 +218,14 @@ function Membership({ dataSource }) {
       >
         <Input
           allowClear
-          placeholder="Search by Title"
+          placeholder="Tên Gói"
           value={searchTitle}
           onChange={(e) => setSearchTitle(e.target.value)}
           style={{ width: 220, borderRadius: 6, padding: "6px 10px" }}
         />
         <Input
           allowClear
-          placeholder="Search by Description"
+          placeholder="Mô Tả"
           value={searchDescription}
           onChange={(e) => setSearchDescription(e.target.value)}
           style={{ width: 250, borderRadius: 6, padding: "6px 10px" }}
@@ -224,18 +239,18 @@ function Membership({ dataSource }) {
         /> */}
         <Input
           allowClear
-          placeholder="Search by Type"
+          placeholder="Loại"
           value={searchType}
           onChange={(e) => setSearchType(e.target.value)}
           style={{ width: 220, borderRadius: 6, padding: "6px 10px" }}
         />
         <DatePicker
-          placeholder="Start Date"
+          placeholder="Ngày Bắt Đầu"
           value={searchStartDate}
           onChange={(date) => setSearchStartDate(date)}
         />
         <DatePicker
-          placeholder="End Date"
+          placeholder="Ngày Kết Thúc"
           value={searchEndDate}
           onChange={(date) => setSearchEndDate(date)}
         />
@@ -257,11 +272,12 @@ function Membership({ dataSource }) {
             gap: "6px",
           }}
         >
-          Reset Filters
+          Cài lại bộ lọc
         </Button>
       </div>
       <Spin spinning={loading} tip="Loading...">
         <Table
+          scroll={{ x: 1700 }}
           dataSource={paginatedData}
           columns={columns}
           pagination={false}

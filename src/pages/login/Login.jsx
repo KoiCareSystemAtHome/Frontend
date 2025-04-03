@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Form, Input, Button, Checkbox, message, notification } from "antd";
+import { Form, Input, Button, Checkbox, notification } from "antd";
 import LoginBackground from "../../assets/login-background.png";
 import Logo from "../../assets/logo.png";
 import { login } from "../../redux/slices/authSlice";
@@ -48,7 +48,7 @@ const LoginPage = () => {
         console.log("User role:", role);
 
         // Show success notification
-        openNotification("success", "Login successful! Redirecting...");
+        openNotification("success", "Đăng nhập thành công!");
 
         // Delay navigation slightly to show the notification
         setTimeout(() => {
@@ -102,9 +102,9 @@ const LoginPage = () => {
         {/* Welcome text */}
         <div className="mb-8">
           <p className="text-gray-600">
-            Welcome to <span className="text-orange-500">KOI GUARDIAN</span>
+            <span className="text-orange-500">KOI GUARDIAN</span>
           </p>
-          <h1 className="text-2xl font-bold text-gray-900">Sign in</h1>
+          <h1 className="text-2xl font-bold text-gray-900">ĐĂNG NHẬP</h1>
         </div>
 
         <Form
@@ -114,17 +114,17 @@ const LoginPage = () => {
         >
           {/* Email field */}
           <Form.Item
-            label="Enter your email address"
+            label="Email"
             name="username"
             className="mb-4"
             rules={[
-              { required: true, message: "Please input your email!" },
-              { type: "email", message: "Invalid email address!" },
+              { required: true, message: "Vui lòng nhập email!" },
+              { type: "email", message: "Email không khả dụng!" },
             ]}
           >
             <Input
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-colors"
-              placeholder="Email address"
+              placeholder="Email"
               value={username} // Bind to state
               onChange={(e) => setUsername(e.target.value)} // Update state on input change
             />
@@ -132,14 +132,14 @@ const LoginPage = () => {
 
           {/* Password field */}
           <Form.Item
-            label="Enter your Password"
+            label="Mật khẩu"
             name="password"
             className="mb-4"
-            rules={[{ required: true, message: "Please input your password!" }]}
+            rules={[{ required: true, message: "Vui lòng nhập mật khẩu!" }]}
           >
             <Input.Password
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-colors"
-              placeholder="Password"
+              placeholder="Mật khẩu"
               value={password} // Bind to state
               onChange={(e) => setPassword(e.target.value)} // Update state on input change
             />
@@ -161,7 +161,7 @@ const LoginPage = () => {
               href="forgot-password"
               className="text-sm text-orange-500 hover:text-orange-600"
             >
-              Forgot Password?
+              Quên mật khẩu?
             </a>
           </div>
 
@@ -174,26 +174,25 @@ const LoginPage = () => {
               size="large"
               style={{ backgroundColor: "orange" }}
             >
-              Sign in
+              Đăng nhập
             </Button>
           </Form.Item>
 
           {/* Divider */}
-          <div className="relative my-6">
+          {/* <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-200"></div>
             </div>
             <div className="relative flex justify-center">
-              <span className="bg-white px-4 text-gray-500 text-sm">OR</span>
+              <span className="bg-white px-4 text-gray-500 text-sm">Hoặc</span>
             </div>
-          </div>
+          </div> */}
 
           {/* Google Sign In */}
-          <Button
+          {/* <Button
             type="button"
             className="w-full h-12 flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 font-title"
           >
-            {/* Google Icon */}
             <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24">
               <path
                 d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -212,17 +211,17 @@ const LoginPage = () => {
                 fill="#EA4335"
               />
             </svg>
-            Sign in with Google
-          </Button>
+            Đăng nhập với Google
+          </Button> */}
 
           {/* Sign up link */}
           <div className="text-center mt-6">
-            <span className="text-gray-600">Don't have an Account? </span>
+            <span className="text-gray-600">Không có tài khoản? </span>
             <a
               href="/register"
               className="text-orange-500 hover:text-orange-600"
             >
-              Sign up
+              Đăng kí
             </a>
           </div>
         </Form>

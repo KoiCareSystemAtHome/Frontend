@@ -15,6 +15,7 @@ import useReportList from "../../hooks/useReportList";
 import { getListReportSelector } from "../../redux/selector";
 import { useNavigate } from "react-router";
 import dayjs from "dayjs";
+import { ReloadOutlined } from "@ant-design/icons";
 
 // const renderUpdateReport = (record) => <UpdateReport record={record} />;
 
@@ -32,8 +33,10 @@ function ReportTable({ dataSource }) {
   const [searchDate, setSearchDate] = useState(null);
   const [searchStatus, setSearchStatus] = useState(null);
 
-  const handleViewDetail = (reportId) => {
-    navigate(`/admin/report-detail/${reportId}`);
+  const handleViewDetail = (reportId, rowIndex) => {
+    navigate(`/admin/report-detail/${reportId}`, {
+      state: { rowIndex },
+    });
   };
 
   // Filter data based on search criteria
@@ -67,18 +70,20 @@ function ReportTable({ dataSource }) {
     //   key: "reportId",
     // },
     {
-      title: "Order",
+      title: "Đơn Hàng",
       //dataIndex: "orderId",
       key: "orderId",
       render: (_, __, index) => index + 1 + (currentPage - 1) * pageSize,
     },
     {
-      title: "Created Date",
+      title: "Ngày Tạo",
       dataIndex: "createdDate",
       key: "createdDate",
+      render: (value) =>
+        value ? dayjs(value).format("DD-MM-YYYY / HH:mm:ss") : "-",
     },
     {
-      title: "Reason",
+      title: "Lý Do",
       dataIndex: "reason",
       key: "reason",
       render: (_, record) => (
@@ -88,7 +93,7 @@ function ReportTable({ dataSource }) {
             src={record.image}
             alt="Report"
             style={{ objectFit: "cover", borderRadius: 5 }}
-            preview={{ mask: "View Image" }}
+            preview={{ mask: "Xem" }}
           />
           <span>{record.reason}</span>
         </div>
@@ -99,18 +104,50 @@ function ReportTable({ dataSource }) {
     //   dataIndex: "image",
     //   key: "image",
     // },
+    // {
+    //   title: "Trạng Thái",
+    //   dataIndex: "status",
+    //   key: "status",
+    //   render: (status) => {
+    //     let color = "green";
+    //     if (status.toLowerCase() === "pending") color = "gold";
+    //     else if (status.toLowerCase() === "reject") color = "red";
+    //     return (
+    //       <Tag
+    //         style={{
+    //           width: "80px",
+    //           textAlign: "center",
+    //           cursor: "pointer",
+    //           fontSize: "16px",
+    //           padding: "5px", // More padding for a larger tag
+    //         }}
+    //         color={color}
+    //       >
+    //         {status}
+    //       </Tag>
+    //     );
+    //   },
+    // },
     {
-      title: "Status",
+      title: "Trạng Thái",
       dataIndex: "status",
       key: "status",
       render: (status) => {
         let color = "green";
-        if (status.toLowerCase() === "pending") color = "gold";
-        else if (status.toLowerCase() === "reject") color = "red";
+        let displayText = "Chấp nhận"; // Mặc định là "Chấp nhận"
+
+        if (status.toLowerCase() === "pending") {
+          color = "gold";
+          displayText = "Đang chờ";
+        } else if (status.toLowerCase() === "reject") {
+          color = "red";
+          displayText = "Từ chối";
+        }
+
         return (
           <Tag
             style={{
-              width: "80px",
+              width: "90px",
               textAlign: "center",
               cursor: "pointer",
               fontSize: "16px",
@@ -118,7 +155,7 @@ function ReportTable({ dataSource }) {
             }}
             color={color}
           >
-            {status}
+            {displayText}
           </Tag>
         );
       },
@@ -128,13 +165,18 @@ function ReportTable({ dataSource }) {
       dataIndex: "action",
       key: "action",
       // render: (_, record) => renderUpdateReport(record),
-      render: (_, record) => (
+      render: (_, record, index) => (
         <div style={{ display: "flex", gap: "10px" }}>
           <Button
             type="primary"
-            onClick={() => handleViewDetail(record.reportId)}
+            onClick={() =>
+              handleViewDetail(
+                record.reportId,
+                index + 1 + (currentPage - 1) * pageSize
+              )
+            }
           >
-            View
+            Xem
           </Button>
         </div>
       ),
@@ -171,7 +213,7 @@ function ReportTable({ dataSource }) {
             setSearchDate(date);
             setCurrentPage(1); // Reset to first page when searching
           }}
-          placeholder="Search by Created Date"
+          placeholder="Ngày Tạo"
         />
         <Select
           value={searchStatus}
@@ -181,18 +223,18 @@ function ReportTable({ dataSource }) {
             setCurrentPage(1); // Reset to first page when searching
           }}
           allowClear
-          placeholder="Search by Status"
+          placeholder="Trạng Thái"
         >
-          <Select.Option value="approve">Approved</Select.Option>
-          <Select.Option value="pending">Pending</Select.Option>
-          <Select.Option value="reject">Reject</Select.Option>
+          <Select.Option value="approve">Chấp Nhận</Select.Option>
+          <Select.Option value="reject">Từ Chối</Select.Option>
         </Select>
         <Button
+          icon={<ReloadOutlined />}
           type="default"
           onClick={handleResetFilters}
           //disabled={!searchTitle && !searchDate && !searchStatus} // Disable when no filters applied
         >
-          Reset Filters
+          Cài lại bộ lọc
         </Button>
       </Space>
 

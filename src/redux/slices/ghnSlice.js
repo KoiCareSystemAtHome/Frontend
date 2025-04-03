@@ -198,7 +198,8 @@ const ghnSlice = createSlice({
       })
       .addCase(createShopGHN.fulfilled, (state, action) => {
         state.loading = false;
-        state.orders = action.payload;
+        //state.orders = action.payload;
+        state.orders.push(action.payload); // Thêm đơn hàng mới vào danh sách orders
       })
       .addCase(createShopGHN.rejected, (state, action) => {
         state.loading = false;

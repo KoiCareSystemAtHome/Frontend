@@ -46,7 +46,7 @@ const LocationSelector = ({
       <Select
         allowClear
         className="w-full"
-        placeholder="Select Province"
+        placeholder="Thành phố/Tỉnh"
         value={selectedProvince || undefined}
         onChange={(value) => onLocationChange("province", value)}
         showSearch
@@ -65,7 +65,7 @@ const LocationSelector = ({
       <Select
         allowClear
         className="w-full"
-        placeholder="Select District"
+        placeholder="Quận/Huyện"
         value={selectedDistrict || undefined}
         onChange={(value) => onLocationChange("district", value)}
         disabled={!selectedProvince}
@@ -85,7 +85,7 @@ const LocationSelector = ({
       <Select
         allowClear
         className="w-full"
-        placeholder="Select Ward"
+        placeholder="Phường/Xã"
         value={selectedWard || undefined}
         onChange={(value) => onLocationChange("ward", value)}
         disabled={!selectedDistrict}

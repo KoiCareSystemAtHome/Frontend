@@ -50,7 +50,7 @@ const AddGhn = () => {
       !shopData.phone ||
       !shopData.address
     ) {
-      message.error("Please fill all fields!");
+      message.error("Vui Lòng Nhập Thông Tin!");
       return;
     }
 
@@ -68,32 +68,32 @@ const AddGhn = () => {
 
   return (
     <Form layout="vertical" onFinish={handleSubmit}>
-      <Form.Item label="Shop Name">
+      <Form.Item label="Tên Cửa Hàng">
         <Input
           value={shopData.name}
-          placeholder="name"
+          placeholder="Tên cửa hàng"
           onChange={(e) => handleChange("name", e.target.value)}
         />
       </Form.Item>
 
-      <Form.Item label="Phone">
+      <Form.Item label="Số Điện Thoại">
         <Input
           value={shopData.phone}
-          placeholder="phone"
+          placeholder="Số điện thoại"
           onChange={(e) => handleChange("phone", e.target.value)}
         />
       </Form.Item>
 
-      <Form.Item label="Address">
+      <Form.Item label="Địa Chỉ">
         <Input
           value={shopData.address}
-          placeholder="address"
+          placeholder="Địa chỉ"
           onChange={(e) => handleChange("address", e.target.value)}
         />
       </Form.Item>
 
       {/* Location Selector */}
-      <Form.Item label="Location">
+      <Form.Item label="Thành Phố / Quận / Phường">
         <LocationSelector
           selectedProvince={shopData.provinceId}
           selectedDistrict={shopData.districtId}
@@ -103,7 +103,7 @@ const AddGhn = () => {
       </Form.Item>
 
       <Button type="primary" onClick={handleSubmit} loading={loading}>
-        Register GHN
+        Đăng Kí
       </Button>
     </Form>
   );

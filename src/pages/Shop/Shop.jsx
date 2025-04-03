@@ -17,7 +17,7 @@ const Shop = () => {
           alignItems: "center",
         }}
       >
-        <div>Shop</div>
+        <div>Cửa Hàng</div>
 
         <div
           style={{

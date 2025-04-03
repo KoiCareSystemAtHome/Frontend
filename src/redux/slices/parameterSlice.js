@@ -24,26 +24,6 @@ export const getListParameter = createAsyncThunk(
 );
 
 // POST
-// export const createParameter = createAsyncThunk(
-//   "Parameter/create",
-//   async ({ type, file }) => {
-//     try {
-//       const formData = new FormData();
-//       formData.append("file", file);
-//       formData.append("type", type); // Fish or Pond
-
-//       const res = await postRequest("Parameter/upsert-from-excel", formData, {
-//         headers: { "Content-Type": "multipart/form-data" },
-//       });
-
-//       console.log(`Created ${type} parameters`, res);
-//       return res.data;
-//     } catch (error) {
-//       console.error(`Error uploading ${type} parameters`, error);
-//     }
-//   }
-// );
-
 export const createParameter = createAsyncThunk(
   "parameter/createParameter",
   async ({ type, file }, { rejectWithValue, dispatch }) => {

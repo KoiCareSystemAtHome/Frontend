@@ -15,7 +15,10 @@ import {
   PlusOutlined,
 } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
-import { createParameter } from "../../../redux/slices/parameterSlice";
+import {
+  createParameter,
+  resetStatus,
+} from "../../../redux/slices/parameterSlice";
 
 const { Text, Paragraph } = Typography;
 const { Dragger } = Upload;
@@ -23,7 +26,7 @@ const { Dragger } = Upload;
 const AddPondParameter = ({ type = "Pond" }) => {
   const dispatch = useDispatch();
   const { loading, success, error } = useSelector(
-    (state) => state.parameter || {}
+    (state) => state.parameterSlice || {}
   );
 
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -31,11 +34,12 @@ const AddPondParameter = ({ type = "Pond" }) => {
 
   const showAddModal = () => {
     setIsModalVisible(true);
+    dispatch(resetStatus()); // Reset status when opening the modal
   };
 
   const handleOk = () => {
     if (!file) {
-      message.error("Please upload a file before saving.");
+      message.error("Vui lòng tải tệp lên trước khi lưu.");
       return;
     }
     dispatch(createParameter({ type, file }));
@@ -44,6 +48,7 @@ const AddPondParameter = ({ type = "Pond" }) => {
   const handleCancel = () => {
     setIsModalVisible(false);
     setFile(null);
+    dispatch(resetStatus()); // Reset status when canceling the modal
   };
 
   // Close the modal on success
@@ -51,14 +56,16 @@ const AddPondParameter = ({ type = "Pond" }) => {
     if (success) {
       setIsModalVisible(false);
       setFile(null);
-      message.success("Parameter created successfully!");
+      message.success("Thông số được tạo thành công!");
+      dispatch(resetStatus()); // Reset success after handling
     }
   }, [success]);
 
   // Show error message if the action fails
   useEffect(() => {
     if (error) {
-      message.error(error);
+      message.error("Đã xảy ra lỗi trong quá trình tạo tham số.");
+      dispatch(resetStatus()); // Reset error after displaying
     }
   }, [error]);
 
@@ -74,7 +81,7 @@ const AddPondParameter = ({ type = "Pond" }) => {
     accept: ".xlsx,.xls",
     beforeUpload: (file) => {
       setFile(file);
-      message.success(`${file.name} selected successfully.`);
+      message.success(`${file.name} đã được chọn thành công.`);
       return false; // Prevent auto-upload
     },
   };
@@ -89,18 +96,18 @@ const AddPondParameter = ({ type = "Pond" }) => {
         style={buttonStyle}
         onClick={showAddModal}
       >
-        Add {type} Parameter
+        Thêm Thông Số Hồ
       </Button>
 
       <Modal
-        title={`${type} Parameter Setting`}
+        title={`Thêm Thông Số Hồ`}
         open={isModalVisible}
         onOk={handleOk}
         onCancel={handleCancel}
         width={800}
         footer={[
           <Button key="back" onClick={handleCancel}>
-            Cancel
+            Hủy Bỏ
           </Button>,
           <Button
             key="submit"
@@ -108,12 +115,12 @@ const AddPondParameter = ({ type = "Pond" }) => {
             onClick={handleOk}
             loading={loading}
           >
-            Save
+            Lưu
           </Button>,
         ]}
       >
         <Alert
-          message="Please use the provided templates to update information faster."
+          message="Vui lòng sử dụng các mẫu được cung cấp để cập nhật thông tin nhanh hơn."
           type="info"
           showIcon
           style={{ marginBottom: "24px" }}
@@ -130,7 +137,7 @@ const AddPondParameter = ({ type = "Pond" }) => {
               strong
               style={{ fontSize: "16px", marginBottom: "16px" }}
             >
-              1. Download and fill in the template
+              1. Tải xuống và điền vào mẫu
             </Paragraph>
 
             <Button
@@ -139,7 +146,7 @@ const AddPondParameter = ({ type = "Pond" }) => {
               href={`/sample_${type.toLowerCase()}_parameters.xlsx`}
               download
             >
-              Download {type} Template
+              Tải mẫu thông số {type}
             </Button>
           </Card>
 
@@ -149,7 +156,7 @@ const AddPondParameter = ({ type = "Pond" }) => {
               strong
               style={{ fontSize: "16px", marginBottom: "16px" }}
             >
-              2. Upload the completed template
+              2. Tải lên mẫu đã hoàn thành
             </Paragraph>
 
             <Dragger
@@ -162,15 +169,14 @@ const AddPondParameter = ({ type = "Pond" }) => {
                 <InboxOutlined style={{ fontSize: "48px", color: "#1890ff" }} />
               </p>
               <Paragraph style={{ textAlign: "center", marginBottom: "8px" }}>
-                Please drag and drop or click here to upload the Excel file
-                containing the {type.toLowerCase()} information.
+                Vui lòng kéo và thả hoặc nhấp vào đây để tải lên tệp Excel có
+                chứa thông tin thông số {type.toLowerCase()}.
               </Paragraph>
               <Text
                 type="secondary"
                 style={{ textAlign: "center", display: "block" }}
               >
-                Only Excel files (.xlsx, .xls) following the downloaded template
-                are accepted.
+                Chỉ chấp nhận các tệp Excel (.xlsx, .xls) theo mẫu đã tải xuống.
               </Text>
             </Dragger>
           </Card>

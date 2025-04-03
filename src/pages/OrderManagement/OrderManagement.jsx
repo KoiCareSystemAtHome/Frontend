@@ -17,7 +17,7 @@ const OrderManagement = () => {
             alignItems: "center",
           }}
         >
-          <div>Order Management</div>
+          <div>Quản Lý Đơn Đặt Hàng</div>
 
           <div
             style={{

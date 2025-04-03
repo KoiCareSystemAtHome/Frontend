@@ -18,6 +18,7 @@ import {
   CheckCircleOutlined,
   CloseCircleOutlined,
   EyeOutlined,
+  ReloadOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router";
 import { approveBlog, getListBlog } from "../../redux/slices/blogSlice";
@@ -78,12 +79,12 @@ function BlogTable({ dataSource }) {
     const newStatus = !isApproved;
 
     Modal.confirm({
-      title: "Confirm Status Change",
-      content: `Are you sure you want to change the status to ${
-        newStatus ? "Approved" : "Rejected"
+      title: "Xác nhận Thay đổi Trạng thái",
+      content: `Bạn có chắc chắn muốn thay đổi trạng thái thành ${
+        newStatus ? "Chấp Nhận" : "Từ Chối"
       }?`,
-      okText: "Yes",
-      cancelText: "No",
+      okText: "Có",
+      cancelText: "Không",
       centered: true,
       onOk: async () => {
         try {
@@ -91,10 +92,10 @@ function BlogTable({ dataSource }) {
           dispatch(getListBlog()); // Refresh list after update
 
           notification.success({
-            message: "Status Updated",
-            description: `Blog status changed to ${
-              newStatus ? "Approved" : "Rejected"
-            }`,
+            message: "Trạng thái đã được cập nhật",
+            // description: `Bạn có chắc chắn muốn thay đổi trạng thái thành ${
+            //   newStatus ? "Chấp Nhận" : "Từ Chối"
+            // }`,
             placement: "top",
           });
         } catch (error) {
@@ -125,7 +126,7 @@ function BlogTable({ dataSource }) {
       render: (_, __, index) => index + 1 + (currentPage - 1) * pageSize,
     },
     {
-      title: "Title",
+      title: "Tựa Đề",
       key: "title",
       render: (record) => (
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -147,7 +148,7 @@ function BlogTable({ dataSource }) {
       key: "tag",
     },
     {
-      title: "Type",
+      title: "Loại",
       dataIndex: "type",
       key: "type",
     },
@@ -167,12 +168,12 @@ function BlogTable({ dataSource }) {
     //   key: "name",
     // },
     {
-      title: "View",
+      title: "Số Lượng View",
       dataIndex: "view",
       key: "view",
     },
     {
-      title: "Status",
+      title: "Trạng Thái",
       dataIndex: "isApproved",
       key: "isApproved",
       render: (isApproved, record) => {
@@ -184,7 +185,7 @@ function BlogTable({ dataSource }) {
             color={approved ? "green" : "red"}
             onClick={() => handleStatusChange(record.blogId, approved)}
           >
-            {approved ? "Approved" : "Rejected"}
+            {approved ? "Chấp Thuận" : "Từ Chối"}
           </Tag>
         );
       },
@@ -243,7 +244,7 @@ function BlogTable({ dataSource }) {
         }}
       >
         <Input
-          placeholder="Search by title"
+          placeholder="Tựa Đề"
           value={searchTitle}
           onChange={(e) => {
             setSearchTitle(e.target.value);
@@ -251,7 +252,7 @@ function BlogTable({ dataSource }) {
           }}
           style={{ width: 200 }}
         />
-        <DatePicker
+        {/* <DatePicker
           placeholder="Select report date"
           value={searchDate}
           onChange={(date) => {
@@ -259,9 +260,9 @@ function BlogTable({ dataSource }) {
             setCurrentPage(1);
           }}
           style={{ width: 200 }}
-        />
+        /> */}
         <Select
-          placeholder="Select status"
+          placeholder="Trạng Thái"
           value={searchStatus}
           onChange={(value) => {
             setSearchStatus(value);
@@ -270,15 +271,16 @@ function BlogTable({ dataSource }) {
           style={{ width: 200 }}
           allowClear
         >
-          <Select.Option value="approved">Approved</Select.Option>
-          <Select.Option value="rejected">Rejected</Select.Option>
+          <Select.Option value="approved">Chấp Thuận</Select.Option>
+          <Select.Option value="rejected">Từ Chối</Select.Option>
         </Select>
         <Button
+          icon={<ReloadOutlined />}
           type="default"
           onClick={handleResetFilters}
           //disabled={!searchTitle && !searchDate && !searchStatus} // Disable when no filters applied
         >
-          Reset Filters
+          Cài lại bộ lọc
         </Button>
       </div>
 

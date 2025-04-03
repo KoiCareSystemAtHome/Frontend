@@ -17,7 +17,7 @@ const Blog = () => {
           alignItems: "center",
         }}
       >
-        <div>Blog</div>
+        <div>Bài Viết</div>
 
         <div
           style={{

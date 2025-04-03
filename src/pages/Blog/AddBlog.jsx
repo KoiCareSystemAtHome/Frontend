@@ -221,7 +221,7 @@ const AddBlog = ({ onClose }) => {
     dispatch(createBlog(payload))
       .unwrap()
       .then(() => {
-        openNotification("success", "Blog Created Successfully!");
+        openNotification("success", "Thêm Bài Viết Thành Công!");
         dispatch(getListBlog());
         handleCancel();
         onClose();
@@ -248,13 +248,13 @@ const AddBlog = ({ onClose }) => {
         style={buttonStyle}
         onClick={showAddModal}
       >
-        Create New Blog
+        Thêm Bài Viết
       </Button>
 
       <Modal
         className="custom-modal"
         centered
-        title="Create New Blog"
+        title="Thêm Bài Viết Mới"
         open={isAddOpen}
         onCancel={handleCancel}
         width={870}
@@ -265,17 +265,17 @@ const AddBlog = ({ onClose }) => {
           <Row style={{ justifyContent: "space-between" }}>
             {/* 1st column */}
             <Col>
-              <p className="modalContent">Blog Title</p>
+              <p className="modalContent">Tựa Đề</p>
               <Form.Item
                 name="title"
                 rules={[
                   {
                     required: true,
-                    message: "Please enter blog title!",
+                    message: "Vui lòng nhập tựa đề!",
                   },
                 ]}
               >
-                <Input placeholder="Blog Title" />
+                <Input allowClear placeholder="Tựa Đề" />
               </Form.Item>
             </Col>
             {/* 2nd column */}
@@ -286,7 +286,7 @@ const AddBlog = ({ onClose }) => {
                 rules={[
                   {
                     required: true,
-                    message: "Please input tag!",
+                    message: "Vui lòng nhập tag!",
                   },
                 ]}
               >
@@ -295,19 +295,19 @@ const AddBlog = ({ onClose }) => {
             </Col>
             {/* 3rd column */}
             <Col>
-              <p className="modalContent">Status</p>
+              <p className="modalContent">Trạng Thái</p>
               <Form.Item
                 name="isApproved"
                 rules={[
                   {
                     required: true,
-                    message: "Please select status!",
+                    message: "Vui lòng chọn trạng thái!",
                   },
                 ]}
               >
                 <Select placeholder="Status" style={{ width: "270px" }}>
-                  <Select.Option value="true">Approved</Select.Option>
-                  <Select.Option value="false">Rejected</Select.Option>
+                  <Select.Option value="true">Chấp Thuận</Select.Option>
+                  <Select.Option value="false">Từ Chối</Select.Option>
                 </Select>
               </Form.Item>
             </Col>
@@ -317,34 +317,35 @@ const AddBlog = ({ onClose }) => {
           <Row>
             {/* 1st column */}
             <Col>
-              <p className="modalContent">Type</p>
+              <p className="modalContent">Loại</p>
               <Form.Item
                 name="type"
                 rules={[
                   {
                     required: true,
-                    message: "Please input type!",
+                    message: "Vui lòng nhập loại!",
                   },
                 ]}
               >
-                <Input placeholder="Type" />
+                <Input allowClear placeholder="Loại" />
               </Form.Item>
             </Col>
             {/* 2nd column */}
             <Col style={{ marginLeft: "6px" }}>
-              <p className="modalContent">Product</p>
+              <p className="modalContent">Sản Phẩm</p>
               <Form.Item
                 name="productIds"
                 rules={[
                   {
                     required: true,
-                    message: "Please select product!",
+                    message: "Vui lòng chọn sản phẩm!",
                   },
                 ]}
               >
                 <Select
+                  allowClear
                   mode="multiple" // Allow multiple selections
-                  placeholder="Select products"
+                  placeholder="Sản Phẩm"
                   style={{ width: "270px" }}
                   optionFilterProp="children" // Enable search by product name
                   showSearch
@@ -380,16 +381,18 @@ const AddBlog = ({ onClose }) => {
           {/* 3rd Row */}
           <Row>
             <Col>
-              <p className="modalContent">Blog Content</p>
+              <p className="modalContent">Nội Dung Bài Viết</p>
               <Form.Item
                 name="content"
                 rules={[
                   {
                     required: true,
-                    message: "Please enter blog content!",
+                    message: "Vui lòng nhập nội dung bài viết!",
                     validator: () => {
                       if (!content) {
-                        return Promise.reject("Please enter blog content!");
+                        return Promise.reject(
+                          "Vui lòng nhập nội dung bài viết!"
+                        );
                       }
                       return Promise.resolve();
                     },
@@ -411,8 +414,16 @@ const AddBlog = ({ onClose }) => {
 
           {/* 4th Row */}
           <Col>
-            <p className="modalContent">Image (Optional)</p>
-            <Form.Item name="Image">
+            <p className="modalContent">Hình Ảnh</p>
+            <Form.Item
+              name="Image"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng upload ảnh!",
+                },
+              ]}
+            >
               <Upload.Dragger
                 name="file"
                 beforeUpload={beforeUpload}
@@ -425,10 +436,10 @@ const AddBlog = ({ onClose }) => {
                   <InboxOutlined />
                 </p>
                 <p className="ant-upload-text">
-                  Click or drag file to this area to upload
+                  Nhấp hoặc kéo tệp vào khu vực này để tải lên
                 </p>
                 <p className="ant-upload-hint">
-                  Supports a single image file. Click or drag to upload.
+                  Hỗ trợ một tệp hình ảnh duy nhất. Nhấp hoặc kéo để tải lên.
                 </p>
               </Upload.Dragger>
             </Form.Item>
@@ -452,7 +463,7 @@ const AddBlog = ({ onClose }) => {
                     icon={<DeleteOutlined />}
                     onClick={handleRemoveImage}
                   >
-                    Remove Image
+                    Bỏ Ảnh
                   </Button>
                 </div>
               </div>
@@ -473,7 +484,7 @@ const AddBlog = ({ onClose }) => {
                 }}
               >
                 <PlusOutlined />
-                Create Blog
+                Thêm Bài VIết
               </Button>
             </Form.Item>
           </Row>

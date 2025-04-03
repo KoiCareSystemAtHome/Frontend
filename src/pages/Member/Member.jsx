@@ -17,7 +17,7 @@ const Member = () => {
           alignItems: "center",
         }}
       >
-        <div>Member</div>
+        <div>Thành Viên</div>
 
         <div
           style={{

@@ -98,7 +98,7 @@ const UpdateMembership = (props) => {
             handleEditCancel();
             openNotification(
               "success",
-              `Updated package "${record.packageTitle}" successfully!`
+              `Cập Nhật "${record.packageTitle}" Thành Công!`
             );
             dispatch(getListMembershipPackage());
           })
@@ -134,7 +134,7 @@ const UpdateMembership = (props) => {
       <Modal
         className="custom-modal"
         centered
-        title="Edit Membership"
+        title="Chỉnh Sửa Thông Tin Gói Thành Viên"
         open={isEditOpen}
         onCancel={handleEditCancel}
         width={870}
@@ -145,53 +145,55 @@ const UpdateMembership = (props) => {
           <Row style={{ justifyContent: "space-between" }}>
             {/* 1st column */}
             <Col>
-              <p className="modalContent">Package Title</p>
+              <p className="modalContent">Tên Gói</p>
               <Form.Item
                 name="packageTitle"
                 initialValue={record.packageTitle}
                 rules={[
                   {
                     required: true,
-                    message: "Please enter package title!",
+                    message: "Vui lòng nhập tên gói!",
                   },
                 ]}
               >
-                <Input placeholder="Package Title"></Input>
+                <Input placeholder="Tên Gói"></Input>
               </Form.Item>
             </Col>
             {/* 2nd column */}
             <Col>
-              <p className="modalContent">Description</p>
+              <p className="modalContent">Mô Tả</p>
               <Form.Item
                 name="packageDescription"
                 initialValue={record.packageDescription}
                 rules={[
                   {
                     required: true,
-                    message: "Please enter description!",
+                    message: "Vui lòng nhập mô tả!",
                   },
                 ]}
               >
-                <Input placeholder="Description"></Input>
+                <Input placeholder="Mô Tả"></Input>
               </Form.Item>
             </Col>
             {/* 3rd column */}
             <Col>
-              <p className="modalContent">Price</p>
+              <p className="modalContent">Giá</p>
               <Form.Item
                 name="packagePrice"
                 initialValue={record.packagePrice}
                 rules={[
                   {
                     required: true,
-                    message: "Please enter price!",
+                    message: "Vui lòng nhập giá!",
                   },
                 ]}
               >
-                <InputNumber
+                <Input
+                  allowClear
                   style={{ width: "270px" }}
-                  placeholder="Price"
-                ></InputNumber>
+                  placeholder="Giá"
+                  type="number"
+                ></Input>
               </Form.Item>
             </Col>
           </Row>
@@ -199,23 +201,23 @@ const UpdateMembership = (props) => {
           <Row style={{ justifyContent: "space-between" }}>
             {/* 1st column */}
             <Col>
-              <p className="modalContent">Package Type</p>
+              <p className="modalContent">Loại Gói</p>
               <Form.Item
                 name="type"
                 initialValue={record.type}
                 rules={[
                   {
                     required: true,
-                    message: "Please select package type!",
+                    message: "Vui lòng nhập loại gói!",
                   },
                 ]}
               >
-                <Input placeholder="Package Type"></Input>
+                <Input placeholder="Loại Gói"></Input>
               </Form.Item>
             </Col>
             {/* 2nd column */}
             <Col>
-              <p className="modalContent">Start Date</p>
+              <p className="modalContent">Ngày Bắt Đầu</p>
               <Form.Item
                 name="startDate"
                 initialValue={
@@ -229,19 +231,19 @@ const UpdateMembership = (props) => {
                 rules={[
                   {
                     required: true,
-                    message: "Please select start date!",
+                    message: "Vui lòng chọn ngày bắt đầu!",
                   },
                 ]}
               >
                 <DatePicker
                   style={{ width: "270px" }}
-                  placeholder="Start Date"
+                  placeholder="Ngày Bắt Đầu"
                 ></DatePicker>
               </Form.Item>
             </Col>
             {/* 3rd column */}
             <Col>
-              <p className="modalContent">End Date</p>
+              <p className="modalContent">Ngày Kết Thúc</p>
               <Form.Item
                 name="endDate"
                 initialValue={
@@ -255,13 +257,13 @@ const UpdateMembership = (props) => {
                 rules={[
                   {
                     required: true,
-                    message: "Please select end date!",
+                    message: "Vui lòng chọn ngày kết thúc!",
                   },
                 ]}
               >
                 <DatePicker
                   style={{ width: "270px" }}
-                  placeholder="End Date"
+                  placeholder="Ngày Kết Thúc"
                 ></DatePicker>
               </Form.Item>
             </Col>
@@ -270,18 +272,18 @@ const UpdateMembership = (props) => {
           <Row>
             {/* 1st column */}
             <Col>
-              <p className="modalContent">Period</p>
+              <p className="modalContent">Giai Đoạn</p>
               <Form.Item
                 name="peiod"
                 initialValue={record.peiod}
                 rules={[
                   {
                     required: true,
-                    message: "Please input period!",
+                    message: "Vui lòng nhập giai đoạn!",
                   },
                 ]}
               >
-                <Input placeholder="Period"></Input>
+                <Input placeholder="Giai Đoạn"></Input>
               </Form.Item>
             </Col>
           </Row>
@@ -300,7 +302,7 @@ const UpdateMembership = (props) => {
                 }}
               >
                 <EditOutlined />
-                Edit Membership
+                Chỉnh Sửa
               </Button>
             </Form.Item>
           </Row>

@@ -12,7 +12,7 @@ import {
   Table,
 } from "antd";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { getListReportSelector } from "../../redux/selector";
 import useReportList from "../../hooks/useReportList";
 import { getOrderDetail } from "../../redux/slices/orderSlice";
@@ -20,11 +20,13 @@ import {
   getListReport,
   updateReportStatus,
 } from "../../redux/slices/reportSlice";
-import { EditOutlined } from "@ant-design/icons";
+import { EditOutlined, LeftOutlined } from "@ant-design/icons";
+import dayjs from "dayjs";
 
 function ReportDetail() {
   const navigate = useNavigate();
   const { reportId } = useParams();
+  const location = useLocation();
   const dispatch = useDispatch();
   const reportList = useSelector(getListReportSelector);
   const {
@@ -36,8 +38,8 @@ function ReportDetail() {
     useSelector((state) => state.reportSlice || {});
   const [reportStatus, setReportStatus] = useState(null);
 
-  //   // Call the useReportList hook at the top level
-  //   const fetchReportList = useReportList();
+  // Get the rowIndex from the navigation state
+  const rowIndex = location.state?.rowIndex || "N/A"; // Fallback to "N/A" if not provided
 
   // Fetch the report list if it's not already loaded
   useEffect(() => {
@@ -57,6 +59,14 @@ function ReportDetail() {
     () => reportList.find((item) => item.reportId === reportId) || {},
     [reportList, reportId]
   );
+
+  // Calculate rowIndex as a fallback if not provided in navigation state
+  if (!rowIndex) {
+    const reportIndex = reportList.findIndex(
+      (item) => item.reportId === reportId
+    );
+    rowIndex = reportIndex !== -1 ? reportIndex + 1 : "N/A"; // Add 1 to convert to 1-based index
+  }
 
   // Fetch order details when report is found
   //   const report = reportList.find((item) => item.reportId === reportId) || {};
@@ -85,6 +95,19 @@ function ReportDetail() {
     );
   }
 
+  // Helper function to map status to display text
+  const getStatusDisplayText = (status) => {
+    switch (status) {
+      case "Approve":
+        return "Chấp Nhận";
+      case "Reject":
+        return "Từ Chối";
+      default:
+        return "N/A"; // Fallback for unknown status
+    }
+  };
+
+  // Helper function to determine tag color based on status
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
       case "pending":
@@ -125,10 +148,15 @@ function ReportDetail() {
       ).unwrap();
       // Update local state optimistically
       setReportStatus(newStatus);
+      // Show success message based on newStatus
+      const statusMessage =
+        newStatus.toLowerCase() === "approve"
+          ? "chấp nhận"
+          : newStatus.toLowerCase() === "reject"
+          ? "từ chối"
+          : newStatus.toLowerCase();
       // Show success message
-      message.success(
-        `Report has been ${newStatus.toLowerCase()}d successfully!`
-      );
+      message.success(`Báo cáo đã được ${statusMessage} thành công!`);
       // Refetch the report list to sync with backend
       await dispatch(getListReport());
     } catch (error) {
@@ -161,44 +189,44 @@ function ReportDetail() {
 
   const columns = [
     {
-      title: "Product ID",
+      title: "ID Sản Phẩm",
       dataIndex: "productId",
       key: "productId",
       width: "5%",
     },
     {
-      title: "Product Name",
+      title: "Tên Sản Phẩm",
       dataIndex: "productName",
       key: "productName",
       width: "30%",
     },
     {
-      title: "Price",
+      title: "Giá",
       dataIndex: "price",
       key: "price",
       width: "15%",
     },
     {
-      title: "Quantity",
+      title: "Số Lượng",
       dataIndex: "quantity",
       key: "quantity",
       width: "10%",
     },
     {
-      title: "Total",
+      title: "Tổng Tiền",
       dataIndex: "total",
       key: "total",
       width: "20%",
     },
     {
-      title: "Actual Record",
+      title: "Ghi Nhận Thực Tế",
       dataIndex: "actualRecord",
       key: "actualRecord",
       width: "20%",
       render: (_, record) => (
         <div>
-          <div>Fee: {record.fee}</div>
-          <div>Time: {record.time}</div>
+          <div>Phí: {record.fee}</div>
+          <div>Thời Gian: {record.time}</div>
         </div>
       ),
     },
@@ -209,7 +237,7 @@ function ReportDetail() {
       render: (_, record) => (
         <div>
           <Button type="link" className="p-0" icon={<EditOutlined />}>
-            Edit
+            Chỉnh Sửa
           </Button>
         </div>
       ),
@@ -231,16 +259,18 @@ function ReportDetail() {
   return (
     <div style={{ padding: "20px", maxWidth: "1920px", margin: "0 auto" }}>
       <Button
+        type="text"
+        icon={<LeftOutlined />}
         onClick={() => navigate("/admin/report")}
         style={{ marginBottom: "20px" }}
       >
-        Back
+        Trang Chủ
       </Button>
 
       <Row gutter={16}>
         {/* Left Section: Order Details */}
         <Col span={12}>
-          <Card title={`Order #${displayOrderDetails.orderId}`}>
+          <Card title={`Đơn Hàng #${rowIndex}`}>
             <Spin spinning={orderLoading}>
               <Descriptions
                 bordered={false} // Match screenshot style
@@ -253,30 +283,30 @@ function ReportDetail() {
                 }}
                 contentStyle={{ minWidth: "200px", color: "#555" }}
               >
-                <Descriptions.Item label="Member">
+                <Descriptions.Item label="Tên Thành Viên">
                   {displayOrderDetails.customerName}
                 </Descriptions.Item>
-                <Descriptions.Item label="Phone Number">
+                <Descriptions.Item label="Số Điện Thoại">
                   {displayOrderDetails.customerPhoneNumber}
                 </Descriptions.Item>
-                <Descriptions.Item label="Address">
+                <Descriptions.Item label="Địa Chỉ">
                   {displayOrderDetails.customerAddress?.provinceName},{" "}
                   {displayOrderDetails.customerAddress?.districtName},{" "}
                   {displayOrderDetails.customerAddress?.wardName}
                 </Descriptions.Item>
-                <Descriptions.Item label="Order Code">
+                <Descriptions.Item label="Mã Đơn Hàng">
                   {displayOrderDetails.oder_code}
                 </Descriptions.Item>
-                <Descriptions.Item label="Ship Type">
+                <Descriptions.Item label="Loại Ship">
                   {displayOrderDetails.shipType}
                 </Descriptions.Item>
-                <Descriptions.Item label="Ship Fee">
+                <Descriptions.Item label="Phí Ship">
                   <span>{displayOrderDetails.shipFee}</span>
                 </Descriptions.Item>
-                <Descriptions.Item label="Notes">
+                <Descriptions.Item label="Ghi Chú">
                   {displayOrderDetails.note}
                 </Descriptions.Item>
-                <Descriptions.Item label="Status">
+                <Descriptions.Item label="Trạng Thái">
                   <Tag
                     color={getOrderStatusColor(displayOrderDetails.status)}
                     style={{
@@ -344,7 +374,7 @@ function ReportDetail() {
 
         {/* Right Section: Report Details */}
         <Col span={12}>
-          <Card title="Report Details">
+          <Card title="Chi Tiết Báo Cáo">
             <Spin spinning={reportLoading}>
               <Descriptions
                 bordered={false} // Match screenshot style
@@ -357,19 +387,21 @@ function ReportDetail() {
                 }}
                 contentStyle={{ minWidth: "200px", color: "#555" }}
               >
-                <Descriptions.Item label="Report ID">
+                <Descriptions.Item label="ID Báo Cáo">
                   {report.reportId}
                 </Descriptions.Item>
-                <Descriptions.Item label="Order ID">
+                <Descriptions.Item label="ID Đơn Hàng">
                   {report.orderId || "N/A"}
                 </Descriptions.Item>
-                <Descriptions.Item label="Created Date">
-                  {report.createdDate || "N/A"}
+                <Descriptions.Item label="Ngày Tạo">
+                  {report.createdDate
+                    ? dayjs(report.createdDate).format("DD-MM-YYYY / HH:mm:ss")
+                    : "N/A"}
                 </Descriptions.Item>
-                <Descriptions.Item label="Reason">
+                <Descriptions.Item label="Lý Do">
                   {report.reason || "N/A"}
                 </Descriptions.Item>
-                <Descriptions.Item label="Status">
+                <Descriptions.Item label="Trạng Thái">
                   <Tag
                     color={getStatusColor(reportStatus)}
                     style={{
@@ -380,10 +412,10 @@ function ReportDetail() {
                       borderRadius: "10px", // Match screenshot tag style
                     }}
                   >
-                    {reportStatus || "N/A"}
+                    {getStatusDisplayText(reportStatus) || "N/A"}
                   </Tag>
                 </Descriptions.Item>
-                <Descriptions.Item label="Image">
+                <Descriptions.Item label="Hình Ảnh">
                   {report.image ? (
                     <Image
                       width={62}
@@ -416,7 +448,7 @@ function ReportDetail() {
                   loading={reportLoading}
                   style={{ borderRadius: "20px" }}
                 >
-                  Approve
+                  Chấp Nhận
                 </Button>
                 <Button
                   danger
@@ -425,7 +457,7 @@ function ReportDetail() {
                   loading={reportLoading}
                   style={{ borderRadius: "20px" }}
                 >
-                  Reject
+                  Từ Chối
                 </Button>
               </div>
             </Spin>
@@ -435,7 +467,7 @@ function ReportDetail() {
 
       {/* Full Width Order Detail Card */}
       <div className="w-full bg-white rounded-lg p-6 border border-gray-200 mt-5">
-        <h2 className="text-lg font-semibold mb-4">Order Details</h2>
+        <h2 className="text-lg font-semibold mb-4">Chi Tiết Đơn Hàng</h2>
         <Table
           columns={columns}
           dataSource={data}

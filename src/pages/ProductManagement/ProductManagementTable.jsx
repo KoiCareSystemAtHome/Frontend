@@ -5,10 +5,22 @@ import React, { useEffect, useState } from "react";
 import { EyeOutlined, ReloadOutlined } from "@ant-design/icons";
 import UpdateProductManagement from "./UpdateProductManagement";
 import dayjs from "dayjs";
+import UpdateFood from "./UpdateFood";
+import UpdateMedicine from "./UpdateMedicine";
 
-const renderUpdateProductManagement = (record) => (
-  <UpdateProductManagement record={record} />
-);
+const renderUpdateProductManagement = (record) => {
+  if (record.type === 1) {
+    // Type 1: Dụng Cụ (Tool) => Use UpdateProductManagement
+    return <UpdateProductManagement record={record} />;
+  } else if (record.type === 0) {
+    // Type 0: Thức Ăn (Food) => Use UpdateFood
+    return <UpdateFood record={record} />;
+  } else if (record.type === 2) {
+    // Type 2: Thuốc (Medicine) => Use UpdateMedicine
+    return <UpdateMedicine record={record} />;
+  }
+  return null;
+};
 
 function ProductManagementTable({ dataSource }) {
   console.log("Datasource: ", dataSource);
@@ -16,23 +28,33 @@ function ProductManagementTable({ dataSource }) {
   //console.log("Product list", productList);
   //const dispatch = useDispatch();
 
+  // Ensure dataSource is an array, default to empty array if not
+  const safeDataSource = Array.isArray(dataSource) ? dataSource : [];
+
   // search states
   const [searchProductName, setSearchProductName] = useState("");
   const [searchDescription, setSearchDescription] = useState("");
   const [searchBrand, setSearchBrand] = useState("");
   const [searchType, setSearchType] = useState(null);
-  // Filtered data based on search input
-  const filteredData = dataSource.filter(
-    (item) =>
-      item.productName
-        .toLowerCase()
-        .includes(searchProductName.toLowerCase()) &&
-      item.description
-        .toLowerCase()
-        .includes(searchDescription.toLowerCase()) &&
-      item.brand.toLowerCase().includes(searchBrand.toLowerCase()) &&
-      (searchType === null || item.type === searchType)
-  );
+
+  // Filtered data based on search input with defensive checks
+  const filteredData = safeDataSource.filter((item) => {
+    // Skip items that are undefined, null, or missing required properties
+    if (!item || typeof item !== "object") return false;
+
+    // Use optional chaining and provide fallback values
+    const productName = (item.productName || "").toLowerCase();
+    const description = (item.description || "").toLowerCase();
+    const brand = (item.brand || "").toLowerCase();
+    const type = item.type;
+
+    return (
+      productName.includes(searchProductName.toLowerCase()) &&
+      description.includes(searchDescription.toLowerCase()) &&
+      brand.includes(searchBrand.toLowerCase()) &&
+      (searchType === null || type === searchType)
+    );
+  });
 
   // pagination
   const [loading, setLoading] = useState(false);
@@ -47,9 +69,9 @@ function ProductManagementTable({ dataSource }) {
 
   // Map type integers to labels
   const typeLabels = {
-    0: "Food",
-    1: "Accessory",
-    2: "Medicine",
+    0: "Thức Ăn",
+    1: "Dụng Cụ",
+    2: "Thuốc",
   };
 
   const columns = [
@@ -60,12 +82,12 @@ function ProductManagementTable({ dataSource }) {
       render: (_, __, index) => index + 1 + (currentPage - 1) * pageSize,
     },
     {
-      title: " Product Name",
+      title: "Tên Sản Phẩm",
       dataIndex: "productName",
       key: "productName",
     },
     {
-      title: "Description",
+      title: "Mô Tả",
       //dataIndex: "description",
       key: "description",
       render: (record) => (
@@ -88,53 +110,76 @@ function ProductManagementTable({ dataSource }) {
     //   key: "image",
     // },
     {
-      title: "Price",
+      title: "Giá",
       dataIndex: "price",
       key: "price",
+      render: (price) => {
+        // Check if price is a valid number, otherwise return a fallback
+        return price && !isNaN(price)
+          ? price.toLocaleString("vi-VN", {
+              style: "currency",
+              currency: "VND",
+            })
+          : "N/A"; // Or any fallback value like 0 or an empty string
+      },
     },
     {
-      title: "Stock Quantity",
+      title: "Số Lượng",
       dataIndex: "stockQuantity",
       key: "stockQuantity",
     },
     {
-      title: "Brand",
+      title: "Nhãn Hiệu",
       dataIndex: "brand",
       key: "brand",
     },
     {
-      title: "Manufacture Date",
+      title: "Ngày Sản Xuất",
       dataIndex: "manufactureDate",
       key: "manufactureDate",
+      width: 150,
       render: (date) =>
         date
-          ? dayjs.utc(date).tz("Asia/Ho_Chi_Minh").format("YYYY-MM-DD")
+          ? dayjs.utc(date).tz("Asia/Ho_Chi_Minh").format("DD-MM-YYYY")
           : "-",
     },
     {
-      title: "Expiry Date",
+      title: "Ngày Hết Hạn",
       dataIndex: "expiryDate",
       key: "expiryDate",
+      width: 150,
       render: (date) =>
         date
-          ? dayjs.utc(date).tz("Asia/Ho_Chi_Minh").format("YYYY-MM-DD")
+          ? dayjs.utc(date).tz("Asia/Ho_Chi_Minh").format("DD-MM-YYYY")
           : "-",
     },
     {
-      title: "Parameter Impacts",
-      dataIndex: "parameterImpactment",
-      key: "parameterImpactment",
+      title: "Tham Số Ảnh Hưởng",
+      dataIndex: "parameterImpacts",
+      key: "parameterImpacts",
       render: (value) => {
         try {
-          const parsedValue = JSON.parse(value); // Parse the string into an object
-          // Convert the object entries into a formatted string without outer braces
-          const formattedString = Object.entries(parsedValue)
-            .map(([key, val]) => `  "${key}": "${val}"`) // Format each key-value pair
-            .join(",\n"); // Join with comma and newline for readability
-          return <pre>{formattedString}</pre>;
+          // Ensure value is an object; if not, display a fallback
+          if (!value || typeof value !== "object") {
+            return <span>-</span>;
+          }
+
+          // Convert the object entries into a formatted string
+          const formattedString = Object.entries(value)
+            .map(([key, val]) => `"${key}": "${val}"`)
+            .join(",\n");
+
+          // Render the formatted string in a <pre> tag
+          return <pre style={{ margin: 0 }}>{formattedString}</pre>;
         } catch (error) {
-          // Fallback if parsing fails: display the raw value
-          return <pre>{value}</pre>;
+          // Log the error and display a fallback
+          console.error(
+            "Error rendering parameterImpacts:",
+            error,
+            "Value:",
+            value
+          );
+          return <span>-</span>;
         }
       },
     },
@@ -149,15 +194,16 @@ function ProductManagementTable({ dataSource }) {
     //   key: "categoryId",
     // },
     {
-      title: "Type",
+      title: "Loại Sản Phẩm",
       dataIndex: "type",
       key: "type",
+      width: 150,
       render: (type) => typeLabels[type] || type, // Display the label (e.g., "Food") instead of the integer (e.g., 0)
       sorter: (a, b) => Number(a.type) - Number(b.type), // Sorting function
       sortDirections: ["ascend", "descend"], // Allow ascending and descending
     },
     {
-      title: "Edit",
+      title: "Chỉnh Sửa",
       key: "edit",
       render: (record) => {
         return renderUpdateProductManagement(record);
@@ -204,33 +250,33 @@ function ProductManagementTable({ dataSource }) {
         }}
       >
         <Input
-          placeholder="Search by Product Name"
+          placeholder="Tên Sản Phẩm"
           value={searchProductName}
           onChange={(e) => setSearchProductName(e.target.value)}
           style={{ width: 220, borderRadius: 6, padding: "6px 10px" }}
         />
         <Input
-          placeholder="Search by Description"
+          placeholder="Mô Tả"
           value={searchDescription}
           onChange={(e) => setSearchDescription(e.target.value)}
           style={{ width: 220, borderRadius: 6, padding: "6px 10px" }}
         />
         <Input
-          placeholder="Search by Brand"
+          placeholder="Nhãn Hiệu"
           value={searchBrand}
           onChange={(e) => setSearchBrand(e.target.value)}
           style={{ width: 220, borderRadius: 6, padding: "6px 10px" }}
         />
         <Select
-          placeholder="Select Type"
+          placeholder="Loại"
           value={searchType}
           onChange={(value) => setSearchType(value)}
           allowClear
           style={{ width: 150 }}
         >
-          <Select.Option value={0}>Food</Select.Option>
-          <Select.Option value={1}>Accessory</Select.Option>
-          <Select.Option value={2}>Medicine</Select.Option>
+          <Select.Option value={0}>Thức Ăn</Select.Option>
+          <Select.Option value={1}>Dụng Cụ</Select.Option>
+          <Select.Option value={2}>Thuốc</Select.Option>
         </Select>
         <Button
           icon={<ReloadOutlined />}
@@ -249,7 +295,7 @@ function ProductManagementTable({ dataSource }) {
             gap: "6px",
           }}
         >
-          Reset Filters
+          Đặt lại bộ lọc
         </Button>
       </div>
 
@@ -260,7 +306,7 @@ function ProductManagementTable({ dataSource }) {
           pagination={false}
           className="[&_.ant-table-thead_.ant-table-cell]:bg-[#fafafa] [&_.ant-table-thead_.ant-table-cell]:font-medium [&_.ant-table-cell]:py-4"
           style={{ marginBottom: "1rem" }}
-          scroll={{ x: 1500 }}
+          scroll={{ x: 1700 }}
           //onChange={GetListTable}
         />
       </Spin>

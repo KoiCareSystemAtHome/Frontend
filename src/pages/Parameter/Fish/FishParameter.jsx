@@ -18,7 +18,7 @@ const FishParameter = () => {
           alignItems: "center",
         }}
       >
-        <div>Fish Parameter</div>
+        <div>Thông Số Cá</div>
 
         <div
           style={{

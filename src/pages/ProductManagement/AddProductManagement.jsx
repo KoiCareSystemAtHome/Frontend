@@ -235,7 +235,7 @@ const AddProductManagement = ({ onClose, shopId }) => {
       // The API returns text/plain ("Success") for a 200 response
       const result = await response.text();
       if (response.ok) {
-        openNotification("success", "Product Created Successfully!");
+        openNotification("success", "Thêm Dụng Cụ Thành Công!");
         dispatch(getListProductManagement());
         handleCancel();
         form.resetFields();
@@ -268,7 +268,7 @@ const AddProductManagement = ({ onClose, shopId }) => {
         style={buttonStyle}
         onClick={showAddModal}
       >
-        Create Accessory
+        Thêm Dụng Cụ
       </Button>
 
       <Modal
@@ -285,47 +285,47 @@ const AddProductManagement = ({ onClose, shopId }) => {
           <Row style={{ justifyContent: "space-between" }}>
             {/* 1st column */}
             <Col>
-              <p className="modalContent">Product Name</p>
+              <p className="modalContent">Tên Sản Phẩm</p>
               <Form.Item
                 name="ProductName"
                 rules={[
                   {
                     required: true,
-                    message: "Please enter product name!",
+                    message: "Vui lòng nhập tên sản phẩm!",
                   },
                 ]}
               >
-                <Input placeholder="Product Name"></Input>
+                <Input placeholder="Tên Sản Phẩm"></Input>
               </Form.Item>
             </Col>
             {/* 2nd column */}
             <Col>
-              <p className="modalContent">Description</p>
+              <p className="modalContent">Mô Tả</p>
               <Form.Item
                 name="Description"
                 rules={[
                   {
                     required: true,
-                    message: "Please enter description!",
+                    message: "Vui lòng nhập mô tả!",
                   },
                 ]}
               >
-                <Input placeholder="Description"></Input>
+                <Input placeholder="Mô Tả"></Input>
               </Form.Item>
             </Col>
             {/* 3rd column */}
             <Col>
-              <p className="modalContent">Price</p>
+              <p className="modalContent">Giá</p>
               <Form.Item
                 name="Price"
                 rules={[
                   {
                     required: true,
-                    message: "Please select price!",
+                    message: "Vui lòng nhập giá!",
                   },
                 ]}
               >
-                <Input placeholder="Price"></Input>
+                <Input allowClear placeholder="Giá" type="number"></Input>
               </Form.Item>
             </Col>
           </Row>
@@ -333,34 +333,34 @@ const AddProductManagement = ({ onClose, shopId }) => {
           <Row style={{ justifyContent: "space-between" }}>
             {/* 1st column */}
             <Col>
-              <p className="modalContent">Stock Quantity</p>
+              <p className="modalContent">Số Lượng</p>
               <Form.Item
                 name="StockQuantity"
                 rules={[
                   {
                     required: true,
-                    message: "Please select stock quantity!",
+                    message: "Vui lòng nhập số lượng!",
                   },
                 ]}
               >
-                <Input placeholder="Stock Quantity"></Input>
+                <Input allowClear placeholder="Số Lượng" type="number"></Input>
               </Form.Item>
             </Col>
             {/* 2nd column */}
             <Col>
-              <p className="modalContent">Category</p>
+              <p className="modalContent">Loại</p>
               <Form.Item
                 name="CategoryId"
                 rules={[
                   {
                     required: true,
-                    message: "Please input category ID!",
+                    message: "Vui lòng chọn loại!",
                   },
                 ]}
               >
                 <Select
                   allowClear
-                  placeholder="Select Category"
+                  placeholder="Loại"
                   style={{ width: "270px" }}
                   loading={isLoadingCategories}
                 >
@@ -377,17 +377,17 @@ const AddProductManagement = ({ onClose, shopId }) => {
             </Col>
             {/* 3rd column */}
             <Col>
-              <p className="modalContent">Brand</p>
+              <p className="modalContent">Nhãn Hiệu</p>
               <Form.Item
                 name="Brand"
                 rules={[
                   {
                     required: true,
-                    message: "Please input brand!",
+                    message: "Vui lòng nhập nhãn hiệu!",
                   },
                 ]}
               >
-                <Input placeholder="Brand"></Input>
+                <Input allowClear placeholder="Nhãn Hiệu"></Input>
               </Form.Item>
             </Col>
             {/* 4th column */}
@@ -396,37 +396,37 @@ const AddProductManagement = ({ onClose, shopId }) => {
           <Row>
             {/* 1st Column */}
             <Col>
-              <p className="modalContent">Manufacture Date</p>
+              <p className="modalContent">Ngày Sản Xuất</p>
               <Form.Item
                 name="ManufactureDate"
                 rules={[
                   {
                     required: true,
-                    message: "Please select manufacture date!",
+                    message: "Vui lòng chọn ngày sản xuất!",
                   },
                 ]}
               >
                 <DatePicker
                   style={{ width: "270px" }}
-                  placeholder="Manufacture Date"
+                  placeholder="Ngày Sản Xuất"
                 ></DatePicker>
               </Form.Item>
             </Col>
             {/* 2nd Column */}
             <Col style={{ marginLeft: "6px" }}>
-              <p className="modalContent">Expiry Date</p>
+              <p className="modalContent">Ngày Hết Hạn</p>
               <Form.Item
                 name="ExpiryDate"
                 rules={[
                   {
                     required: true,
-                    message: "Please select expiry date!",
+                    message: "Vui lòng chọn ngày hết hạn!",
                   },
                 ]}
               >
                 <DatePicker
                   style={{ width: "270px" }}
-                  placeholder="Expiry Date"
+                  placeholder="Ngày Hết Hạn"
                 ></DatePicker>
               </Form.Item>
             </Col>
@@ -455,105 +455,103 @@ const AddProductManagement = ({ onClose, shopId }) => {
             </Col> */}
           </Row>
           {/* 4th Row */}
-          <Row>
-            <Col style={{ marginRight: "6px" }}>
-              <p className="modalContent">Parameter Impacts</p>
-              <Form.List name="ParameterImpacts">
-                {(fields, { add, remove }) => (
-                  <>
-                    {fields.map((field, index) => (
-                      <Row
-                        key={field.key}
-                        gutter={12}
-                        align="middle"
-                        style={{ marginBottom: 8 }}
-                      >
-                        <Col>
-                          <Form.Item
-                            {...field}
-                            name={[field.name, "impact"]}
-                            fieldKey={[field.fieldKey, "impact"]}
-                            rules={[
-                              {
-                                required: true,
-                                message: "Please input impact!",
-                              },
-                            ]}
+          <Col style={{ marginRight: "6px" }}>
+            <p className="modalContent">Tham Số Ảnh Hưởng</p>
+            <Form.List name="ParameterImpacts">
+              {(fields, { add, remove }) => (
+                <>
+                  {fields.map((field, index) => (
+                    <Row
+                      key={field.key}
+                      gutter={12}
+                      align="middle"
+                      style={{ marginBottom: 8 }}
+                    >
+                      <Col>
+                        <Form.Item
+                          {...field}
+                          name={[field.name, "impact"]}
+                          fieldKey={[field.fieldKey, "impact"]}
+                          rules={[
+                            {
+                              required: true,
+                              message: "Vui lòng chọn tham số!",
+                            },
+                          ]}
+                        >
+                          <Select
+                            allowClear
+                            style={{ width: "150px" }}
+                            placeholder="Tham Số"
+                            loading={isLoadingParameters}
                           >
-                            <Select
-                              allowClear
-                              style={{ width: "150px" }}
-                              placeholder="Select Parameter"
-                              loading={isLoadingParameters}
-                            >
-                              {parameters.map((param) => (
-                                <Select.Option
-                                  key={param.parameterId}
-                                  value={param.parameterName} // Use parameterName as the value
-                                >
-                                  {param.parameterName}
-                                </Select.Option>
-                              ))}
-                            </Select>
-                          </Form.Item>
-                        </Col>
-                        <Col span={8}>
-                          <Form.Item
-                            {...field}
-                            name={[field.name, "effect"]}
-                            fieldKey={[field.fieldKey, "effect"]}
-                            rules={[
-                              {
-                                required: true,
-                                message: "Please select effect!",
-                              },
-                            ]}
-                          >
-                            <Select
-                              allowClear
-                              style={{ width: "120px" }}
-                              placeholder="Increased or Decreased"
-                            >
-                              <Option value="increased">Increased</Option>
-                              <Option value="decreased">Decreased</Option>
-                            </Select>
-                          </Form.Item>
-                        </Col>
-                        <Col span={4}>
-                          {fields.length > 1 ? (
-                            <Button
-                              type="link"
-                              danger
-                              onClick={() => remove(field.name)}
-                            >
-                              <span
-                                style={{ marginTop: "-40px" }}
-                                role="img"
-                                aria-label="delete"
+                            {parameters.map((param) => (
+                              <Select.Option
+                                key={param.parameterId}
+                                value={param.parameterName} // Use parameterName as the value
                               >
-                                ✖
-                              </span>
-                            </Button>
-                          ) : null}
-                        </Col>
-                      </Row>
-                    ))}
-                    <Form.Item>
-                      <Button
-                        style={{ width: "232px" }}
-                        type="dashed"
-                        onClick={() => add()}
-                        block
-                        icon={<PlusOutlined />}
-                      >
-                        Add Parameter Impact
-                      </Button>
-                    </Form.Item>
-                  </>
-                )}
-              </Form.List>
-            </Col>
-          </Row>
+                                {param.parameterName}
+                              </Select.Option>
+                            ))}
+                          </Select>
+                        </Form.Item>
+                      </Col>
+                      <Col span={5.5}>
+                        <Form.Item
+                          {...field}
+                          name={[field.name, "effect"]}
+                          fieldKey={[field.fieldKey, "effect"]}
+                          rules={[
+                            {
+                              required: true,
+                              message: "Vui lòng chọn ảnh hưởng!",
+                            },
+                          ]}
+                        >
+                          <Select
+                            allowClear
+                            style={{ width: "160px" }}
+                            placeholder="Tăng hoặc giảm"
+                          >
+                            <Option value="increased">Tăng</Option>
+                            <Option value="decreased">Giảm</Option>
+                          </Select>
+                        </Form.Item>
+                      </Col>
+                      <Col span={4}>
+                        {fields.length > 1 ? (
+                          <Button
+                            type="link"
+                            danger
+                            onClick={() => remove(field.name)}
+                          >
+                            <span
+                              style={{ marginTop: "-40px" }}
+                              role="img"
+                              aria-label="delete"
+                            >
+                              ✖
+                            </span>
+                          </Button>
+                        ) : null}
+                      </Col>
+                    </Row>
+                  ))}
+                  <Form.Item>
+                    <Button
+                      style={{ width: "320px" }}
+                      type="dashed"
+                      onClick={() => add()}
+                      block
+                      icon={<PlusOutlined />}
+                    >
+                      Thêm Tham Số Ảnh Hưởng
+                    </Button>
+                  </Form.Item>
+                </>
+              )}
+            </Form.List>
+          </Col>
           {/* 5th Row */}
           <Row>
             {/* 1st column */}
@@ -573,13 +571,13 @@ const AddProductManagement = ({ onClose, shopId }) => {
             </Col>
           </Row>
           <Col>
-            <p className="modalContent">Image</p>
+            <p className="modalContent">Hình Ảnh</p>
             <Form.Item
               name="Image"
               rules={[
                 {
                   required: true,
-                  message: "Please upload an image!",
+                  message: "Vui lòng upload ảnh!",
                 },
               ]}
             >
@@ -595,10 +593,10 @@ const AddProductManagement = ({ onClose, shopId }) => {
                   <InboxOutlined />
                 </p>
                 <p className="ant-upload-text">
-                  Click or drag file to this area to upload
+                  Nhấp hoặc kéo tệp vào khu vực này để tải lên
                 </p>
                 <p className="ant-upload-hint">
-                  Supports a single image file. Click or drag to upload.
+                  Hỗ trợ một tệp hình ảnh duy nhất. Nhấp hoặc kéo để tải lên.
                 </p>
               </Upload.Dragger>
             </Form.Item>
@@ -622,7 +620,7 @@ const AddProductManagement = ({ onClose, shopId }) => {
                     icon={<DeleteOutlined />}
                     onClick={handleRemoveImage}
                   >
-                    Remove Image
+                    Bỏ Ảnh
                   </Button>
                 </div>
               </div>
@@ -641,7 +639,7 @@ const AddProductManagement = ({ onClose, shopId }) => {
                 }}
               >
                 <PlusOutlined />
-                Create Accessory
+                Thêm Dụng Cụ
               </Button>
             </Form.Item>
           </Row>
@@ -652,111 +650,3 @@ const AddProductManagement = ({ onClose, shopId }) => {
 };
 
 export default AddProductManagement;
-
-{
-  /* <Col style={{ marginRight: "6px" }}>
-              <p className="modalContent">Parameter Impacts</p>
-              <Form.Item
-                name="ParameterImpacts"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input parameter impacts!",
-                  },
-                  // {
-                  //   validator: (_, value) => {
-                  //     try {
-                  //       if (value) {
-                  //         JSON.parse(value); // Validate JSON format
-                  //       }
-                  //       return Promise.resolve();
-                  //     } catch {
-                  //       return Promise.reject(
-                  //         new Error("Invalid JSON format!")
-                  //       );
-                  //     }
-                  //   },
-                  // },
-                ]}
-              >
-                <Input.TextArea
-                  rows={4}
-                  placeholder="Enter parameter impacts in JSON format"
-                  onChange={(e) => {
-                    try {
-                      JSON.parse(e.target.value); // Check JSON validity
-                    } catch {
-                      console.error("Invalid JSON format");
-                    }
-                  }}
-                />
-              </Form.Item>
-            </Col> */
-}
-
-// const onFinish = async (values) => {
-//   if (!selectedImage) {
-//     openNotification("error", "Please upload an image!");
-//     return;
-//   }
-
-//   // Transform ParameterImpacts into a nested object
-//   const parameterImpactsObj = (values.ParameterImpacts || []).reduce(
-//     (acc, item) => {
-//       if (item.impact && item.effect) {
-//         acc[item.impact] = item.effect;
-//       }
-//       return acc;
-//     },
-//     {}
-//   );
-//   const nestedParameterImpacts = {
-//     ParameterImpacts: parameterImpactsObj,
-//   };
-
-//   // Construct query parameters
-//   const queryParams = new URLSearchParams({
-//     ProductName: values.ProductName,
-//     Description: values.Description,
-//     Price: values.Price,
-//     StockQuantity: values.StockQuantity,
-//     ShopId: values.ShopId,
-//     CategoryId: values.CategoryId,
-//     Brand: values.Brand,
-//     ManufactureDate: values.ManufactureDate,
-//     ExpiryDate: values.ExpiryDate,
-//     //ParameterImpacts: nestedParameterImpacts,
-//     ParameterImpacts: JSON.stringify(nestedParameterImpacts),
-//   });
-//   console.log("Query Params String:", queryParams.toString()); // Log the final query string
-
-//   const formData = new FormData();
-//   //formData.append("ParameterImpacts", values.ParameterImpacts); // Send as raw value
-//   formData.append("image", selectedImage);
-
-//   try {
-//     const response = await fetch(
-//       `http://14.225.206.203:8080/api/Product/create-product?${queryParams}`,
-//       {
-//         method: "POST",
-//         body: formData,
-//       }
-//     );
-
-//     const result = await response.json();
-//     if (response.ok) {
-//       openNotification("success", "Product Created Successfully!");
-//       dispatch(getListProductManagement());
-//       handleCancel();
-//       form.resetFields();
-//     } else {
-//       openNotification(
-//         "error",
-//         result.message || "Failed to create product."
-//       );
-//     }
-//   } catch (error) {
-//     console.error("Error:", error);
-//     openNotification("error", "Network error, try again later.");
-//   }
-// };

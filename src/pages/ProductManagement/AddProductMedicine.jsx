@@ -296,7 +296,7 @@ const AddProductMedicine = ({ onClose, shopId }) => {
       // The API returns text/plain ("Success") for a 200 response
       const result = await response.text();
       if (response.ok) {
-        openNotification("success", "Product Medicine Created Successfully!");
+        openNotification("success", "Thêm Thuốc Thành Công!");
         dispatch(getListProductManagement());
         handleCancel();
         form.resetFields();
@@ -330,7 +330,7 @@ const AddProductMedicine = ({ onClose, shopId }) => {
         style={buttonStyle}
         onClick={showAddModal}
       >
-        Create Medicine
+        Thêm Thuốc
       </Button>
 
       <Modal
@@ -347,47 +347,47 @@ const AddProductMedicine = ({ onClose, shopId }) => {
           <Row style={{ justifyContent: "space-between" }}>
             {/* 1st column */}
             <Col>
-              <p className="modalContent">Product Name</p>
+              <p className="modalContent">Tên Sản Phẩm</p>
               <Form.Item
                 name="ProductName"
                 rules={[
                   {
                     required: true,
-                    message: "Please enter product name!",
+                    message: "Vui lòng nhập tên sản phẩm!",
                   },
                 ]}
               >
-                <Input placeholder="Product Name" />
+                <Input allowClear placeholder="Tên Sản Phẩm" />
               </Form.Item>
             </Col>
             {/* 2nd column */}
             <Col>
-              <p className="modalContent">Description</p>
+              <p className="modalContent">Mô Tả</p>
               <Form.Item
                 name="Description"
                 rules={[
                   {
                     required: true,
-                    message: "Please enter description!",
+                    message: "Vui lòng nhập mô tả!",
                   },
                 ]}
               >
-                <Input placeholder="Description" />
+                <Input allowClear placeholder="Mô Tả" />
               </Form.Item>
             </Col>
             {/* 3rd column */}
             <Col>
-              <p className="modalContent">Price</p>
+              <p className="modalContent">Giá</p>
               <Form.Item
                 name="Price"
                 rules={[
                   {
                     required: true,
-                    message: "Please select price!",
+                    message: "Vui lòng nhập giá!",
                   },
                 ]}
               >
-                <Input placeholder="Price" type="number" />
+                <Input allowClear placeholder="Giá" type="number" />
               </Form.Item>
             </Col>
           </Row>
@@ -395,47 +395,47 @@ const AddProductMedicine = ({ onClose, shopId }) => {
           <Row style={{ justifyContent: "space-between" }}>
             {/* 1st column */}
             <Col>
-              <p className="modalContent">Stock Quantity</p>
+              <p className="modalContent">Số Lượng</p>
               <Form.Item
                 name="StockQuantity"
                 rules={[
                   {
                     required: true,
-                    message: "Please select stock quantity!",
+                    message: "Vui lòng nhập số lượng!",
                   },
                 ]}
               >
-                <Input placeholder="Stock Quantity" type="number" />
+                <Input allowClear placeholder="Số Lượng" type="number" />
               </Form.Item>
             </Col>
             {/* 2nd column */}
             <Col>
-              <p className="modalContent">Brand</p>
+              <p className="modalContent">Nhãn Hiệu</p>
               <Form.Item
                 name="Brand"
                 rules={[
                   {
                     required: true,
-                    message: "Please input brand!",
+                    message: "Vui lòng nhập nhãn hiệu!",
                   },
                 ]}
               >
-                <Input placeholder="Brand" />
+                <Input allowClear placeholder="Nhãn Hiệu" />
               </Form.Item>
             </Col>
             {/* 3rd column - Medicine Name */}
             <Col>
-              <p className="modalContent">Medicine Name</p>
+              <p className="modalContent">Tên Thuốc</p>
               <Form.Item
                 name="MedicineName"
                 rules={[
                   {
                     required: true,
-                    message: "Please input medicine name!",
+                    message: "Vui lòng nhập tên thuốc!",
                   },
                 ]}
               >
-                <Input placeholder="Medicine Name" />
+                <Input allowClear placeholder="Tên Thuốc" />
               </Form.Item>
             </Col>
           </Row>
@@ -443,56 +443,57 @@ const AddProductMedicine = ({ onClose, shopId }) => {
           <Row style={{ justifyContent: "space-between" }}>
             {/* 1st Column */}
             <Col>
-              <p className="modalContent">Manufacture Date</p>
+              <p className="modalContent">Ngày Sản Xuất</p>
               <Form.Item
                 name="ManufactureDate"
                 rules={[
                   {
                     required: true,
-                    message: "Please select manufacture date!",
+                    message: "Vui lòng chọn ngày sản xuất!",
                   },
                 ]}
               >
                 <DatePicker
                   style={{ width: "270px" }}
-                  placeholder="Manufacture Date"
+                  placeholder="Ngày Sản Xuất"
                 />
               </Form.Item>
             </Col>
             {/* 2nd Column */}
             <Col>
-              <p className="modalContent">Expiry Date</p>
+              <p className="modalContent">Ngày Hết Hạn</p>
               <Form.Item
                 name="ExpiryDate"
                 rules={[
                   {
                     required: true,
-                    message: "Please select expiry date!",
+                    message: "Vui lòng chọn ngày hết hạn!",
                   },
                 ]}
               >
                 <DatePicker
                   style={{ width: "270px" }}
-                  placeholder="Expiry Date"
+                  placeholder="Ngày Hết Hạn"
                 />
               </Form.Item>
             </Col>
             {/* 3rd Column - Category */}
             <Col>
-              <p className="modalContent">Category</p>
+              <p className="modalContent">Loại</p>
               <Form.Item
                 name="CategoryId"
                 rules={[
                   {
                     required: true,
-                    message: "Please select a category!",
+                    message: "Vui lòng chọn loại!",
                   },
                 ]}
               >
                 <Select
                   allowClear
-                  placeholder="Select Category"
+                  placeholder="Loại"
                   style={{ width: "270px" }}
+                  loading={isLoadingCategories}
                 >
                   {CategoryList?.map((category) => (
                     <Select.Option
@@ -510,40 +511,41 @@ const AddProductMedicine = ({ onClose, shopId }) => {
           <Row style={{ justifyContent: "space-between" }}>
             {/* 1st Column - Dosage Form */}
             <Col>
-              <p className="modalContent">Dosage Form</p>
+              <p className="modalContent">Liều Dùng</p>
               <Form.Item
                 name="DosageForm"
                 rules={[
                   {
                     required: true,
-                    message: "Please input dosage form!",
+                    message: "Vui lòng nhập liều dùng!",
                   },
                 ]}
               >
-                <Input placeholder="Dosage Form" />
+                <Input allowClear placeholder="Liều Dùng" />
               </Form.Item>
             </Col>
             {/* 2nd Column - Symptoms */}
             <Col>
-              <p className="modalContent">Symptoms</p>
+              <p className="modalContent">Triệu Chứng</p>
               <Form.Item
                 name="Symptoms"
                 rules={[
                   {
                     required: true,
-                    message: "Please input symptoms!",
+                    message: "Vui lòng chọn triệu chứng!",
                   },
                 ]}
               >
                 <Select
                   allowClear
-                  placeholder="Select Symptom"
+                  placeholder="Triệu Chứng"
                   style={{ width: "270px" }}
                   loading={isLoadingSymptoms}
                 >
                   {symptoms.map((symptom) => (
                     <Select.Option key={symptom.symptomId} value={symptom.name}>
-                      {symptom.name} / ({symptom.type})
+                      {symptom.name}
+                      {/* / ({symptom.type}) */}
                     </Select.Option>
                   ))}
                 </Select>
@@ -551,11 +553,11 @@ const AddProductMedicine = ({ onClose, shopId }) => {
             </Col>
             {/* 3rd Column - Pond Param ID */}
             <Col>
-              <p className="modalContent">Pond Parameter</p>
+              <p className="modalContent">Tham Số Hồ</p>
               <Form.Item name="PondParamId">
                 <Select
                   allowClear
-                  placeholder="Select Pond Parameter (Optional)"
+                  placeholder="Tham Số Hồ (Tùy Chọn)"
                   style={{ width: "270px" }}
                   loading={isLoadingPondParams}
                 >
@@ -572,109 +574,107 @@ const AddProductMedicine = ({ onClose, shopId }) => {
             </Col>
           </Row>
           {/* 5th Row */}
-          <Row>
-            <Col style={{ marginRight: "6px" }}>
-              <p className="modalContent">Parameter Impacts</p>
-              <Form.List name="ParameterImpacts">
-                {(fields, { add, remove }) => (
-                  <>
-                    {fields.map((field, index) => (
-                      <Row
-                        key={field.key}
-                        gutter={12}
-                        align="middle"
-                        style={{ marginBottom: 8 }}
-                      >
-                        <Col>
-                          <Form.Item
-                            {...field}
-                            name={[field.name, "impact"]}
-                            fieldKey={[field.fieldKey, "impact"]}
-                            rules={[
-                              {
-                                required: true,
-                                message: "Please input impact!",
-                              },
-                            ]}
+          <Col style={{ marginRight: "6px" }}>
+            <p className="modalContent">Tham Số Ảnh Hưởng</p>
+            <Form.List name="ParameterImpacts">
+              {(fields, { add, remove }) => (
+                <>
+                  {fields.map((field, index) => (
+                    <Row
+                      key={field.key}
+                      gutter={12}
+                      align="middle"
+                      style={{ marginBottom: 8 }}
+                    >
+                      <Col>
+                        <Form.Item
+                          {...field}
+                          name={[field.name, "impact"]}
+                          fieldKey={[field.fieldKey, "impact"]}
+                          rules={[
+                            {
+                              required: true,
+                              message: "Vui lòng chọn tham số!",
+                            },
+                          ]}
+                        >
+                          <Select
+                            allowClear
+                            style={{ width: "150px" }}
+                            placeholder="Tham Số"
+                            loading={isLoadingParameters}
                           >
-                            <Select
-                              allowClear
-                              style={{ width: "150px" }}
-                              placeholder="Select Parameter"
-                              loading={isLoadingParameters}
-                            >
-                              {parameters.map((param) => (
-                                <Select.Option
-                                  key={param.parameterId}
-                                  value={param.parameterName} // Use parameterName as the value
-                                >
-                                  {param.parameterName}
-                                </Select.Option>
-                              ))}
-                            </Select>
-                          </Form.Item>
-                        </Col>
-                        <Col span={8}>
-                          <Form.Item
-                            {...field}
-                            name={[field.name, "effect"]}
-                            fieldKey={[field.fieldKey, "effect"]}
-                            rules={[
-                              {
-                                required: true,
-                                message: "Please select effect!",
-                              },
-                            ]}
-                          >
-                            <Select
-                              allowClear
-                              style={{ width: "120px" }}
-                              placeholder="Increased or Decreased"
-                            >
-                              <Select.Option value="increased">
-                                Increased
-                              </Select.Option>
-                              <Select.Option value="decreased">
-                                Decreased
-                              </Select.Option>
-                            </Select>
-                          </Form.Item>
-                        </Col>
-                        <Col span={4}>
-                          {fields.length > 1 ? (
-                            <Button
-                              type="link"
-                              danger
-                              onClick={() => remove(field.name)}
-                            >
-                              <span
-                                style={{ marginTop: "-40px" }}
-                                role="img"
-                                aria-label="delete"
+                            {parameters.map((param) => (
+                              <Select.Option
+                                key={param.parameterId}
+                                value={param.parameterName} // Use parameterName as the value
                               >
-                                ✖
-                              </span>
-                            </Button>
-                          ) : null}
-                        </Col>
-                      </Row>
-                    ))}
-                    <Form.Item>
-                      <Button
-                        style={{ width: "232px" }}
-                        type="dashed"
-                        onClick={() => add()}
-                        block
-                        icon={<PlusOutlined />}
-                      >
-                        Add Parameter Impact
-                      </Button>
-                    </Form.Item>
-                  </>
-                )}
-              </Form.List>
-            </Col>
-          </Row>
+                                {param.parameterName}
+                              </Select.Option>
+                            ))}
+                          </Select>
+                        </Form.Item>
+                      </Col>
+                      <Col span={5.5}>
+                        <Form.Item
+                          {...field}
+                          name={[field.name, "effect"]}
+                          fieldKey={[field.fieldKey, "effect"]}
+                          rules={[
+                            {
+                              required: true,
+                              message: "Vui lòng chọn ảnh hưởng!",
+                            },
+                          ]}
+                        >
+                          <Select
+                            allowClear
+                            style={{ width: "160px" }}
+                            placeholder="Tăng hoặc giảm"
+                          >
+                            <Select.Option value="increased">
+                              Tăng
+                            </Select.Option>
+                            <Select.Option value="decreased">
+                              Giảm
+                            </Select.Option>
+                          </Select>
+                        </Form.Item>
+                      </Col>
+                      <Col span={4}>
+                        {fields.length > 1 ? (
+                          <Button
+                            type="link"
+                            danger
+                            onClick={() => remove(field.name)}
+                          >
+                            <span
+                              style={{ marginTop: "-40px" }}
+                              role="img"
+                              aria-label="delete"
+                            >
+                              ✖
+                            </span>
+                          </Button>
+                        ) : null}
+                      </Col>
+                    </Row>
+                  ))}
+                  <Form.Item>
+                    <Button
+                      style={{ width: "320px" }}
+                      type="dashed"
+                      onClick={() => add()}
+                      block
+                      icon={<PlusOutlined />}
+                    >
+                      Thêm Tham Số Ảnh Hưởng
+                    </Button>
+                  </Form.Item>
+                </>
+              )}
+            </Form.List>
+          </Col>
           {/* 6th Row */}
           <Row>
             {/* 1st column */}
@@ -693,7 +693,7 @@ const AddProductMedicine = ({ onClose, shopId }) => {
             </Col>
           </Row>
           <Col>
-            <p className="modalContent">Image</p>
+            <p className="modalContent">Hình Ảnh</p>
             <Form.Item
               name="Image"
               rules={[
@@ -715,10 +715,10 @@ const AddProductMedicine = ({ onClose, shopId }) => {
                   <InboxOutlined />
                 </p>
                 <p className="ant-upload-text">
-                  Click or drag file to this area to upload
+                  Nhấp hoặc kéo tệp vào khu vực này để tải lên
                 </p>
                 <p className="ant-upload-hint">
-                  Supports a single image file. Click or drag to upload.
+                  Hỗ trợ một tệp hình ảnh duy nhất. Nhấp hoặc kéo để tải lên.
                 </p>
               </Upload.Dragger>
             </Form.Item>
@@ -742,7 +742,7 @@ const AddProductMedicine = ({ onClose, shopId }) => {
                     icon={<DeleteOutlined />}
                     onClick={handleRemoveImage}
                   >
-                    Remove Image
+                    Bỏ Ảnh
                   </Button>
                 </div>
               </div>
@@ -761,7 +761,7 @@ const AddProductMedicine = ({ onClose, shopId }) => {
                 }}
               >
                 <PlusOutlined />
-                Create Medicine
+                Thêm Thuốc
               </Button>
             </Form.Item>
           </Row>

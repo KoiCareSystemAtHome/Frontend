@@ -155,7 +155,7 @@ const ShopLayout = ({ children }) => {
             },
             {
               key: "/shop/orderManagement",
-              label: "Order",
+              label: "Đơn Đặt Hàng",
               style: { color: "white" },
               className: "group", // Add group class to the Blog menu item
               icon: (
@@ -175,7 +175,7 @@ const ShopLayout = ({ children }) => {
             },
             {
               key: "/shop/productManagement",
-              label: "Product",
+              label: "Sản Phẩm",
               style: { color: "white" },
               className: "group", // Add group class to the Blog menu item
               icon: (
@@ -201,7 +201,7 @@ const ShopLayout = ({ children }) => {
             // },
             {
               key: "/shop/blog",
-              label: "Blog",
+              label: "Bài Viết",
               style: { color: "white" },
               className: "group", // Add group class to the Blog menu item
               icon: (
@@ -221,7 +221,7 @@ const ShopLayout = ({ children }) => {
             },
             {
               key: "/shop/shopProfile",
-              label: "Shop Profile",
+              label: "Hồ Sơ Cửa Hàng",
               style: { color: "white" },
               className: "group", // Add group class to the Blog menu item
               icon: (

@@ -10,7 +10,7 @@ import {
   List,
   Empty,
 } from "antd";
-import { LeftOutlined } from "@ant-design/icons";
+import { EditOutlined, LeftOutlined } from "@ant-design/icons";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux"; // Correct import for useSelector
 import {
@@ -80,7 +80,7 @@ const CommonDiseasesDetail = () => {
       setFormData(updatedData);
       setEditMode(false);
       dispatch(getDiseaseDetail(diseaseId));
-      message.success("Disease updated successfully!");
+      message.success("Cập Nhật Bệnh Thành Công!");
     } catch (error) {
       message.error("Failed to update disease!");
     }
@@ -103,16 +103,22 @@ const CommonDiseasesDetail = () => {
           onClick={() => navigate("/admin/diseases")}
           className="flex items-center text-gray-700 hover:text-blue-600"
         >
-          Back
+          Trang chủ
         </Button>
         {!editMode && (
           <Button
-            style={{ height: "40px", width: "160px", borderRadius: "10px" }}
-            type="primary"
+            icon={<EditOutlined />}
+            style={{
+              height: "40px",
+              width: "160px",
+              borderRadius: "10px",
+              backgroundColor: "orange",
+              color: "white",
+            }}
             className="ml-4"
             onClick={handleEditClick}
           >
-            Edit
+            Chỉnh Sửa
           </Button>
         )}
       </div>
@@ -133,7 +139,7 @@ const CommonDiseasesDetail = () => {
       ) : (
         <div className="px-4 sm:px-6 lg:px-8">
           <Title level={2} className="text-gray-800 mb-6">
-            Disease Detail
+            Chi Tiết Bệnh
           </Title>
           {/* Single Card with Two Columns */}
           <Card style={cardStyle} className="bg-white">
@@ -152,7 +158,7 @@ const CommonDiseasesDetail = () => {
                 {/* Name */}
                 <div>
                   <Text strong className="text-green-600">
-                    Name
+                    Tên Bệnh
                   </Text>
                   {editMode ? (
                     <Form form={form} layout="vertical">
@@ -178,7 +184,7 @@ const CommonDiseasesDetail = () => {
                 {/* Description */}
                 <div>
                   <Text strong className="text-green-600">
-                    Description
+                    Mô Tả
                   </Text>
                   {editMode ? (
                     <Form form={form} layout="vertical">
@@ -199,7 +205,7 @@ const CommonDiseasesDetail = () => {
                 {/* Food Percentage */}
                 <div>
                   <Text strong className="text-green-600">
-                    Food Percentage
+                    Phần Trăm Thức Ăn
                   </Text>
                   {editMode ? (
                     <Form form={form} layout="vertical">
@@ -221,7 +227,7 @@ const CommonDiseasesDetail = () => {
                 {/* Salt Percentage */}
                 <div>
                   <Text strong className="text-green-600">
-                    Salt Percentage
+                    Phần Trăm Muối
                   </Text>
                   {editMode ? (
                     <Form form={form} layout="vertical">
@@ -243,7 +249,7 @@ const CommonDiseasesDetail = () => {
                 {/* Medicines */}
                 <div>
                   <Text strong className="text-green-600">
-                    Medicines
+                    Thuốc
                   </Text>
                   {disease?.medicines && disease.medicines.length > 0 ? (
                     <List
@@ -262,7 +268,7 @@ const CommonDiseasesDetail = () => {
                       image={Empty.PRESENTED_IMAGE_SIMPLE}
                       description={
                         <Text className="text-gray-500">
-                          No medicines available
+                          Không có thuốc nào có sẵn
                         </Text>
                       }
                       className="mt-2"
@@ -274,9 +280,9 @@ const CommonDiseasesDetail = () => {
                 {editMode && (
                   <div className="flex gap-4 mt-4">
                     <Button type="primary" onClick={handleSave}>
-                      Save
+                      Lưu
                     </Button>
-                    <Button onClick={handleCancelEdit}>Cancel</Button>
+                    <Button onClick={handleCancelEdit}>Hủy Bỏ</Button>
                   </div>
                 )}
               </div>

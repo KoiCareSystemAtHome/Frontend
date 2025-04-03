@@ -16,7 +16,7 @@ const Report = () => {
           alignItems: "center",
         }}
       >
-        <div>Report</div>
+        <div>Báo Cáo</div>
 
         <div
           style={{

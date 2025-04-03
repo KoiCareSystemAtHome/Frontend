@@ -112,7 +112,7 @@ const authSlice = createSlice({
       localStorage.removeItem("role");
 
       notification.success({
-        message: "Logged out successfully",
+        message: "Đăng Xuất Thành Công!",
         placement: "top",
       });
     },

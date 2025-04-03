@@ -73,7 +73,7 @@ const Profile = () => {
           <div>
             <Form.Item
               label={
-                <span className="text-gray-700 font-medium">Shop Name</span>
+                <span className="text-gray-700 font-medium">Tên Cửa Hàng</span>
               }
               name="shopName"
             >
@@ -83,7 +83,7 @@ const Profile = () => {
             </Form.Item>
 
             <Form.Item
-              label={<span className="text-gray-700 font-medium">Address</span>}
+              label={<span className="text-gray-700 font-medium">Địa Chỉ</span>}
               name="address"
             >
               <div className="p-2 bg-gray-100 rounded border-0">
@@ -95,11 +95,13 @@ const Profile = () => {
           {/* Right Column */}
           <div>
             <Form.Item
-              label={<span className="text-gray-700 font-medium">Status</span>}
-              name="phone"
+              label={
+                <span className="text-gray-700 font-medium">Trạng Thái</span>
+              }
+              name="status"
             >
               <div className="p-2 bg-gray-100 rounded border-0">
-                {shopProfile?.isActivate ? "Activated" : "Unactivated"}
+                {shopProfile?.isActivate ? "Kích Hoạt" : "Vô Hiệu"}
               </div>
             </Form.Item>
 
@@ -126,7 +128,7 @@ const Profile = () => {
         </div> */}
 
         {/* Create Ghn */}
-        <h2>Regiter GHN</h2>
+        <h2>Đăng Kí GHN</h2>
         <AddGhn />
       </Form>
     </div>

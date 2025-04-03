@@ -17,7 +17,7 @@ const PondParameter = () => {
           alignItems: "center",
         }}
       >
-        <div>Pond Parameter</div>
+        <div>Thông Số Hồ</div>
 
         <div
           style={{

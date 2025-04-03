@@ -18,6 +18,7 @@ import {
   CheckCircleOutlined,
   CloseCircleOutlined,
   DeleteOutlined,
+  ReloadOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
 import { deleteShop, getListShop } from "../../redux/slices/shopSlice";
@@ -136,22 +137,22 @@ function ShopTable({ dataSource }) {
       render: (_, __, index) => index + 1 + (currentPage - 1) * pageSize,
     },
     {
-      title: "Shop Name",
+      title: "Tên Cửa Hàng",
       dataIndex: "shopName",
       key: "shopName",
     },
     {
-      title: "Shop Rate",
+      title: "Đánh Giá",
       dataIndex: "shopRate",
       key: "shopRate",
     },
     {
-      title: "Shop Description",
+      title: "Mô Tả",
       dataIndex: "shopDescription",
       key: "shopDescription",
     },
     {
-      title: "Shop Address",
+      title: "Địa Chỉ",
       dataIndex: "shopAddress",
       key: "shopAddress",
       render: (shopAddress) => {
@@ -165,7 +166,7 @@ function ShopTable({ dataSource }) {
       },
     },
     {
-      title: "License",
+      title: "Giấy Phép Kinh Doanh",
       dataIndex: "bizLicences",
       key: "bizLicences",
     },
@@ -175,32 +176,32 @@ function ShopTable({ dataSource }) {
       key: "ghnId",
     },
     {
-      title: "Status",
+      title: "Trạng Thái",
       dataIndex: "isActivate",
       key: "isActivate",
       render: (isActivate) => {
         const isActive = isActivate === true || isActivate === "true"; // Ensure boolean
         return isActive ? (
           <Tag
-            style={{ width: "80px", fontSize: "14px", padding: "5px" }}
+            style={{ width: "95px", fontSize: "14px", padding: "5px" }}
             icon={<CheckCircleOutlined />}
             color="green"
           >
-            Active
+            Kích Hoạt
           </Tag>
         ) : (
           <Tag
-            style={{ width: "80px", fontSize: "14px", padding: "5px" }}
+            style={{ width: "95px", fontSize: "14px", padding: "5px" }}
             icon={<CloseCircleOutlined />}
             color="red"
           >
-            Inactive
+            Vô Hiệu
           </Tag>
         );
       },
     },
     {
-      title: "Edit / Delete",
+      title: "Chỉnh Sửa / Xóa",
       key: "actions",
       render: (record) => {
         return (
@@ -263,14 +264,14 @@ function ShopTable({ dataSource }) {
       {/* Search Filters */}
       <Space style={{ marginBottom: 16, width: "100%" }} wrap>
         <Input
-          placeholder="Search Shop Name"
+          placeholder="Tên Cửa Hàng"
           value={searchShopName}
           onChange={(e) => setSearchShopName(e.target.value)}
           prefix={<SearchOutlined />}
           style={{ width: 200 }}
         />
         <Input
-          placeholder="Search Shop Address"
+          placeholder="Địa Chỉ"
           value={searchShopAddress}
           onChange={(e) => setSearchShopAddress(e.target.value)}
           prefix={<SearchOutlined />}
@@ -281,16 +282,17 @@ function ShopTable({ dataSource }) {
           onChange={(value) => setSearchStatus(value)}
           style={{ width: 150 }}
         >
-          <Select.Option value="all">All Status</Select.Option>
-          <Select.Option value="active">Active</Select.Option>
-          <Select.Option value="inactive">Inactive</Select.Option>
+          <Select.Option value="all">Tất Cả</Select.Option>
+          <Select.Option value="active">Kích Hoạt</Select.Option>
+          <Select.Option value="inactive">Chưa Kích Hoạt</Select.Option>
         </Select>
         <Button
+          icon={<ReloadOutlined />}
           type="default"
           onClick={handleResetFilters}
           //disabled={!searchTitle && !searchDate && !searchStatus} // Disable when no filters applied
         >
-          Reset Filters
+          Cài lại bộ lọc
         </Button>
       </Space>
 

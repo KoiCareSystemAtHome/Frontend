@@ -6,6 +6,17 @@ import { useDispatch } from "react-redux";
 
 //const renderUpdateMember = (record) => <UpdateMember record={record} />;
 
+// Helper function to format date to DD-MM-YYYY
+const formatDate = (dateString) => {
+  if (!dateString) return "N/A"; // Handle null or undefined dates
+  const date = new Date(dateString);
+  if (isNaN(date)) return "Invalid Date"; // Handle invalid date strings
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-based
+  const year = date.getFullYear();
+  return `${day}-${month}-${year}`;
+};
+
 function MemberTable({ dataSource }) {
   console.log("Datasource: ", dataSource);
   //const packageList = useSelector(getListMembershipPackageSelector);
@@ -31,12 +42,12 @@ function MemberTable({ dataSource }) {
       render: (_, __, index) => index + 1 + (currentPage - 1) * pageSize,
     },
     {
-      title: "Member Name",
+      title: "Tên Thành Viên",
       dataIndex: "userName",
       key: "userName",
     },
     {
-      title: "Email Address",
+      title: "Email",
       dataIndex: "email",
       key: "email",
     },
@@ -46,7 +57,7 @@ function MemberTable({ dataSource }) {
     //   key: "phone",
     // },
     {
-      title: "Address",
+      title: "Địa Chỉ",
       dataIndex: ["member", "address"],
       key: "address",
       render: (address) => {
@@ -74,14 +85,16 @@ function MemberTable({ dataSource }) {
     //   key: "membershipType",
     // },
     {
-      title: "Start Date",
+      title: "Ngày Tạo",
       dataIndex: "createdDate",
       key: "createdDate",
+      render: (date) => formatDate(date), // Format the date here
     },
     {
-      title: "End Date",
+      title: "Ngày Kết Thúc",
       dataIndex: "validUntil",
       key: "validUntil",
+      render: (date) => formatDate(date), // Format the date here
     },
     // {
     //   title: "Status",

@@ -16,7 +16,7 @@ const ProductManagement = () => {
           alignItems: "center",
         }}
       >
-        <div>Product Management</div>
+        <div>Quản Lý Sản Phẩm</div>
 
         <div
           style={{

@@ -62,7 +62,7 @@ const AddMembership = ({ onClose }) => {
     dispatch(createPackage(values))
       .unwrap()
       .then(() => {
-        openNotification("success", "Membership Created Successfully!");
+        openNotification("success", "Thêm Gói Thành Viên Thành Công!");
         dispatch(getListMembershipPackage());
         handleCancel();
         form.resetFields();
@@ -90,13 +90,13 @@ const AddMembership = ({ onClose }) => {
         style={buttonStyle}
         onClick={showAddModal}
       >
-        Create Membership
+        Thêm Gói
       </Button>
 
       <Modal
         className="custom-modal"
         centered
-        title="Create Membership"
+        title="Thêm Gói Thành Viên"
         open={isAddOpen}
         onCancel={handleCancel}
         width={870}
@@ -107,50 +107,52 @@ const AddMembership = ({ onClose }) => {
           <Row style={{ justifyContent: "space-between" }}>
             {/* 1st column */}
             <Col>
-              <p className="modalContent">Package Title</p>
+              <p className="modalContent">Tên Gói</p>
               <Form.Item
                 name="packageTitle"
                 rules={[
                   {
                     required: true,
-                    message: "Please enter package title!",
+                    message: "Vui lòng nhập tên gói!",
                   },
                 ]}
               >
-                <Input allowClear placeholder="Package Title"></Input>
+                <Input allowClear placeholder="Tên Gói"></Input>
               </Form.Item>
             </Col>
             {/* 2nd column */}
             <Col>
-              <p className="modalContent">Package Description</p>
+              <p className="modalContent">Mô Tả Gói</p>
               <Form.Item
                 name="packageDescription"
                 rules={[
                   {
                     required: true,
-                    message: "Please enter package description!",
+                    message: "Vui lòng nhập mô tả!",
                   },
                 ]}
               >
-                <Input allowClear placeholder="Package Description"></Input>
+                <Input allowClear placeholder="Mô Tả Gói"></Input>
               </Form.Item>
             </Col>
             {/* 3rd column */}
             <Col>
-              <p className="modalContent">Package Price</p>
+              <p className="modalContent">Giá Gói</p>
               <Form.Item
                 name="packagePrice"
                 rules={[
                   {
                     required: true,
-                    message: "Please select package price!",
+                    message: "Vui lòng nhập giá gói!",
                   },
                 ]}
               >
-                <InputNumber
+                <Input
+                  allowClear
                   style={{ width: "270px" }}
-                  placeholder="Package Price"
-                ></InputNumber>
+                  placeholder="Giá Gói"
+                  type="number"
+                ></Input>
               </Form.Item>
             </Col>
           </Row>
@@ -158,52 +160,52 @@ const AddMembership = ({ onClose }) => {
           <Row style={{ justifyContent: "space-between" }}>
             {/* 1st column */}
             <Col>
-              <p className="modalContent">Package Type</p>
+              <p className="modalContent">Loại Gói</p>
               <Form.Item
                 name="type"
                 rules={[
                   {
                     required: true,
-                    message: "Please select package type!",
+                    message: "Vui lòng nhập loại gói!",
                   },
                 ]}
               >
-                <Input allowClear placeholder="Package Type"></Input>
+                <Input allowClear placeholder="Loại Gói"></Input>
               </Form.Item>
             </Col>
             {/* 2nd column */}
             <Col>
-              <p className="modalContent">Start Date</p>
+              <p className="modalContent">Ngày Bắt Đầu</p>
               <Form.Item
                 name="startDate"
                 rules={[
                   {
                     required: true,
-                    message: "Please select start date!",
+                    message: "Vui lòng nhập ngày bắt đầu!",
                   },
                 ]}
               >
                 <DatePicker
                   style={{ width: "270px" }}
-                  placeholder="Start Date"
+                  placeholder="Ngày Bắt Đầu"
                 ></DatePicker>
               </Form.Item>
             </Col>
             {/* 3rd column */}
             <Col>
-              <p className="modalContent">End Date</p>
+              <p className="modalContent">Ngày Kết Thúc</p>
               <Form.Item
                 name="endDate"
                 rules={[
                   {
                     required: true,
-                    message: "Please select end date!",
+                    message: "Vui lòng nhập ngày kết thúc!",
                   },
                 ]}
               >
                 <DatePicker
                   style={{ width: "270px" }}
-                  placeholder="End Date"
+                  placeholder="Ngày Kết Thúc"
                 ></DatePicker>
               </Form.Item>
             </Col>
@@ -212,17 +214,17 @@ const AddMembership = ({ onClose }) => {
           <Row>
             {/* 1st Column */}
             <Col>
-              <p className="modalContent">Period</p>
+              <p className="modalContent">Giai đoạn</p>
               <Form.Item
                 name="peiod"
                 rules={[
                   {
                     required: true,
-                    message: "Please enter period!",
+                    message: "Vui lòng nhập giai đoạn!",
                   },
                 ]}
               >
-                <Input placeholder="Period"></Input>
+                <Input allowClear placeholder="Giai đoạn"></Input>
               </Form.Item>
             </Col>
           </Row>
@@ -238,7 +240,7 @@ const AddMembership = ({ onClose }) => {
                 }}
                 onClick={handleCancel}
               >
-                Cancel
+                Hủy bỏ
               </Button>
               <Button
                 htmlType="submit"
@@ -251,7 +253,7 @@ const AddMembership = ({ onClose }) => {
                 }}
               >
                 <PlusOutlined />
-                Create Membership
+                Thêm Gói
               </Button>
             </Form.Item>
           </Row>
