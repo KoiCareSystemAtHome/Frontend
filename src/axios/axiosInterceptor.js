@@ -6,7 +6,8 @@ let isRefreshing = false;
 let refreshPromise = null;
 
 export const axiosClientVer2 = axios.create({
-  baseURL: "http://14.225.206.203:8080/api/",
+  // baseURL: "http://14.225.206.203:8080/api/",
+  baseURL: "https://loco.com.co/api/",
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",

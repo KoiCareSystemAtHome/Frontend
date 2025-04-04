@@ -28,9 +28,7 @@ const PondParameter = () => {
         </div>
       </div>
 
-      <div className="searchContainer">
-        <SearchTable />
-      </div>
+      <div className="searchContainer">{/* <SearchTable /> */}</div>
 
       <div className="tableContainer" style={{ marginTop: "10px" }}>
         <PondParameterTable dataSource={parameterList} />

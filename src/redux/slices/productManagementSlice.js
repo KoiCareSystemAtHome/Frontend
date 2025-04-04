@@ -43,13 +43,13 @@ export const searchProductManagement = createAsyncThunk(
 );
 
 // POST
-export const createProductManagement = createAsyncThunk(
+export const createProduct = createAsyncThunk(
   "Product/create-product",
   async (newProduct, { rejectWithValue }) => {
     try {
       // 🔍 Check if ParameterImpacts is a string, then parse it
-      if (typeof newProduct.ParameterImpacts === "string") {
-        newProduct.ParameterImpacts = JSON.parse(newProduct.ParameterImpacts);
+      if (typeof newProduct.parameterImpacts === "string") {
+        newProduct.parameterImpacts = JSON.parse(newProduct.parameterImpacts);
       }
 
       console.log("✅ Final Payload:", JSON.stringify(newProduct, null, 2));
@@ -57,13 +57,66 @@ export const createProductManagement = createAsyncThunk(
       const res = await postRequest("Product/create-product", newProduct);
       console.log("🔄 API Response:", res);
 
-      if (res.data.status === 400) {
+      if (res.status === 400 || (res.data && res.data.status === 400)) {
         return rejectWithValue(res.data.detail);
       }
 
       return res.data;
     } catch (error) {
       console.log("❌ API Error:", error);
+      return rejectWithValue(error.message || "Failed to create product");
+    }
+  }
+);
+
+// POST FOOD
+export const createFood = createAsyncThunk(
+  "Product/create-food",
+  async (newFood, { rejectWithValue }) => {
+    try {
+      // 🔍 Check if ParameterImpacts is a string, then parse it
+      if (typeof newFood.parameterImpacts === "string") {
+        newFood.parameterImpacts = JSON.parse(newFood.parameterImpacts);
+      }
+
+      console.log("✅ Final Payload:", JSON.stringify(newFood, null, 2));
+
+      const res = await postRequest("Product/create-productfood", newFood);
+      console.log("🔄 API Response:", res);
+
+      if (res.status === 400 || (res.data && res.data.status === 400)) {
+        return rejectWithValue(res.data.detail);
+      }
+      return res.data;
+    } catch (error) {
+      console.log("❌ API Error:", error);
+      return rejectWithValue(error.message || "Failed to create food");
+    }
+  }
+);
+
+// POST MEDICINE
+export const createMedicine = createAsyncThunk(
+  "Product/create-medicine",
+  async (newMedicine, { rejectWithValue }) => {
+    try {
+      // 🔍 Check if ParameterImpacts is a string, then parse it
+      if (typeof newMedicine.parameterImpacts === "string") {
+        newMedicine.parameterImpacts = JSON.parse(newMedicine.parameterImpacts);
+      }
+
+      console.log("✅ Final Payload:", JSON.stringify(newMedicine, null, 2));
+
+      const res = await postRequest("Product/create-medicine", newMedicine);
+      console.log("🔄 API Response:", res);
+
+      if (res.status === 400 || (res.data && res.data.status === 400)) {
+        return rejectWithValue(res.data.detail);
+      }
+      return res.data;
+    } catch (error) {
+      console.log("❌ API Error:", error);
+      return rejectWithValue(error.message || "Failed to create medicine");
     }
   }
 );
@@ -146,8 +199,14 @@ const productManagementSlice = createSlice({
       .addCase(searchProductManagement.fulfilled, (state, action) => {
         state.listProduct = action.payload;
       })
-      .addCase(createProductManagement.fulfilled, (state, action) => {
+      .addCase(createProduct.fulfilled, (state, action) => {
         state.listProduct.push(action.payload);
+      })
+      .addCase(createFood.fulfilled, (state, action) => {
+        state.listFood.push(action.payload);
+      })
+      .addCase(createMedicine.fulfilled, (state, action) => {
+        state.listMedicine.push(action.payload);
       })
       .addCase(updateProductManagement.fulfilled, (state, action) => {
         const updateProduct = action.payload;

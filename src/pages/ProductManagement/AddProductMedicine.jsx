@@ -12,11 +12,19 @@ import {
 } from "antd";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getListProductManagement } from "../../redux/slices/productManagementSlice";
+import {
+  createMedicine,
+  getListProductManagement,
+} from "../../redux/slices/productManagementSlice";
 import { getListCategory } from "../../redux/slices/categorySlice";
 import { InboxOutlined, PlusOutlined, DeleteOutlined } from "@ant-design/icons";
-import dayjs from "dayjs";
 import { getListCategorySelector } from "../../redux/selector";
+import { uploadImage } from "../../redux/slices/authSlice";
+import {
+  getListParameter,
+  getParameters,
+} from "../../redux/slices/parameterSlice";
+import { getSymptoms } from "../../redux/slices/diseasesSlice";
 
 const AddProductMedicine = ({ onClose, shopId }) => {
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -89,18 +97,12 @@ const AddProductMedicine = ({ onClose, shopId }) => {
         });
     }
 
-    // Fetch pond-required-param data
+    // Fetch pond-required-param data using getParameters thunk
     const fetchParameters = async () => {
       setIsLoadingParameters(true);
       try {
-        const response = await fetch(
-          "http://14.225.206.203:8080/api/Pond/pond-required-param"
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch parameters");
-        }
-        const data = await response.json();
-        setParameters(data); // Store the fetched parameters
+        const result = await dispatch(getParameters()).unwrap();
+        setParameters(result); // Store the fetched parameters
         setIsLoadingParameters(false);
       } catch (error) {
         console.error("Failed to fetch parameters:", error);
@@ -109,18 +111,14 @@ const AddProductMedicine = ({ onClose, shopId }) => {
       }
     };
 
-    // Fetch parameters for type=pond for Pond Param ID dropdown
+    // Fetch parameters for type=pond using getListParameter thunk
     const fetchPondParams = async () => {
       setIsLoadingPondParams(true);
       try {
-        const response = await fetch(
-          "http://14.225.206.203:8080/api/Parameter/type?type=pond"
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch pond parameters");
-        }
-        const data = await response.json();
-        setPondParams(data);
+        const result = await dispatch(
+          getListParameter({ type: "pond" })
+        ).unwrap();
+        setPondParams(result);
         setIsLoadingPondParams(false);
       } catch (error) {
         console.error("Failed to fetch pond parameters:", error);
@@ -129,18 +127,12 @@ const AddProductMedicine = ({ onClose, shopId }) => {
       }
     };
 
-    // Fetch symptoms from /api/Symptomp/type
+    // Fetch symptoms using getSymptoms thunk
     const fetchSymptoms = async () => {
       setIsLoadingSymptoms(true);
       try {
-        const response = await fetch(
-          "http://14.225.206.203:8080/api/Symptomp/type"
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch symptoms");
-        }
-        const data = await response.json();
-        setSymptoms(data);
+        const result = await dispatch(getSymptoms()).unwrap();
+        setSymptoms(result);
         setIsLoadingSymptoms(false);
       } catch (error) {
         console.error("Failed to fetch symptoms:", error);
@@ -205,26 +197,14 @@ const AddProductMedicine = ({ onClose, shopId }) => {
       return;
     }
 
-    // Step 1: Upload the image to /api/Account/test to get the image URL
+    // Step 1: Upload the image using uploadImage thunk
     let imageUrl;
     try {
       const formData = new FormData();
       formData.append("file", selectedImage);
 
-      const uploadResponse = await fetch(
-        "http://14.225.206.203:8080/api/Account/test",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-
-      if (!uploadResponse.ok) {
-        throw new Error("Failed to upload image");
-      }
-
-      const uploadResult = await uploadResponse.json();
-      imageUrl = uploadResult.imageUrl;
+      const uploadResult = await dispatch(uploadImage(formData)).unwrap();
+      imageUrl = uploadResult.imageUrl; // Assuming the API returns { imageUrl: "..." }
 
       if (!imageUrl) {
         throw new Error("Image URL not returned from the server");
@@ -248,15 +228,7 @@ const AddProductMedicine = ({ onClose, shopId }) => {
       {}
     );
 
-    // Step 3: Format dates in ISO 8601 format
-    const manufactureDate = values.ManufactureDate
-      ? dayjs(values.ManufactureDate).toISOString()
-      : null;
-    const expiryDate = values.ExpiryDate
-      ? dayjs(values.ExpiryDate).toISOString()
-      : null;
-
-    // Step 4: Construct the payload for create-medicine
+    // Step 3: Construct the payload for create-product with the image URL
     const payload = {
       productName: values.ProductName,
       description: values.Description,
@@ -265,57 +237,27 @@ const AddProductMedicine = ({ onClose, shopId }) => {
       shopId: values.ShopId,
       categoryId: values.CategoryId,
       brand: values.Brand,
-      manufactureDate: manufactureDate,
-      expiryDate: expiryDate,
-      parameterImpacts: parameterImpactsObj, // Send as a flat object
-      image: imageUrl, // Use the image URL
+      manufactureDate: values.ManufactureDate,
+      expiryDate: values.ExpiryDate,
+      parameterImpacts: parameterImpactsObj, // Note: using parameterImpacts as per thunk
+      image: imageUrl, // Use the image URL from the upload
       medicineName: values.MedicineName,
       dosageForm: values.DosageForm,
       symptoms: values.Symptoms,
       pondParamId: values.PondParamId,
     };
 
-    console.log(
-      "Create ProductMedicine Payload:",
-      JSON.stringify(payload, null, 2)
-    );
-
-    // Step 5: Send the create-medicine request
+    // Step 4: Create the product using createProductManagement thunk
     try {
-      const response = await fetch(
-        "http://14.225.206.203:8080/api/Product/create-medicine",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        }
-      );
-
-      // The API returns text/plain ("Success") for a 200 response
-      const result = await response.text();
-      if (response.ok) {
-        openNotification("success", "Thêm Thuốc Thành Công!");
-        dispatch(getListProductManagement());
-        handleCancel();
-        form.resetFields();
-      } else {
-        // Try to parse the error as JSON, if possible
-        let errorMessage = result;
-        try {
-          const errorJson = JSON.parse(result);
-          errorMessage =
-            errorJson.message || "Failed to create product medicine.";
-        } catch (e) {
-          // If parsing fails, use the raw text as the error message
-          errorMessage = result || "Failed to create product medicine.";
-        }
-        openNotification("error", errorMessage);
-      }
+      await dispatch(createMedicine(payload)).unwrap();
+      openNotification("success", "Thêm Thuốc Thành Công!");
+      dispatch(getListProductManagement());
+      handleCancel();
+      form.resetFields();
     } catch (error) {
-      console.error("Error creating product medicine:", error);
-      openNotification("error", "Network error, try again later.");
+      console.error("Error creating product:", error);
+      let errorMessage = error || "Failed to create product.";
+      openNotification("error", errorMessage);
     }
   };
 

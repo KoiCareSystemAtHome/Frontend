@@ -43,29 +43,6 @@ export const login = createAsyncThunk(
   }
 );
 
-// export const login = createAsyncThunk(
-//   "Account/login",
-//   async ({ username, password }, { rejectWithValue }) => {
-//     try {
-//       // Ensure you're sending the correct headers and payload
-//       const res = await postRequestParams("Account/login", {
-//         username,
-//         password,
-//       });
-//       console.log("Payload being sent:", { username, password });
-//       return res.data; // Assuming the response contains user data
-//     } catch (error) {
-//       // Check if the error response is available
-//       if (error.response && error.response.data) {
-//         return rejectWithValue(
-//           error.response.data.message || "Invalid credentials"
-//         );
-//       }
-//       return rejectWithValue("Invalid credentials");
-//     }
-//   }
-// );
-
 export const register = createAsyncThunk(
   "Account/register",
   async (payload, { rejectWithValue }) => {
@@ -80,6 +57,29 @@ export const register = createAsyncThunk(
         error.response.data.message || "An error occurred during registration."
       );
       return rejectWithValue(error.response || error.response.data.message);
+    }
+  }
+);
+
+export const uploadImage = createAsyncThunk(
+  "Account/test",
+  async (payload, { rejectWithValue }) => {
+    try {
+      // Validate payload
+      if (!(payload instanceof FormData)) {
+        throw new Error("Payload must be a FormData object");
+      }
+      const response = await postRequestFormData("Account/test", payload);
+      if (response && response.status === 200) {
+        message.success("Hình ảnh đã được tải lên thành công.");
+      }
+      return response.data;
+    } catch (error) {
+      message.error(
+        error.response.data.message ||
+          "Đã xảy ra lỗi trong quá trình tải lên hình ảnh."
+      );
+      return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
 );
@@ -167,3 +167,26 @@ const authSlice = createSlice({
 export const { logout } = authSlice.actions;
 
 export default authSlice;
+
+// export const login = createAsyncThunk(
+//   "Account/login",
+//   async ({ username, password }, { rejectWithValue }) => {
+//     try {
+//       // Ensure you're sending the correct headers and payload
+//       const res = await postRequestParams("Account/login", {
+//         username,
+//         password,
+//       });
+//       console.log("Payload being sent:", { username, password });
+//       return res.data; // Assuming the response contains user data
+//     } catch (error) {
+//       // Check if the error response is available
+//       if (error.response && error.response.data) {
+//         return rejectWithValue(
+//           error.response.data.message || "Invalid credentials"
+//         );
+//       }
+//       return rejectWithValue("Invalid credentials");
+//     }
+//   }
+// );
