@@ -63,7 +63,7 @@ const HeaderLayout = ({ title }) => {
       {/* Right section */}
       <div className="flex items-center gap-4">
         {/* Notifications */}
-        <div className="relative">
+        {/* <div className="relative">
           <button className="p-2 hover:bg-gray-100 rounded-lg">
             <BellOutlined className="h-5 w-5 text-gray-500" />
           </button>
@@ -80,7 +80,7 @@ const HeaderLayout = ({ title }) => {
               onClick={handleLogout}
             />
           </button>
-        </div>
+        </div> */}
 
         {/* User Profile Dropdown */}
         <div className="relative">
@@ -154,7 +154,7 @@ const HeaderLayout = ({ title }) => {
                 Đổi Mật Khẩu
               </button>
 
-              <button className="w-full px-4 py-3 text-gray-700 hover:bg-gray-50 flex items-center gap-3">
+              {/* <button className="w-full px-4 py-3 text-gray-700 hover:bg-gray-50 flex items-center gap-3">
                 <Icon color="text-purple-400">
                   <svg
                     viewBox="0 0 24 24"
@@ -171,7 +171,7 @@ const HeaderLayout = ({ title }) => {
                   </svg>
                 </Icon>
                 Nhật Ký Hoạt Động
-              </button>
+              </button> */}
 
               <div className="border-t my-1"></div>
 

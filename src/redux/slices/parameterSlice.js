@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getRequest, postRequest } from "../../services/httpMethods";
+import { getRequest, postRequestFormData } from "../../services/httpMethods";
 
 const initialState = {
   token: "",
@@ -23,6 +23,20 @@ export const getListParameter = createAsyncThunk(
   }
 );
 
+// Get Parameter
+export const getParameters = createAsyncThunk(
+  "Pond/pond-required-param",
+  async () => {
+    try {
+      const res = await getRequest(`Pond/pond-required-param`);
+      console.log(`Fetched parameters:`, res);
+      return res.data;
+    } catch (error) {
+      console.error(`Error fetching parameters`, error);
+    }
+  }
+);
+
 // POST
 export const createParameter = createAsyncThunk(
   "parameter/createParameter",
@@ -31,14 +45,13 @@ export const createParameter = createAsyncThunk(
       const formData = new FormData();
       formData.append("type", type);
       formData.append("file", file);
-      const response = await fetch(
-        "http://14.225.206.203:8080/api/Parameter/upsert-from-excel",
-        {
-          method: "POST",
-          body: formData,
-        }
+
+      const response = await postRequestFormData(
+        "Parameter/upsert-from-excel",
+        formData
       );
-      const data = await response.json();
+
+      const data = await response.data; // Note: axios response uses .data property
       // After successful upsert, fetch the updated list of parameters
       await dispatch(getListParameter({ type })).unwrap();
       return data;
@@ -73,6 +86,21 @@ const parameterSlice = createSlice({
         state.listParameter = action.payload || []; // Ensure it's an array
       })
       .addCase(getListParameter.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to fetch parameters";
+      });
+
+    // Handle getParameters
+    builder
+      .addCase(getParameters.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getParameters.fulfilled, (state, action) => {
+        state.loading = false;
+        state.listParameter = action.payload || []; // Ensure it's an array
+      })
+      .addCase(getParameters.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Failed to fetch parameters";
       });

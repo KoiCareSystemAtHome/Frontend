@@ -20,9 +20,11 @@ import {
   getListProductManagement,
   updateMedicineManagement,
 } from "../../redux/slices/productManagementSlice";
-import axios from "axios";
 import { getListCategorySelector } from "../../redux/selector";
 import { getListCategory } from "../../redux/slices/categorySlice";
+import { getParameters } from "../../redux/slices/parameterSlice";
+import { uploadImage } from "../../redux/slices/authSlice";
+import { getSymptoms } from "../../redux/slices/diseasesSlice";
 
 const UpdateMedicine = (props) => {
   const { record } = props;
@@ -46,27 +48,21 @@ const UpdateMedicine = (props) => {
 
   // Fetch symptoms when the component mounts
   useEffect(() => {
-    const fetchSymptoms = async () => {
+    const loadSymptoms = async () => {
       setIsLoadingSymptoms(true);
       try {
-        const response = await axios.get(
-          "http://14.225.206.203:8080/api/Symptomp/type"
-        );
-        if (response.status === 200) {
-          setSymptoms(response.data); // Assuming response.data is an array of symptoms
-        } else {
-          throw new Error("Failed to fetch symptoms");
-        }
+        const data = await dispatch(getSymptoms()).unwrap();
+        setSymptoms(data); // Assuming data is an array of symptoms
+        setIsLoadingSymptoms(false);
       } catch (error) {
         console.error("Failed to fetch symptoms:", error);
         openNotification("error", "Failed to load symptoms");
-      } finally {
         setIsLoadingSymptoms(false);
       }
     };
 
-    fetchSymptoms();
-  }, []);
+    loadSymptoms();
+  }, [dispatch]);
 
   // Transform the parameterImpactment into the required format
   useEffect(() => {
@@ -142,9 +138,9 @@ const UpdateMedicine = (props) => {
     setIsEditOpen(false);
   };
 
-  const handleCancel = () => {
-    setIsEditOpen(false);
-  };
+  // const handleCancel = () => {
+  //   setIsEditOpen(false);
+  // };
 
   const [fileList, setFileList] = useState([]);
 
@@ -166,16 +162,10 @@ const UpdateMedicine = (props) => {
   }, [record.image, form]);
 
   useEffect(() => {
-    const fetchParameters = async () => {
+    const loadParameters = async () => {
       setIsLoadingParameters(true);
       try {
-        const response = await fetch(
-          "http://14.225.206.203:8080/api/Pond/pond-required-param"
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch parameters");
-        }
-        const data = await response.json();
+        const data = await dispatch(getParameters()).unwrap();
         setParameters(data);
         setIsLoadingParameters(false);
       } catch (error) {
@@ -184,9 +174,8 @@ const UpdateMedicine = (props) => {
         openNotification("error", "Failed to load parameters");
       }
     };
-
-    fetchParameters();
-  }, []);
+    loadParameters();
+  }, [dispatch]);
 
   const handleUploadChange = async ({ fileList }) => {
     if (fileList.length === 0) {
@@ -204,13 +193,8 @@ const UpdateMedicine = (props) => {
     formData.append("file", file);
 
     try {
-      const response = await axios.post(
-        "http://14.225.206.203:8080/api/Account/test",
-        formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
-      );
-
-      const imageUrl = response.data.imageUrl;
+      const response = await dispatch(uploadImage(formData)).unwrap();
+      const imageUrl = response.imageUrl; // Adjust based on your API response structure
       console.log("Uploaded Image URL:", imageUrl);
 
       const newFile = {

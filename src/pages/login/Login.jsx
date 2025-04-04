@@ -33,7 +33,10 @@ const LoginPage = () => {
 
         // Check if role is allowed
         if (role === "Member") {
-          openNotification("error", "Only Admin or Shop can log in!");
+          openNotification(
+            "error",
+            "Chỉ Có Shop hoặc Admin Mới Có Thể Đăng Nhập!"
+          );
           return; // Stop execution to prevent further actions
         }
 
@@ -65,7 +68,7 @@ const LoginPage = () => {
       console.error("Login failed:", error);
 
       // Show error notification
-      openNotification("error", "Invalid email or password!");
+      openNotification("error", "Email Hoặc Mật Khẩu Không Chính Xác!");
     }
   };
 

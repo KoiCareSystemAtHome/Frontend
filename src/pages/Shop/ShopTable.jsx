@@ -278,6 +278,7 @@ function ShopTable({ dataSource }) {
           style={{ width: 200 }}
         />
         <Select
+          prefix={<SearchOutlined />}
           value={searchStatus}
           onChange={(value) => setSearchStatus(value)}
           style={{ width: 150 }}

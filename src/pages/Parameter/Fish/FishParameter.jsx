@@ -1,5 +1,4 @@
 import React from "react";
-import SearchTable from "../../../components/SearchTable/searchTable";
 import FishParameterButton from "./FishParameterButton";
 import FishParameterTable from "./FishParameterTable";
 import useParameterList from "../../../hooks/useParameterList";
@@ -29,9 +28,7 @@ const FishParameter = () => {
         </div>
       </div>
 
-      <div className="searchContainer">
-        <SearchTable />
-      </div>
+      <div className="searchContainer">{/* <SearchTable /> */}</div>
 
       <div className="tableContainer" style={{ marginTop: "10px" }}>
         <FishParameterTable dataSource={parameterList} />

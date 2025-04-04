@@ -104,11 +104,6 @@ function ProductManagementTable({ dataSource }) {
         </div>
       ),
     },
-    // {
-    //   title: "Image",
-    //   dataIndex: "image",
-    //   key: "image",
-    // },
     {
       title: "Giá",
       dataIndex: "price",
@@ -122,6 +117,13 @@ function ProductManagementTable({ dataSource }) {
             })
           : "N/A"; // Or any fallback value like 0 or an empty string
       },
+      sorter: (a, b) => {
+        // Handle cases where price might be undefined or not a number
+        const priceA = a.price && !isNaN(a.price) ? a.price : 0;
+        const priceB = b.price && !isNaN(b.price) ? b.price : 0;
+        return priceA - priceB;
+      },
+      sortDirections: ["ascend", "descend"], // Enable ascending and descending sort
     },
     {
       title: "Số Lượng",
@@ -154,7 +156,7 @@ function ProductManagementTable({ dataSource }) {
           : "-",
     },
     {
-      title: "Tham Số Ảnh Hưởng",
+      title: "Thông Số Ảnh Hưởng",
       dataIndex: "parameterImpacts",
       key: "parameterImpacts",
       render: (value) => {
@@ -166,7 +168,7 @@ function ProductManagementTable({ dataSource }) {
 
           // Convert the object entries into a formatted string
           const formattedString = Object.entries(value)
-            .map(([key, val]) => `"${key}": "${val}"`)
+            .map(([key, val]) => `"${key}" : "${val}"`)
             .join(",\n");
 
           // Render the formatted string in a <pre> tag
@@ -183,16 +185,6 @@ function ProductManagementTable({ dataSource }) {
         }
       },
     },
-    // {
-    //   title: "Shop ID",
-    //   dataIndex: "shopId",
-    //   key: "shopId",
-    // },
-    // {
-    //   title: "Category ID",
-    //   dataIndex: "categoryId",
-    //   key: "categoryId",
-    // },
     {
       title: "Loại Sản Phẩm",
       dataIndex: "type",
@@ -329,251 +321,3 @@ function ProductManagementTable({ dataSource }) {
 }
 
 export default ProductManagementTable;
-
-// import { Button, Image, Input, Pagination, Spin, Table } from "antd";
-// import React, { useEffect, useState } from "react";
-// import { useDispatch } from "react-redux";
-// import useProductManagementList from "../../hooks/useProductManagementList";
-// import { EyeOutlined, ReloadOutlined, SearchOutlined } from "@ant-design/icons";
-// import UpdateProductManagement from "./UpdateProductManagement";
-// import dayjs from "dayjs";
-// import { searchProductManagement } from "../../redux/slices/productManagementSlice";
-
-// const renderUpdateProductManagement = (record) => (
-//   <UpdateProductManagement record={record} />
-// );
-
-// function ProductManagementTable({ dataSource }) {
-//   console.log("Datasource: ", dataSource);
-//   //const productList = useSelector(getListProductManagementSelector);
-//   //console.log("Product list", productList);
-//   const dispatch = useDispatch();
-
-//   const initialSearchParams = {
-//     productName: "",
-//     brand: "",
-//     parameterImpact: "",
-//     CategoryName: "",
-//   };
-
-//   // pagination
-//   const [loading, setLoading] = useState(false);
-//   const [currentPage, setCurrentPage] = useState(1);
-//   const [pageSize, setPageSize] = useState(10);
-//   const [searchParams, setSearchParams] = useState(initialSearchParams);
-//   const [filteredData, setFilteredData] = useState([]);
-
-//   // Fetch data when the page loads
-//   // useEffect(() => {
-//   //   handleSearch();
-//   // }, []);
-
-//   const handleSearch = () => {
-//     setLoading(true);
-//     dispatch(searchProductManagement(searchParams))
-//       .then((res) => {
-//         const results = Array.isArray(res.payload) ? res.payload : [];
-//         setFilteredData(results);
-//         setLoading(false);
-//       })
-//       .catch(() => setLoading(false));
-//   };
-
-//   const handleResetFilters = () => {
-//     setSearchParams(initialSearchParams);
-//     setCurrentPage(1);
-//   };
-
-//   useEffect(() => {
-//     handleSearch();
-//   }, [searchParams]); // Runs handleSearch whenever searchParams changes
-
-//   const handleInputChange = (e) => {
-//     const { name, value } = e.target;
-//     setSearchParams((prev) => ({ ...prev, [name]: value }));
-//   };
-
-//   // Compute paginated data
-//   const paginatedData = filteredData.slice(
-//     (currentPage - 1) * pageSize,
-//     currentPage * pageSize
-//   );
-
-//   const columns = [
-//     {
-//       title: "Product ID",
-//       dataIndex: "productId",
-//       key: "productId",
-//     },
-//     {
-//       title: " Product Name",
-//       dataIndex: "productName",
-//       key: "productName",
-//     },
-//     {
-//       title: "Description",
-//       dataIndex: "description",
-//       key: "description",
-//     },
-//     {
-//       title: "Image",
-//       dataIndex: "image",
-//       key: "image",
-//       render: (imageUrl) => (
-//         <Image
-//           width={50}
-//           height={50}
-//           src={imageUrl}
-//           alt="Product"
-//           style={{ objectFit: "cover", borderRadius: 5 }}
-//           preview={{ mask: <EyeOutlined /> }} // Enables preview on click
-//         />
-//       ),
-//     },
-//     {
-//       title: "Price",
-//       dataIndex: "price",
-//       key: "price",
-//     },
-//     {
-//       title: "Stock Quantity",
-//       dataIndex: "stockQuantity",
-//       key: "stockQuantity",
-//     },
-//     {
-//       title: "Brand",
-//       dataIndex: "brand",
-//       key: "brand",
-//     },
-//     {
-//       title: "Manufacture Date",
-//       dataIndex: "manufactureDate",
-//       key: "manufactureDate",
-//       render: (date) =>
-//         date
-//           ? dayjs.utc(date).tz("Asia/Ho_Chi_Minh").format("YYYY-MM-DD")
-//           : "-",
-//     },
-//     {
-//       title: "Expiry Date",
-//       dataIndex: "expiryDate",
-//       key: "expiryDate",
-//       render: (date) =>
-//         date
-//           ? dayjs.utc(date).tz("Asia/Ho_Chi_Minh").format("YYYY-MM-DD")
-//           : "-",
-//     },
-//     {
-//       title: "Parameter Impactment",
-//       dataIndex: "parameterImpactment",
-//       key: "parameterImpactment",
-//       render: (value) => {
-//         try {
-//           const parsedValue = JSON.parse(value);
-//           return <pre>{JSON.stringify(parsedValue, null, 2)}</pre>;
-//         } catch (error) {
-//           return <pre>{JSON.stringify(value, null, 2)}</pre>; // Fallback if parsing fails
-//         }
-//       },
-//     },
-//     {
-//       title: "Shop ID",
-//       dataIndex: "shopId",
-//       key: "shopId",
-//     },
-//     {
-//       title: "Category ID",
-//       dataIndex: ["category", "name"],
-//       key: "categoryId",
-//     },
-//     {
-//       title: "Edit",
-//       key: "edit",
-//       render: (record) => {
-//         return renderUpdateProductManagement(record);
-//       },
-//     },
-//   ];
-
-//   useEffect(() => {
-//     setLoading(true);
-//     setTimeout(() => {
-//       setLoading(false);
-//     }, 2000);
-//   }, [dataSource, currentPage, pageSize]);
-
-//   // Get List
-//   const GetListTable = () => {
-//     setLoading(true);
-//     dispatch(useProductManagementList())
-//       .then(() => {
-//         setLoading(false);
-//       })
-//       .catch((error) => {
-//         console.error("Error fetching data:", error);
-//         setLoading(false);
-//       });
-//   };
-
-//   return (
-//     <div className="w-full">
-//       <div style={{ marginBottom: 16, display: "flex", gap: 8 }}>
-//         <Input
-//           allowClear
-//           placeholder="Search Product Name"
-//           name="productName"
-//           value={searchParams.productName}
-//           onChange={handleInputChange}
-//         />
-//         <Input
-//           allowClear
-//           placeholder="Search Brand"
-//           name="brand"
-//           value={searchParams.brand}
-//           onChange={handleInputChange}
-//         />
-//         <Input
-//           allowClear
-//           placeholder="Search Category"
-//           name="CategoryName"
-//           value={searchParams.CategoryName}
-//           onChange={handleInputChange}
-//         />
-//         <Button icon={<SearchOutlined />} type="primary" onClick={handleSearch}>
-//           Search
-//         </Button>
-//         <Button icon={<ReloadOutlined />} onClick={handleResetFilters}>
-//           Reset Filters
-//         </Button>
-//       </div>
-
-//       <Spin spinning={loading} tip="Loading...">
-//         <Table
-//           dataSource={paginatedData}
-//           columns={columns}
-//           pagination={false}
-//           className="[&_.ant-table-thead_.ant-table-cell]:bg-[#fafafa] [&_.ant-table-thead_.ant-table-cell]:font-medium [&_.ant-table-cell]:py-4"
-//           style={{ marginBottom: "1rem" }}
-//           scroll={{ x: 2500 }}
-//           onChange={GetListTable}
-//         />
-//       </Spin>
-//       <Pagination
-//         total={filteredData.length}
-//         pageSize={pageSize}
-//         current={currentPage}
-//         showSizeChanger
-//         align="end"
-//         showTotal={(total, range) =>
-//           `${range[0]}-${range[1]} of ${total} items`
-//         }
-//         onChange={(page, size) => {
-//           setCurrentPage(page);
-//           setPageSize(size);
-//         }}
-//       />
-//     </div>
-//   );
-// }
-
-// export default ProductManagementTable;

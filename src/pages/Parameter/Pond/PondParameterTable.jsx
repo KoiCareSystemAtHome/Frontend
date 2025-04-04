@@ -1,10 +1,11 @@
-import { Pagination, Spin, Table } from "antd";
+import { Button, Input, Pagination, Spin, Table } from "antd";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import useParameterList from "../../../hooks/useParameterList";
 import { getListParameter } from "../../../redux/slices/parameterSlice";
+import { ReloadOutlined, SearchOutlined } from "@ant-design/icons";
 
-function FishParameterTable({ dataSource }) {
+function PondParameterTable({ dataSource }) {
   console.log("Datasource: ", dataSource);
   // const packageList = useSelector(getListMembershipPackageSelector);
   // console.log("package list", packageList);
@@ -15,8 +16,22 @@ function FishParameterTable({ dataSource }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
+  // State for search
+  const [searchParameterName, setSearchParameterName] = useState("");
+  const [searchUnitName, setSearchUnitName] = useState("");
+
+  // Filter data based on search terms with safeguards
+  const filteredData = dataSource.filter((item) => {
+    const paramName = item.parameterName || ""; // Fallback to empty string if undefined
+    const unitName = item.unitName || ""; // Fallback to empty string if undefined
+    return (
+      paramName.toLowerCase().includes(searchParameterName.toLowerCase()) &&
+      unitName.toLowerCase().includes(searchUnitName.toLowerCase())
+    );
+  });
+
   // Compute paginated data
-  const paginatedData = dataSource.slice(
+  const paginatedData = filteredData.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
@@ -44,21 +59,25 @@ function FishParameterTable({ dataSource }) {
       title: "Cảnh Báo Trên",
       dataIndex: "warningUpper",
       key: "warningUpper",
+      sorter: (a, b) => (a.warningUpper || 0) - (b.warningUpper || 0),
     },
     {
       title: "Cảnh Báo Dưới",
       dataIndex: "warningLowwer",
       key: "warningLowwer",
+      sorter: (a, b) => (a.warningLowwer || 0) - (b.warningLowwer || 0),
     },
     {
       title: "Nguy Hiểm Trên",
       dataIndex: "dangerUpper",
       key: "dangerUpper",
+      sorter: (a, b) => (a.dangerUpper || 0) - (b.dangerUpper || 0),
     },
     {
       title: "Nguy Hiểm Dưới",
       dataIndex: "dangerLower",
       key: "dangerLower",
+      sorter: (a, b) => (a.dangerLower || 0) - (b.dangerLower || 0),
     },
     {
       title: "Hướng Dẫn Đo Lường",
@@ -79,7 +98,7 @@ function FishParameterTable({ dataSource }) {
     setTimeout(() => {
       setLoading(false);
     }, 2000);
-  }, [dataSource, currentPage, pageSize]);
+  }, [dataSource, currentPage, pageSize, searchParameterName, searchUnitName]);
 
   // // Get List
   // const GetListTable = () => {
@@ -96,6 +115,42 @@ function FishParameterTable({ dataSource }) {
 
   return (
     <div className="w-full">
+      {/* Search Inputs */}
+      <div className="mb-4 flex gap-4">
+        <Input
+          prefix={<SearchOutlined />}
+          placeholder="Tên Thông Số"
+          value={searchParameterName}
+          onChange={(e) => setSearchParameterName(e.target.value)}
+          style={{ width: 150 }}
+        />
+        <Input
+          prefix={<SearchOutlined />}
+          placeholder="Tên Đơn Vị"
+          value={searchUnitName}
+          onChange={(e) => setSearchUnitName(e.target.value)}
+          style={{ width: 150 }}
+        />
+
+        <Button
+          icon={<ReloadOutlined />}
+          onClick={() => {
+            setSearchParameterName("");
+            setSearchUnitName("");
+            setCurrentPage(1);
+            setPageSize(10);
+          }}
+          style={{
+            borderRadius: 6,
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+          }}
+        >
+          Cài lại bộ lọc
+        </Button>
+      </div>
+
       <Spin spinning={loading} tip="Loading...">
         <Table
           scroll={{ x: 1500 }}
@@ -125,4 +180,4 @@ function FishParameterTable({ dataSource }) {
   );
 }
 
-export default FishParameterTable;
+export default PondParameterTable;

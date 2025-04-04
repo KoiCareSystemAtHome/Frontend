@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Table, Pagination, Spin, Button, DatePicker } from "antd";
 import UpdateMembership from "./UpdateMembership";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import useMembershipPackageList from "../../hooks/useMembershipPackageList";
-import { getListMembershipPackageSelector } from "../../redux/selector";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import Input from "antd/es/input/Input";
-import { AlignCenterOutlined, ReloadOutlined } from "@ant-design/icons";
+import { ReloadOutlined, SearchOutlined } from "@ant-design/icons";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 
@@ -33,11 +32,37 @@ function Membership({ dataSource }) {
   const [searchType, setSearchType] = useState("");
   const [searchStartDate, setSearchStartDate] = useState(null);
   const [searchEndDate, setSearchEndDate] = useState(null);
+  const [sortField, setSortField] = useState(null);
+  const [sortOrder, setSortOrder] = useState(null);
 
   // pagination
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+
+  const getSortedData = (data) => {
+    if (!sortField || !sortOrder) return data;
+
+    return [...data].sort((a, b) => {
+      let valueA = a[sortField];
+      let valueB = b[sortField];
+
+      if (sortField === "packagePrice") {
+        valueA = Number(valueA) || 0;
+        valueB = Number(valueB) || 0;
+      } else if (sortField === "startDate" || sortField === "endDate") {
+        valueA = valueA ? dayjs(valueA) : null;
+        valueB = valueB ? dayjs(valueB) : null;
+        if (!valueA) return sortOrder === "ascend" ? 1 : -1;
+        if (!valueB) return sortOrder === "ascend" ? -1 : 1;
+      }
+
+      if (sortOrder === "ascend") {
+        return valueA > valueB ? 1 : -1;
+      }
+      return valueA < valueB ? 1 : -1;
+    });
+  };
 
   // Filtered Data
   const filteredData = dataSource.filter((pkg) => {
@@ -50,28 +75,29 @@ function Membership({ dataSource }) {
             .toLowerCase()
             .includes(searchDescription.toLowerCase())
         : true) &&
-      // (searchPrice
-      //   ? pkg.packagePrice.toString().includes(searchPrice)
-      //   : true) &&
       (searchType
         ? pkg.type.toLowerCase().includes(searchType.toLowerCase())
         : true) &&
       (searchStartDate
-        ? dayjs(pkg.startDate).isSameOrAfter(searchStartDate, "day")
+        ? dayjs(pkg.startDate).isSameOrAfter(
+            dayjs(searchStartDate).tz("Asia/Ho_Chi_Minh").format("DD-MM-YYYY"),
+            "day"
+          )
         : true) &&
       (searchEndDate
         ? dayjs(pkg.endDate)
             .tz("Asia/Ho_Chi_Minh")
             .isSameOrBefore(
-              dayjs(searchEndDate).tz("Asia/Ho_Chi_Minh").endOf("day"),
+              dayjs(searchEndDate).tz("Asia/Ho_Chi_Minh").format("DD-MM-YYYY"),
               "day"
             )
         : true)
     );
   });
 
+  const sortedData = getSortedData(filteredData);
   // Compute paginated data
-  const paginatedData = filteredData.slice(
+  const paginatedData = sortedData.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
@@ -98,6 +124,8 @@ function Membership({ dataSource }) {
       dataIndex: "packagePrice",
       key: "packagePrice",
       width: 100,
+      sorter: true,
+      sortOrder: sortField === "packagePrice" && sortOrder,
       render: (price) => {
         // Check if price is a valid number, otherwise return a fallback
         return price && !isNaN(price)
@@ -119,6 +147,8 @@ function Membership({ dataSource }) {
       dataIndex: "startDate",
       key: "startDate",
       width: 150,
+      sorter: true,
+      sortOrder: sortField === "startDate" && sortOrder,
       render: (date) =>
         date
           ? dayjs.utc(date).tz("Asia/Ho_Chi_Minh").format("DD-MM-YYYY")
@@ -129,6 +159,8 @@ function Membership({ dataSource }) {
       dataIndex: "endDate",
       key: "endDate",
       width: 150,
+      sorter: true,
+      sortOrder: sortField === "endDate" && sortOrder,
       render: (date) =>
         date
           ? dayjs.utc(date).tz("Asia/Ho_Chi_Minh").format("DD-MM-YYYY")
@@ -141,31 +173,6 @@ function Membership({ dataSource }) {
       width: 100,
       render: (text) => `${text} Days`, // Optional: Appends "Days" to the data dynamically
     },
-    // {
-    //   title: "Status",
-    //   dataIndex: "status",
-    //   key: "status",
-    //   render: (status) => {
-    //     let backgroundColor;
-    //     if (status === "Active")
-    //       backgroundColor = "#22c55e"; // Green for Active
-    //     else if (status === "Inactive")
-    //       backgroundColor = "#ef4444"; // Red for Inactive
-    //     else if (status === "Expired") backgroundColor = "#facc15"; // Yellow for Expired
-    //     return (
-    //       <span
-    //         className={`px-3 py-1 rounded-full text-white text-xs flex items-center justify-center`}
-    //         style={{
-    //           backgroundColor,
-    //           width: "100px", // Fixed width
-    //           height: "30px", // Fixed height
-    //         }}
-    //       >
-    //         {status}
-    //       </span>
-    //     );
-    //   },
-    // },
     {
       title: "Chỉnh Sửa",
       key: "edit",
@@ -192,6 +199,13 @@ function Membership({ dataSource }) {
     searchEndDate,
   ]);
 
+  const handleTableChange = (pagination, filters, sorter) => {
+    setSortField(sorter.field);
+    setSortOrder(sorter.order);
+    setCurrentPage(pagination.current || 1); // Add default value
+    setPageSize(pagination.pageSize || 10); // Add default value
+  };
+
   // Get List
   const GetListTable = () => {
     setLoading(true);
@@ -217,6 +231,7 @@ function Membership({ dataSource }) {
         }}
       >
         <Input
+          prefix={<SearchOutlined />}
           allowClear
           placeholder="Tên Gói"
           value={searchTitle}
@@ -224,35 +239,38 @@ function Membership({ dataSource }) {
           style={{ width: 220, borderRadius: 6, padding: "6px 10px" }}
         />
         <Input
+          prefix={<SearchOutlined />}
           allowClear
           placeholder="Mô Tả"
           value={searchDescription}
           onChange={(e) => setSearchDescription(e.target.value)}
           style={{ width: 250, borderRadius: 6, padding: "6px 10px" }}
         />
-        {/* <Input
-          allowClear
-          placeholder="Search by Price"
-          value={searchPrice}
-          onChange={(e) => setSearchPrice(e.target.value)}
-          style={{ width: 220, borderRadius: 6, padding: "6px 10px" }}
-        /> */}
         <Input
+          prefix={<SearchOutlined />}
           allowClear
           placeholder="Loại"
           value={searchType}
           onChange={(e) => setSearchType(e.target.value)}
-          style={{ width: 220, borderRadius: 6, padding: "6px 10px" }}
+          style={{ width: 150, borderRadius: 6, padding: "6px 10px" }}
         />
         <DatePicker
+          prefix={<SearchOutlined />}
           placeholder="Ngày Bắt Đầu"
-          value={searchStartDate}
-          onChange={(date) => setSearchStartDate(date)}
+          value={searchStartDate ? dayjs(searchStartDate, "DD-MM-YYYY") : null}
+          onChange={(date) =>
+            setSearchStartDate(date ? date.format("DD-MM-YYYY") : "")
+          }
+          format="DD-MM-YYYY"
         />
         <DatePicker
+          prefix={<SearchOutlined />}
           placeholder="Ngày Kết Thúc"
-          value={searchEndDate}
-          onChange={(date) => setSearchEndDate(date)}
+          value={searchEndDate ? dayjs(searchEndDate, "DD-MM-YYYY") : null}
+          onChange={(date) =>
+            setSearchEndDate(date ? date.format("DD-MM-YYYY") : "")
+          }
+          format="DD-MM-YYYY"
         />
 
         <Button
@@ -283,13 +301,13 @@ function Membership({ dataSource }) {
           pagination={false}
           className="[&_.ant-table-thead_.ant-table-cell]:bg-[#fafafa] [&_.ant-table-thead_.ant-table-cell]:font-medium [&_.ant-table-cell]:py-4"
           style={{ marginBottom: "1rem" }}
-          onChange={GetListTable}
+          onChange={handleTableChange}
         />
       </Spin>
       <Pagination
-        total={filteredData.length}
-        pageSize={pageSize}
-        current={currentPage}
+        total={filteredData.length || 0}
+        pageSize={pageSize || 10}
+        current={currentPage || 1}
         showSizeChanger
         align="end"
         showTotal={(total, range) =>

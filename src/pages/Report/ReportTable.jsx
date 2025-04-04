@@ -81,6 +81,13 @@ function ReportTable({ dataSource }) {
       key: "createdDate",
       render: (value) =>
         value ? dayjs(value).format("DD-MM-YYYY / HH:mm:ss") : "-",
+      sorter: (a, b) => {
+        const dateA = dayjs(a.createdDate);
+        const dateB = dayjs(b.createdDate);
+        return dateA.isBefore(dateB) ? -1 : dateA.isAfter(dateB) ? 1 : 0;
+      },
+      sortDirections: ["ascend", "descend"],
+      defaultSortOrder: "descend",
     },
     {
       title: "Lý Do",
@@ -99,35 +106,6 @@ function ReportTable({ dataSource }) {
         </div>
       ),
     },
-    // {
-    //   title: "Image",
-    //   dataIndex: "image",
-    //   key: "image",
-    // },
-    // {
-    //   title: "Trạng Thái",
-    //   dataIndex: "status",
-    //   key: "status",
-    //   render: (status) => {
-    //     let color = "green";
-    //     if (status.toLowerCase() === "pending") color = "gold";
-    //     else if (status.toLowerCase() === "reject") color = "red";
-    //     return (
-    //       <Tag
-    //         style={{
-    //           width: "80px",
-    //           textAlign: "center",
-    //           cursor: "pointer",
-    //           fontSize: "16px",
-    //           padding: "5px", // More padding for a larger tag
-    //         }}
-    //         color={color}
-    //       >
-    //         {status}
-    //       </Tag>
-    //     );
-    //   },
-    // },
     {
       title: "Trạng Thái",
       dataIndex: "status",
@@ -191,22 +169,28 @@ function ReportTable({ dataSource }) {
   }, [dataSource, currentPage, pageSize, searchDate, searchStatus]);
 
   // Get List
-  const GetListTable = () => {
-    setLoading(true);
-    dispatch(useReportList())
-      .then(() => {
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-        setLoading(false);
-      });
+  // const GetListTable = () => {
+  //   setLoading(true);
+  //   dispatch(useReportList())
+  //     .then(() => {
+  //       setLoading(false);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching data:", error);
+  //       setLoading(false);
+  //     });
+  // };
+
+  const handleTableChange = (pagination, filters, sorter) => {
+    setCurrentPage(pagination.current || 1);
+    setPageSize(pagination.pageSize || 10);
   };
 
   return (
     <div>
       <Space style={{ marginBottom: 16 }}>
         <DatePicker
+          format="DD-MM-YYYY"
           style={{ width: 200 }}
           value={searchDate}
           onChange={(date) => {
@@ -245,7 +229,7 @@ function ReportTable({ dataSource }) {
           pagination={false}
           className="[&_.ant-table-thead_.ant-table-cell]:bg-[#fafafa] [&_.ant-table-thead_.ant-table-cell]:font-medium [&_.ant-table-cell]:py-4"
           style={{ marginBottom: "1rem" }}
-          onChange={GetListTable}
+          onChange={handleTableChange}
         />
       </Spin>
       <Pagination

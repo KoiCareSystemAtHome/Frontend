@@ -12,11 +12,16 @@ import {
 } from "antd";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getListProductManagement } from "../../redux/slices/productManagementSlice";
+import {
+  createProduct,
+  getListProductManagement,
+} from "../../redux/slices/productManagementSlice";
 import { DeleteOutlined, InboxOutlined, PlusOutlined } from "@ant-design/icons";
 import { getListCategorySelector } from "../../redux/selector";
 import { getListCategory } from "../../redux/slices/categorySlice";
 import { Option } from "antd/es/mentions";
+import { uploadImage } from "../../redux/slices/authSlice";
+import { getParameters } from "../../redux/slices/parameterSlice";
 
 const AddProductManagement = ({ onClose, shopId }) => {
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -86,27 +91,20 @@ const AddProductManagement = ({ onClose, shopId }) => {
         });
     }
 
-    // Fetch pond-required-param data
-    const fetchParameters = async () => {
-      setIsLoadingParameters(true);
-      try {
-        const response = await fetch(
-          "http://14.225.206.203:8080/api/Pond/pond-required-param"
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch parameters");
-        }
-        const data = await response.json();
-        setParameters(data); // Store the fetched parameters
+    // Replace fetchParameters with getParameters thunk
+    setIsLoadingParameters(true);
+    dispatch(getParameters()) // Pass a type parameter as required by the thunk
+      .unwrap()
+      .then((data) => {
+        setParameters(data); // Set the fetched parameters
         setIsLoadingParameters(false);
-      } catch (error) {
+        console.log("Parameters fetched successfully:", data);
+      })
+      .catch((error) => {
         console.error("Failed to fetch parameters:", error);
         setIsLoadingParameters(false);
         openNotification("error", "Failed to load parameters");
-      }
-    };
-
-    fetchParameters();
+      });
   }, [currentShopId, form, dispatch, CategoryList]);
 
   const [selectedImage, setSelectedImage] = useState(null); // Store the selected file
@@ -155,26 +153,14 @@ const AddProductManagement = ({ onClose, shopId }) => {
       return;
     }
 
-    // Step 1: Upload the image to /api/Account/test to get the image URL
+    // Step 1: Upload the image using uploadImage thunk
     let imageUrl;
     try {
       const formData = new FormData();
       formData.append("file", selectedImage);
 
-      const uploadResponse = await fetch(
-        "http://14.225.206.203:8080/api/Account/test",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-
-      if (!uploadResponse.ok) {
-        throw new Error("Failed to upload image");
-      }
-
-      const uploadResult = await uploadResponse.json();
-      imageUrl = uploadResult.imageUrl;
+      const uploadResult = await dispatch(uploadImage(formData)).unwrap();
+      imageUrl = uploadResult.imageUrl; // Assuming the API returns { imageUrl: "..." }
 
       if (!imageUrl) {
         throw new Error("Image URL not returned from the server");
@@ -198,9 +184,6 @@ const AddProductManagement = ({ onClose, shopId }) => {
       {}
     );
 
-    // Step 3: Convert the Type value to an integer
-    const typeValue = parseInt(values.Type, 10); // Convert "0", "1", or "2" to 0, 1, or 2
-
     // Step 3: Construct the payload for create-product with the image URL
     const payload = {
       productName: values.ProductName,
@@ -212,48 +195,21 @@ const AddProductManagement = ({ onClose, shopId }) => {
       brand: values.Brand,
       manufactureDate: values.ManufactureDate,
       expiryDate: values.ExpiryDate,
-      ParameterImpacts: parameterImpactsObj, // Send as a flat object
-      //type: typeValue, // Send the type as an integer (0, 1, or 2)
-      image: imageUrl, // Use the image URL instead of base64
+      parameterImpacts: parameterImpactsObj, // Note: using parameterImpacts as per thunk
+      image: imageUrl, // Use the image URL from the upload
     };
 
-    console.log("Create Product Payload:", JSON.stringify(payload, null, 2));
-
-    // Step 4: Send the create-product request
+    // Step 4: Create the product using createProductManagement thunk
     try {
-      const response = await fetch(
-        "http://14.225.206.203:8080/api/Product/create-product",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        }
-      );
-
-      // The API returns text/plain ("Success") for a 200 response
-      const result = await response.text();
-      if (response.ok) {
-        openNotification("success", "Thêm Dụng Cụ Thành Công!");
-        dispatch(getListProductManagement());
-        handleCancel();
-        form.resetFields();
-      } else {
-        // Try to parse the error as JSON, if possible
-        let errorMessage = result;
-        try {
-          const errorJson = JSON.parse(result);
-          errorMessage = errorJson.message || "Failed to create product.";
-        } catch (e) {
-          // If parsing fails, use the raw text as the error message
-          errorMessage = result || "Failed to create product.";
-        }
-        openNotification("error", errorMessage);
-      }
+      await dispatch(createProduct(payload)).unwrap();
+      openNotification("success", "Thêm Dụng Cụ Thành Công!");
+      dispatch(getListProductManagement());
+      handleCancel();
+      form.resetFields();
     } catch (error) {
       console.error("Error creating product:", error);
-      openNotification("error", "Network error, try again later.");
+      let errorMessage = error || "Failed to create product.";
+      openNotification("error", errorMessage);
     }
   };
 
@@ -430,29 +386,6 @@ const AddProductManagement = ({ onClose, shopId }) => {
                 ></DatePicker>
               </Form.Item>
             </Col>
-            {/* 3rd Column */}
-            {/* <Col>
-              <p className="modalContent">Type</p>
-              <Form.Item
-                name="Type"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please select a type!",
-                  },
-                ]}
-              >
-                <Select
-                  allowClear
-                  placeholder="Select Type"
-                  style={{ width: "270px" }}
-                >
-                  <Select.Option value="0">Food</Select.Option>
-                  <Select.Option value="1">Accessory</Select.Option>
-                  <Select.Option value="2">Medicine</Select.Option>
-                </Select>
-              </Form.Item>
-            </Col> */}
           </Row>
           {/* 4th Row */}
           <Col style={{ marginRight: "6px" }}>

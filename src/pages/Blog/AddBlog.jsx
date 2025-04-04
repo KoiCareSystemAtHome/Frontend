@@ -15,6 +15,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { createBlog, getListBlog } from "../../redux/slices/blogSlice";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import { uploadImage } from "../../redux/slices/authSlice";
+import { getListProductManagement } from "../../redux/slices/productManagementSlice";
 
 const AddBlog = ({ onClose }) => {
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -33,32 +35,21 @@ const AddBlog = ({ onClose }) => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch("http://14.225.206.203:8080/api/Product", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            // Add authorization header if required
-            // "Authorization": `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch products");
-        }
-
-        const data = await response.json();
-        setProducts(data); // Store the fetched products
+        const result = await dispatch(getListProductManagement()).unwrap();
+        console.log("Fetched Products:", result);
+        setProducts(result || []); // Store the fetched products, default to empty array if result is undefined
       } catch (error) {
         console.error("Error fetching products:", error);
         notification.error({
           message: "Failed to fetch products",
-          description: error.message,
+          description: error.message || "An unexpected error occurred",
         });
+        setProducts([]); // Set to empty array on error
       }
     };
 
     fetchProducts();
-  }, []);
+  }, [dispatch]); // Add dispatch to the dependency array
 
   const showAddModal = () => {
     form.setFieldsValue({
@@ -155,36 +146,16 @@ const AddBlog = ({ onClose }) => {
     // Log the selected image to verify
     console.log("Selected Image:", selectedImage);
 
-    // Step 1: Upload the image to /api/Account/test to get the image URL
+    // Step 1: Upload the image using the uploadImage thunk
     let imageUrl;
     try {
       const formData = new FormData();
       formData.append("file", selectedImage);
 
-      const uploadResponse = await fetch(
-        "http://14.225.206.203:8080/api/Account/test",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-
-      if (!uploadResponse.ok) {
-        const errorText = await uploadResponse.text();
-        console.error(
-          "Upload Response Error:",
-          uploadResponse.status,
-          errorText
-        );
-        throw new Error(
-          `Failed to upload image: ${uploadResponse.status} ${errorText}`
-        );
-      }
-
-      const uploadResult = await uploadResponse.json();
+      const uploadResult = await dispatch(uploadImage(formData)).unwrap();
       console.log("Upload Response:", uploadResult);
 
-      imageUrl = uploadResult.imageUrl; // Note: The response field is "imageURL" as per the second image
+      imageUrl = uploadResult.imageUrl; // Note: The response field is "imageUrl" as per the screenshot
 
       if (!imageUrl) {
         throw new Error("Image URL not returned from the server");
@@ -192,10 +163,10 @@ const AddBlog = ({ onClose }) => {
 
       console.log("Image URL:", imageUrl);
     } catch (error) {
-      console.error("Error uploading image:", error.message);
+      console.error("Error uploading image:", error);
       openNotification(
         "error",
-        `Failed to upload image: ${error.message}. Please try again.`
+        `Failed to upload image: ${error}. Please try again.`
       );
       return;
     }
@@ -209,9 +180,6 @@ const AddBlog = ({ onClose }) => {
       isApproved: values.isApproved === "true", // Convert string to boolean
       type: values.type,
       shopId: values.shopId,
-      // productIds: values.productIds
-      //   ? values.productIds.split(",").map((id) => id.trim()) // Convert comma-separated string to array
-      //   : [],
       productIds: values.productIds || [], // Use the array directly, no need to split
     };
 

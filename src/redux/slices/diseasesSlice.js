@@ -1,5 +1,9 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getRequest, postRequest } from "../../services/httpMethods";
+import {
+  getRequest,
+  postRequest,
+  putRequest,
+} from "../../services/httpMethods";
 
 const initialState = {
   token: "",
@@ -12,6 +16,28 @@ const initialState = {
 
 // GET
 export const getListDisease = createAsyncThunk("Diseases", async () => {
+  try {
+    const res = await getRequest("Diseases/all-disease");
+    console.log("res", res);
+    return res.data;
+  } catch (error) {
+    console.log("Error", error);
+  }
+});
+
+// GET Symptoms
+export const getSymptoms = createAsyncThunk("Symptomp/type", async () => {
+  try {
+    const res = await getRequest("Symptomp/type");
+    console.log("res", res);
+    return res.data;
+  } catch (error) {
+    console.log("Error", error);
+  }
+});
+
+// GET all med
+export const getMedicine = createAsyncThunk("Diseases", async () => {
   try {
     const res = await getRequest("Diseases/all-disease");
     console.log("res", res);
@@ -54,18 +80,18 @@ export const createDisease = createAsyncThunk(
 
 // UPDATE
 export const updateDisease = createAsyncThunk(
-  "diseases/updateDisease",
-  async (diseaseData) => {
-    const response = await fetch(
-      `http://14.225.206.203:8080/api/Diseases/update`,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(diseaseData),
+  "Diseases/update",
+  async (diseaseData, { rejectWithValue }) => {
+    try {
+      const res = await putRequest("Diseases/update", diseaseData);
+      console.log("res", res);
+      if (res.data.status === 400) {
+        return rejectWithValue(res.data.detail);
       }
-    );
-    if (!response.ok) throw new Error("Failed to update disease");
-    return await response.json();
+      return res.data;
+    } catch (error) {
+      console.log(error.detail);
+    }
   }
 );
 
@@ -76,6 +102,9 @@ const diseasesSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(getListDisease.fulfilled, (state, action) => {
+        state.listDisease = action.payload;
+      })
+      .addCase(getSymptoms.fulfilled, (state, action) => {
         state.listDisease = action.payload;
       })
       .addCase(createDisease.fulfilled, (state, action) => {

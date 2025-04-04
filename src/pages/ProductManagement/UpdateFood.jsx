@@ -20,9 +20,10 @@ import {
   getListProductManagement,
   updateFoodManagement,
 } from "../../redux/slices/productManagementSlice";
-import axios from "axios";
 import { getListCategorySelector } from "../../redux/selector";
 import { getListCategory } from "../../redux/slices/categorySlice";
+import { getParameters } from "../../redux/slices/parameterSlice";
+import { uploadImage } from "../../redux/slices/authSlice";
 
 const UpdateFood = (props) => {
   const { record } = props;
@@ -116,9 +117,9 @@ const UpdateFood = (props) => {
     setIsEditOpen(false);
   };
 
-  const handleCancel = () => {
-    setIsEditOpen(false);
-  };
+  // const handleCancel = () => {
+  //   setIsEditOpen(false);
+  // };
 
   const [fileList, setFileList] = useState([]);
 
@@ -140,16 +141,10 @@ const UpdateFood = (props) => {
   }, [record.image, form]);
 
   useEffect(() => {
-    const fetchParameters = async () => {
+    const loadParameters = async () => {
       setIsLoadingParameters(true);
       try {
-        const response = await fetch(
-          "http://14.225.206.203:8080/api/Pond/pond-required-param"
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch parameters");
-        }
-        const data = await response.json();
+        const data = await dispatch(getParameters()).unwrap();
         setParameters(data);
         setIsLoadingParameters(false);
       } catch (error) {
@@ -158,9 +153,8 @@ const UpdateFood = (props) => {
         openNotification("error", "Failed to load parameters");
       }
     };
-
-    fetchParameters();
-  }, []);
+    loadParameters();
+  }, [dispatch]);
 
   const handleUploadChange = async ({ fileList }) => {
     if (fileList.length === 0) {
@@ -178,13 +172,8 @@ const UpdateFood = (props) => {
     formData.append("file", file);
 
     try {
-      const response = await axios.post(
-        "http://14.225.206.203:8080/api/Account/test",
-        formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
-      );
-
-      const imageUrl = response.data.imageUrl;
+      const response = await dispatch(uploadImage(formData)).unwrap();
+      const imageUrl = response.imageUrl; // Adjust based on your API response structure
       console.log("Uploaded Image URL:", imageUrl);
 
       const newFile = {

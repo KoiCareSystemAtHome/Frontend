@@ -17,6 +17,7 @@ import {
   getListDisease,
 } from "../../redux/slices/diseasesSlice";
 import axios from "axios";
+import { uploadImage } from "../../redux/slices/authSlice";
 
 const AddCommonDiseases = ({ onClose }) => {
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -115,32 +116,22 @@ const AddCommonDiseases = ({ onClose }) => {
     return true; // Allow the removal
   };
 
+  // Updated onFinish to use uploadImage thunk
   const onFinish = async (values) => {
     if (!selectedImage) {
       openNotification("error", "Please upload an image!");
       return;
     }
 
-    // Step 1: Upload the image to /api/account/test to get the image URL
+    // Step 1: Upload the image using the uploadImage thunk
     let imageUrl;
     try {
       const formData = new FormData();
       formData.append("file", selectedImage);
 
-      const uploadResponse = await fetch(
-        "http://14.225.206.203:8080/api/account/test",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-
-      if (!uploadResponse.ok) {
-        throw new Error("Failed to upload image");
-      }
-
-      const uploadResult = await uploadResponse.json();
-      imageUrl = uploadResult.imageUrl;
+      // Dispatch the uploadImage thunk
+      const uploadResult = await dispatch(uploadImage(formData)).unwrap();
+      imageUrl = uploadResult.imageUrl; // Assuming the response contains imageUrl
 
       if (!imageUrl) {
         throw new Error("Image URL not returned from the server");
@@ -166,7 +157,7 @@ const AddCommonDiseases = ({ onClose }) => {
       .unwrap()
       .then(() => {
         onClose();
-        openNotification("success", "Disease Created Successfully!");
+        openNotification("success", "Bệnh Thêm Thành Công!");
         dispatch(getListDisease());
         handleCancel();
         form.resetFields();
@@ -412,225 +403,3 @@ const AddCommonDiseases = ({ onClose }) => {
 };
 
 export default AddCommonDiseases;
-
-// import { PlusOutlined } from "@ant-design/icons";
-// import { Button, Col, Form, Input, Modal, notification, Row } from "antd";
-// import React, { useState } from "react";
-// import { useDispatch } from "react-redux";
-// import {
-//   createDisease,
-//   getListDisease,
-// } from "../../redux/slices/diseasesSlice";
-
-// const AddCommonDiseases = ({ onClose }) => {
-//   const [isAddOpen, setIsAddOpen] = useState(false);
-
-//   const showAddModal = () => {
-//     setIsAddOpen(true);
-//   };
-
-//   const handleCancel = () => {
-//     setIsAddOpen(false);
-//   };
-
-//   const dispatch = useDispatch();
-
-//   const [form] = Form.useForm();
-
-//   const buttonStyle = {
-//     height: "40px",
-//     width: "160px",
-//     borderRadius: "10px",
-//     margin: "0px 5px",
-//     padding: "7px 0px 10px 0px",
-//   };
-
-//   // Notification
-//   const [api, contextHolder] = notification.useNotification();
-
-//   const openNotification = (type, message) => {
-//     api[type]({
-//       message: message,
-//       placement: "top",
-//       duration: 5,
-//     });
-//   };
-
-//   const onFinish = (values) => {
-//     console.log(values);
-//     // Dispatch the createShop action with the form values
-//     dispatch(createDisease(values))
-//       .unwrap()
-//       .then(() => {
-//         // Close the Modal
-//         onClose();
-//         openNotification("success", "Disease Created Successfully!");
-//         dispatch(getListDisease());
-//         handleCancel();
-//         // Reset the form fields after dispatching the action
-//         form.resetFields();
-//       })
-//       .catch((error) => {
-//         openNotification("warning", error);
-//       });
-//   };
-//   return (
-//     <div>
-//       {contextHolder}
-//       <Button
-//         size="small"
-//         className="addBtn"
-//         type="primary"
-//         icon={<PlusOutlined />}
-//         style={buttonStyle}
-//         onClick={showAddModal}
-//       >
-//         Create Disease
-//       </Button>
-
-//       <Modal
-//         className="custom-modal"
-//         centered
-//         title="Create Disease"
-//         open={isAddOpen}
-//         onCancel={handleCancel}
-//         width={870}
-//         footer={null}
-//       >
-//         <Form form={form} onFinish={onFinish}>
-//           {/* 1st Row */}
-//           <Row style={{ justifyContent: "space-between" }}>
-//             {/* 1st column */}
-//             <Col>
-//               <p className="modalContent">Name</p>
-//               <Form.Item
-//                 name="name"
-//                 rules={[
-//                   {
-//                     required: true,
-//                     message: "Please enter disease name!",
-//                   },
-//                 ]}
-//               >
-//                 <Input placeholder="Name"></Input>
-//               </Form.Item>
-//             </Col>
-//             {/* 2nd column */}
-//             <Col>
-//               <p className="modalContent">Description</p>
-//               <Form.Item
-//                 name="description"
-//                 rules={[
-//                   {
-//                     required: true,
-//                     message: "Please enter disease description!",
-//                   },
-//                 ]}
-//               >
-//                 <Input placeholder="Description"></Input>
-//               </Form.Item>
-//             </Col>
-//             {/* 3rd column */}
-//             <Col>
-//               <p className="modalContent">Type</p>
-//               <Form.Item
-//                 name="type"
-//                 rules={[
-//                   {
-//                     required: true,
-//                     message: "Please enter disease type!",
-//                   },
-//                 ]}
-//               >
-//                 <Input placeholder="Type"></Input>
-//               </Form.Item>
-//             </Col>
-//           </Row>
-//           {/* 2nd Row */}
-//           <Row style={{ justifyContent: "space-between" }}>
-//             {/* 1st column */}
-//             <Col>
-//               <p className="modalContent">Food Percentage</p>
-//               <Form.Item
-//                 name="foodModifyPercent"
-//                 rules={[
-//                   {
-//                     required: true,
-//                     message: "Please enter food percentage!",
-//                   },
-//                 ]}
-//               >
-//                 <Input placeholder="Food Percentage"></Input>
-//               </Form.Item>
-//             </Col>
-//             {/* 2nd column */}
-//             <Col>
-//               <p className="modalContent">Salt Percentage</p>
-//               <Form.Item
-//                 name="saltModifyPercent"
-//                 rules={[
-//                   {
-//                     required: true,
-//                     message: "Please enter salt percentage!",
-//                   },
-//                 ]}
-//               >
-//                 <Input placeholder="Salt Percentage"></Input>
-//               </Form.Item>
-//             </Col>
-//             {/* 3rd column */}
-//             <Col>
-//               <p className="modalContent">Image</p>
-//               <Form.Item
-//                 name="image"
-//                 rules={[
-//                   {
-//                     required: true,
-//                     message: "Please input image!",
-//                   },
-//                 ]}
-//               >
-//                 <Input placeholder="Image"></Input>
-//               </Form.Item>
-//             </Col>
-//           </Row>
-//           <Row>
-//             <Col>
-//               <p className="modalContent">Mecidine ID</p>
-//               <Form.Item
-//                 name="medicineIds"
-//                 rules={[
-//                   {
-//                     required: true,
-//                     message: "Please input medicine Id!",
-//                   },
-//                 ]}
-//               >
-//                 <Input placeholder="Medicine ID"></Input>
-//               </Form.Item>
-//             </Col>
-//           </Row>
-//           <Row className="membershipButton">
-//             <Form.Item>
-//               <Button
-//                 htmlType="submit"
-//                 type="primary"
-//                 style={{
-//                   width: "150px",
-//                   height: "40px",
-//                   padding: "8px",
-//                   borderRadius: "10px",
-//                 }}
-//               >
-//                 <PlusOutlined />
-//                 Create Disease
-//               </Button>
-//             </Form.Item>
-//           </Row>
-//         </Form>
-//       </Modal>
-//     </div>
-//   );
-// };
-
-// export default AddCommonDiseases;

@@ -1,7 +1,9 @@
-import { Pagination, Spin, Table } from "antd";
+import { Button, DatePicker, Input, Pagination, Spin, Table } from "antd";
 import React, { useEffect, useState } from "react";
 import useMemberList from "../../hooks/useMemberList";
 import { useDispatch } from "react-redux";
+import dayjs from "dayjs";
+import { ReloadOutlined, SearchOutlined } from "@ant-design/icons";
 //import UpdateMember from "./UpdateMember";
 
 //const renderUpdateMember = (record) => <UpdateMember record={record} />;
@@ -27,9 +29,34 @@ function MemberTable({ dataSource }) {
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [searchText, setSearchText] = useState("");
+  const [createdDate, setCreatedDate] = useState(null); // Single date for createdDate
+  const [validUntil, setValidUntil] = useState(null); // Single date for validUntil
+
+  // Filter data based on search criteria
+  const filteredData = dataSource.filter((item) => {
+    const matchesUsername = item.userName
+      ?.toLowerCase()
+      .includes(searchText.toLowerCase());
+
+    const createdDateObj = new Date(item.createdDate);
+    const validUntilObj = new Date(item.validUntil);
+
+    // Match exact date for createdDate (ignoring time)
+    const matchesCreatedDate = createdDate
+      ? dayjs(createdDate).isSame(dayjs(createdDateObj), "day")
+      : true;
+
+    // Match exact date for validUntil (ignoring time)
+    const matchesValidUntil = validUntil
+      ? dayjs(validUntil).isSame(dayjs(validUntilObj), "day")
+      : true;
+
+    return matchesUsername && matchesCreatedDate && matchesValidUntil;
+  });
 
   // Compute paginated data
-  const paginatedData = dataSource.slice(
+  const paginatedData = filteredData.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
@@ -135,7 +162,7 @@ function MemberTable({ dataSource }) {
     setTimeout(() => {
       setLoading(false);
     }, 2000);
-  }, [dataSource, currentPage, pageSize]);
+  }, [dataSource, currentPage, pageSize, searchText, createdDate, validUntil]);
 
   // Get List
   const GetListTable = () => {
@@ -152,9 +179,66 @@ function MemberTable({ dataSource }) {
 
   return (
     <div className="w-full">
+      {/* Search Controls */}
+      <div
+        style={{
+          marginBottom: 16,
+          display: "flex",
+          gap: "12px",
+          alignItems: "center",
+        }}
+      >
+        <Input
+          prefix={<SearchOutlined />}
+          placeholder="Tên thành viên"
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          style={{ width: 200 }}
+        />
+
+        <div>
+          {/* <span style={{ marginRight: "0.5rem" }}>Ngày tạo:</span> */}
+          <DatePicker
+            prefix={<SearchOutlined />}
+            placeholder="Ngày Tạo"
+            format="DD-MM-YYYY"
+            onChange={(date) => setCreatedDate(date)}
+            value={createdDate}
+          />
+        </div>
+
+        <div>
+          {/* <span style={{ marginRight: "0.5rem" }}>Ngày kết thúc:</span> */}
+          <DatePicker
+            prefix={<SearchOutlined />}
+            placeholder="Ngày Kết Thúc"
+            format="DD-MM-YYYY"
+            onChange={(date) => setValidUntil(date)}
+            value={validUntil}
+          />
+        </div>
+
+        <Button
+          icon={<ReloadOutlined />}
+          onClick={() => {
+            setSearchText("");
+            setCreatedDate(null);
+            setValidUntil(null);
+          }}
+          style={{
+            borderRadius: 6,
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+          }}
+        >
+          Cài lại bộ lọc
+        </Button>
+      </div>
+
       <Spin spinning={loading} tip="Loading...">
         <Table
-          dataSource={!loading ? paginatedData : []}
+          dataSource={paginatedData}
           columns={columns}
           pagination={false}
           className="[&_.ant-table-thead_.ant-table-cell]:bg-[#fafafa] [&_.ant-table-thead_.ant-table-cell]:font-medium [&_.ant-table-cell]:py-4"
@@ -163,7 +247,7 @@ function MemberTable({ dataSource }) {
         />
       </Spin>
       <Pagination
-        total={dataSource.length}
+        total={filteredData.length}
         pageSize={pageSize}
         current={currentPage}
         showSizeChanger

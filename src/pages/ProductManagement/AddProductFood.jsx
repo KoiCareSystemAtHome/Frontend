@@ -12,10 +12,15 @@ import {
 } from "antd";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getListProductManagement } from "../../redux/slices/productManagementSlice";
+import {
+  createFood,
+  getListProductManagement,
+} from "../../redux/slices/productManagementSlice";
 import { InboxOutlined, PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import { getListCategory } from "../../redux/slices/categorySlice";
 import { getListCategorySelector } from "../../redux/selector";
+import { uploadImage } from "../../redux/slices/authSlice"; // Import the uploadImage thunk
+import { getParameters } from "../../redux/slices/parameterSlice";
 
 const AddProductFood = ({ onClose, shopId }) => {
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -27,7 +32,6 @@ const AddProductFood = ({ onClose, shopId }) => {
   const currentShopId = shopId || loggedInUser?.shopId;
 
   const showAddModal = () => {
-    openNotification("success", "Thêm Thức Ăn Thành Công!");
     form.setFieldsValue({ ShopId: currentShopId });
     console.log("shopId:", currentShopId);
     setIsAddOpen(true);
@@ -85,27 +89,20 @@ const AddProductFood = ({ onClose, shopId }) => {
         });
     }
 
-    // Fetch pond-required-param data
-    const fetchParameters = async () => {
-      setIsLoadingParameters(true);
-      try {
-        const response = await fetch(
-          "http://14.225.206.203:8080/api/Pond/pond-required-param"
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch parameters");
-        }
-        const data = await response.json();
-        setParameters(data); // Store the fetched parameters
+    // Replace fetchParameters with getParameters thunk
+    setIsLoadingParameters(true);
+    dispatch(getParameters()) // Pass a type parameter as required by the thunk
+      .unwrap()
+      .then((data) => {
+        setParameters(data); // Set the fetched parameters
         setIsLoadingParameters(false);
-      } catch (error) {
+        console.log("Parameters fetched successfully:", data);
+      })
+      .catch((error) => {
         console.error("Failed to fetch parameters:", error);
         setIsLoadingParameters(false);
         openNotification("error", "Failed to load parameters");
-      }
-    };
-
-    fetchParameters();
+      });
   }, [currentShopId, form, dispatch, CategoryList]);
 
   const [selectedImage, setSelectedImage] = useState(null); // Store the selected file
@@ -159,26 +156,14 @@ const AddProductFood = ({ onClose, shopId }) => {
       return;
     }
 
-    // Step 1: Upload the image to /api/Account/test to get the image URL
+    // Step 1: Upload the image using uploadImage thunk
     let imageUrl;
     try {
       const formData = new FormData();
       formData.append("file", selectedImage);
 
-      const uploadResponse = await fetch(
-        "http://14.225.206.203:8080/api/Account/test",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-
-      if (!uploadResponse.ok) {
-        throw new Error("Failed to upload image");
-      }
-
-      const uploadResult = await uploadResponse.json();
-      imageUrl = uploadResult.imageUrl;
+      const uploadResult = await dispatch(uploadImage(formData)).unwrap();
+      imageUrl = uploadResult.imageUrl; // Assuming the API returns { imageUrl: "..." }
 
       if (!imageUrl) {
         throw new Error("Image URL not returned from the server");
@@ -202,68 +187,35 @@ const AddProductFood = ({ onClose, shopId }) => {
       {}
     );
 
-    // Step 3: Convert the Type value to an integer
-    const typeValue = parseInt(values.Type, 10); // Convert "0", "1", or "2" to 0, 1, or 2
-
-    // Step 3: Construct the payload for create-productfood
+    // Step 3: Construct the payload for create-product with the image URL
     const payload = {
       productName: values.ProductName,
       description: values.Description,
-      price: Number(values.Price), // Ensure price is a number
-      stockQuantity: Number(values.StockQuantity), // Ensure stockQuantity is a number
+      price: Number(values.Price),
+      stockQuantity: Number(values.StockQuantity),
       shopId: values.ShopId,
-      categoryId: values.CategoryId, // Added categoryId
+      categoryId: values.CategoryId,
       brand: values.Brand,
       manufactureDate: values.ManufactureDate,
       expiryDate: values.ExpiryDate,
-      parameterImpacts: parameterImpactsObj, // Send as a flat object
-      //type: typeValue,
-      image: imageUrl, // Use the image URL
+      parameterImpacts: parameterImpactsObj,
+      image: imageUrl,
       name: values.Name,
       ageFrom: Number(values.AgeFrom) || 0, // Ensure ageFrom is a number, default to 0 if not provided
       ageTo: Number(values.AgeTo) || 0, // Ensure ageTo is a number, default to 0 if not provided
     };
 
-    console.log(
-      "Create ProductFood Payload:",
-      JSON.stringify(payload, null, 2)
-    );
-
-    // Step 4: Send the create-productfood request
+    // Step 4: Create the product using createProductManagement thunk
     try {
-      const response = await fetch(
-        "http://14.225.206.203:8080/api/Product/create-productfood",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        }
-      );
-
-      // The API returns text/plain ("Success") for a 200 response
-      const result = await response.text();
-      if (response.ok) {
-        openNotification("success", "Thêm Thức Ăn Thành Công!");
-        dispatch(getListProductManagement());
-        handleCancel();
-        form.resetFields();
-      } else {
-        // Try to parse the error as JSON, if possible
-        let errorMessage = result;
-        try {
-          const errorJson = JSON.parse(result);
-          errorMessage = errorJson.message || "Failed to create product food.";
-        } catch (e) {
-          // If parsing fails, use the raw text as the error message
-          errorMessage = result || "Failed to create product food.";
-        }
-        openNotification("error", errorMessage);
-      }
+      await dispatch(createFood(payload)).unwrap(); // Removed unused 'result'
+      openNotification("success", "Thêm Thức Ăn Thành Công!");
+      dispatch(getListProductManagement());
+      handleCancel();
+      form.resetFields();
     } catch (error) {
-      console.error("Error creating product food:", error);
-      openNotification("error", "Network error, try again later.");
+      console.error("Error creating product:", error);
+      let errorMessage = error || "Failed to create product.";
+      openNotification("error", errorMessage);
     }
   };
 
