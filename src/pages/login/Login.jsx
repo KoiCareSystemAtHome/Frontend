@@ -157,11 +157,11 @@ const LoginPage = () => {
               className="mb-0"
             >
               <Checkbox className="text-gray-700 font-title">
-                Remember me
+                Nhớ Mật Khẩu
               </Checkbox>
             </Form.Item>
             <a
-              href="forgot-password"
+              href="/forgot-password"
               className="text-sm text-orange-500 hover:text-orange-600"
             >
               Quên mật khẩu?
@@ -173,7 +173,7 @@ const LoginPage = () => {
             <Button
               type="primary"
               htmlType="submit"
-              className="w-full bg-orange-500 text-white rounded-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors font-title"
+              className="w-full h-12 text-lg font-semibold rounded-lg bg-blue-600 hover:bg-blue-700 transition-all duration-300 transform hover:scale-105"
               size="large"
               style={{ backgroundColor: "orange" }}
             >
@@ -234,68 +234,3 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
-
-// const onFinish = (e) => {
-//   console.log("Form submitted:", e);
-
-//   dispatch(login({ username, password }))
-//     .then((res) => {
-//       console.log("Response payload:", res.payload);
-//       if (res.payload.status === 200) {
-//         message.success("Login successful!");
-//         if (res.payload?.data?.userInfo.roles === "Admin") {
-//           navigate("/admin");
-//         } else if (res.payload?.data?.userInfo.roles === "Member") {
-//           navigate("/shop");
-//         } else {
-//           message.error("Wrong username or password");
-//         }
-//       } else {
-//       }
-//     })
-//     .catch((error) => {
-//       console.error("Login failed:", error);
-//       message.error("Login failed. Please try again.");
-//     });
-// };
-
-// const handleLogin = () => {
-//   dispatch(login({ username, password }))
-//     .then((res) => {
-//       console.log("Response payload:", res.payload);
-//       if (res.payload.status === 200) {
-//         message.success("Login successful!");
-//         if (res.payload?.data?.userInfo.roles === "Admin") {
-//           navigate("/admin");
-//         } else if (res.payload?.data?.userInfo.roles === "Shop") {
-//           navigate("/");
-//         } else {
-//           message.error("Wrong username or password");
-//         }
-//       } else {
-//       }
-//     })
-//     .catch((error) => {
-//       console.error("Login failed:", error);
-//       message.error("Login failed. Please try again.");
-//     });
-// };
-
-// const handleLogin = () => {
-//   console.log("Username:", username);
-//   console.log("Password:", password);
-
-//   dispatch(login({ username, password }))
-//     .then((res) => {
-//       console.log(res);
-//       if (res.payload.status === 200) {
-//         message.success("Login successful!");
-//       } else {
-//         message.error("Invalid credentials.");
-//       }
-//     })
-//     .catch((error) => {
-//       console.error("Login failed:", error);
-//       message.error("Login failed. Please try again.");
-//     });
-// };

@@ -3,7 +3,6 @@ import { Form, Avatar } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { getShopByUserId } from "../../redux/slices/shopSlice";
-import LocationSelector from "./LocationSelector";
 import AddGhn from "./AddGhn";
 
 const Profile = () => {
@@ -53,7 +52,8 @@ const Profile = () => {
       <div className="flex items-center mb-8 px-4">
         <Avatar
           size={64}
-          icon={<UserOutlined />}
+          src={user.avatar || undefined} // Use user.avatar if available, otherwise fallback to icon
+          icon={!user.avatar && <UserOutlined />} // Show icon only if no avatar URL
           className="border-2 border-gray-200"
         />
         <div className="ml-4">

@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
+  postRequest,
   postRequestFormData,
   postRequestParams,
 } from "../../services/httpMethods";
@@ -57,6 +58,103 @@ export const register = createAsyncThunk(
         error.response.data.message || "An error occurred during registration."
       );
       return rejectWithValue(error.response || error.response.data.message);
+    }
+  }
+);
+
+export const forgotPassword = createAsyncThunk(
+  "Account/forgotPassword",
+  async (email, { rejectWithValue }) => {
+    try {
+      const response = await postRequestParams("Account/ForgotPassword", {
+        email,
+      });
+
+      if (response && response.status === 200) {
+        message.success(
+          "Liên kết đặt lại mật khẩu đã được gửi đến email của bạn."
+        );
+      }
+      return response.data; // The response data (likely a string based on the schema)
+    } catch (error) {
+      message.error(
+        error.response?.data?.message ||
+          "Đã xảy ra lỗi trong quá trình xử lý yêu cầu của bạn."
+      );
+      return rejectWithValue(
+        error.response?.data?.message ||
+          "Failed to process forgot password request"
+      );
+    }
+  }
+);
+
+export const confirmResetPassCode = createAsyncThunk(
+  "Account/confirmResetPassCode",
+  async ({ email, code, newPass }, { rejectWithValue }) => {
+    try {
+      const response = await postRequestParams("Account/ConfirmResetPassCode", {
+        email,
+        code,
+        newPass,
+      });
+
+      if (response && response.status === 200) {
+        message.success("Cài đặt lại mật khẩu đã được xác nhận thành công.");
+      }
+      return response.data; // The response data (likely a string or object)
+    } catch (error) {
+      message.error(
+        error.response?.data?.message ||
+          "Mã xác nhận không hợp lệ hoặc đã hết hạn."
+      );
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to confirm reset password code"
+      );
+    }
+  }
+);
+
+// Add the changePassword thunk
+export const changePassword = createAsyncThunk(
+  "Account/changePassword",
+  async ({ email, oldPass, newPass }, { rejectWithValue }) => {
+    try {
+      const response = await postRequestParams("Account/ChangePassword", {
+        email,
+        oldPass,
+        newPass,
+      });
+
+      if (response && response.status === 200) {
+        message.success("Đổi mật khẩu thành công!");
+      }
+      return response.data; // Return the response data (likely a success message or object)
+    } catch (error) {
+      message.error(
+        error.response?.data?.message ||
+          "Đã xảy ra lỗi trong quá trình đổi mật khẩu."
+      );
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to change password"
+      );
+    }
+  }
+);
+
+export const updateProfile = createAsyncThunk(
+  "Account/updateProfile",
+  async (profileData, { rejectWithValue }) => {
+    try {
+      const response = await postRequest("Account/UpdateProfile", profileData);
+
+      //message.success("Cập nhật hồ sơ thành công!");
+      return response.data; // Return the updated user data or success message
+    } catch (error) {
+      message.error(
+        error.message || "Đã xảy ra lỗi trong quá trình cập nhật hồ sơ."
+      );
+      return rejectWithValue(error.message || "Failed to update profile");
     }
   }
 );
@@ -160,6 +258,67 @@ const authSlice = createSlice({
       .addCase(register.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Registration failed";
+      })
+      // Add Forgot Password cases
+      .addCase(forgotPassword.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(forgotPassword.fulfilled, (state, action) => {
+        state.loading = false;
+        // Optionally, you can store the response message if needed
+        // For example, if the API returns a confirmation message
+        state.error = null; // Clear any previous errors
+      })
+      .addCase(forgotPassword.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Forgot password request failed";
+      })
+      // Add Confirm Reset Password Code cases
+      .addCase(confirmResetPassCode.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(confirmResetPassCode.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        // Optionally, you can store the response data if needed
+        // For example, if the API returns a token or additional data for the next step
+      })
+      .addCase(confirmResetPassCode.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to confirm reset password code";
+      })
+      // Add Change Password cases
+      .addCase(changePassword.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(changePassword.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        // Optionally, you can update state if the API returns user data
+      })
+      .addCase(changePassword.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to change password";
+      })
+      // Add Update Profile cases
+      .addCase(updateProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        // Update the user in the state with the new profile data
+        state.user = { ...state.user, ...action.payload };
+        // Update localStorage with the new user data
+        localStorage.setItem("user", JSON.stringify(state.user));
+      })
+      .addCase(updateProfile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to update profile";
       });
   },
 });
@@ -167,26 +326,3 @@ const authSlice = createSlice({
 export const { logout } = authSlice.actions;
 
 export default authSlice;
-
-// export const login = createAsyncThunk(
-//   "Account/login",
-//   async ({ username, password }, { rejectWithValue }) => {
-//     try {
-//       // Ensure you're sending the correct headers and payload
-//       const res = await postRequestParams("Account/login", {
-//         username,
-//         password,
-//       });
-//       console.log("Payload being sent:", { username, password });
-//       return res.data; // Assuming the response contains user data
-//     } catch (error) {
-//       // Check if the error response is available
-//       if (error.response && error.response.data) {
-//         return rejectWithValue(
-//           error.response.data.message || "Invalid credentials"
-//         );
-//       }
-//       return rejectWithValue("Invalid credentials");
-//     }
-//   }
-// );
