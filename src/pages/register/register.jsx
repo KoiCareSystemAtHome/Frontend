@@ -45,9 +45,9 @@ const RegisterPage = () => {
         {/* Welcome text */}
         <div className="mb-8">
           <p className="text-gray-600">
-            Welcome to <span className="text-orange-500">KOI GUARDIAN</span>
+            <span className="text-orange-500">KOI GUARDIAN</span>
           </p>
-          <h1 className="text-2xl font-bold text-gray-900">Sign Up</h1>
+          <h1 className="text-2xl font-bold text-gray-900">ĐĂNG KÍ</h1>
         </div>
 
         <Form onFinish={onFinish} layout="vertical" className="space-y-4">
@@ -145,20 +145,20 @@ const RegisterPage = () => {
             <Button
               type="primary"
               htmlType="submit"
-              className="w-full bg-orange-500 text-white rounded-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors mt-4 font-title"
+              className="w-full h-12 text-lg font-semibold rounded-lg bg-blue-600 hover:bg-blue-700 transition-all duration-300 transform hover:scale-105"
               size="large"
               style={{ backgroundColor: "orange" }}
               loading={loading}
             >
-              Sign in
+              Đăng Kí
             </Button>
           </Form.Item>
 
           {/* Sign up link */}
           <div className="text-center mt-6 font-title">
-            <span className="text-gray-600">Already have an Account? </span>
+            <span className="text-gray-600">Đã có tài khoản? </span>
             <a href="/" className="text-orange-500 hover:text-orange-600">
-              Sign In
+              Đăng nhập
             </a>
           </div>
         </Form>

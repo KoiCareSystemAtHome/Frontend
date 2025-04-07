@@ -1,13 +1,9 @@
 import React, { useState, useEffect } from "react";
 import {
-  DashboardOutlined,
   TeamOutlined,
-  SettingOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   ShopOutlined,
-  ToolOutlined,
-  MessageOutlined,
 } from "@ant-design/icons";
 import { Layout, Menu, Button } from "antd";
 import { Route, Routes, useNavigate } from "react-router-dom";
@@ -31,6 +27,8 @@ import PondParameter from "../../pages/Parameter/Pond/PondParameter";
 import FishParameter from "../../pages/Parameter/Fish/FishParameter";
 import Report from "../../pages/Report/Report";
 import ReportDetail from "../../pages/Report/ReportDetail";
+import ChangePassword from "../../pages/ChangePassword/ChangePassword";
+import UpdateProfile from "../../pages/UpdateProfile/UpdateProfile";
 
 const { Sider, Content } = Layout;
 
@@ -348,6 +346,8 @@ const AdminLayout = ({ children }) => {
             />
             <Route path="report" element={<Report />} />
             <Route path="report-detail/:reportId" element={<ReportDetail />} />
+            <Route path="change-password" element={<ChangePassword />} />
+            <Route path="update-profile" element={<UpdateProfile />} />
             {/* <Route path="feedback" element={<Feedback />} /> */}
           </Routes>
         </Content>

@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  DollarCircleOutlined,
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
-} from "@ant-design/icons";
+import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import { Layout, Menu, Button } from "antd";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import "./ShopLayout.css";
@@ -21,6 +17,8 @@ import productIcon from "../../assets/product.png";
 import orderIcon from "../../assets/order.png";
 import dashboardIcon from "../../assets/dashboard.png";
 import BlogDetail from "../../pages/Blog/BlogDetail";
+import ChangePassword from "../../pages/ChangePassword/ChangePassword";
+import UpdateProfile from "../../pages/UpdateProfile/UpdateProfile";
 
 const { Sider, Content } = Layout;
 
@@ -257,6 +255,8 @@ const ShopLayout = ({ children }) => {
             <Route path="blog" element={<Blog />} />
             <Route path="blog-detail/:blogId" element={<BlogDetail />} />
             <Route path="shopProfile" element={<Profile />} />
+            <Route path="change-password" element={<ChangePassword />} />
+            <Route path="update-profile" element={<UpdateProfile />} />
           </Routes>
         </Content>
       </Layout>

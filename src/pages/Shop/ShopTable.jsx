@@ -1,5 +1,6 @@
 import {
   Button,
+  Image,
   Input,
   notification,
   Pagination,
@@ -137,6 +138,29 @@ function ShopTable({ dataSource }) {
       render: (_, __, index) => index + 1 + (currentPage - 1) * pageSize,
     },
     {
+      title: "Hình Ảnh",
+      dataIndex: "shopAvatar",
+      key: "shopAvatar",
+      render: (shopAvatar) => {
+        if (!shopAvatar) {
+          return "N/A"; // Display "N/A" if no image URL is provided
+        }
+        return (
+          <Image
+            src={shopAvatar}
+            alt="Shop Avatar"
+            style={{
+              maxWidth: "100px",
+              maxHeight: "100px",
+              objectFit: "cover",
+            }}
+            placeholder={<Spin size="small" />}
+            fallback="https://via.placeholder.com/100?text=No+Image" // Fallback image if URL fails
+          />
+        );
+      },
+    },
+    {
       title: "Tên Cửa Hàng",
       dataIndex: "shopName",
       key: "shopName",
@@ -169,6 +193,22 @@ function ShopTable({ dataSource }) {
       title: "Giấy Phép Kinh Doanh",
       dataIndex: "bizLicences",
       key: "bizLicences",
+      render: (bizLicences) => {
+        if (!bizLicences) {
+          return "N/A";
+        }
+        return (
+          <Image
+            src={bizLicences}
+            alt="Not Available"
+            style={{
+              maxWidth: "100px",
+              maxHeight: "100px",
+              objectFit: "cover",
+            }}
+          />
+        );
+      },
     },
     {
       title: "GHN ID",

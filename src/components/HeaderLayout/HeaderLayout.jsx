@@ -1,10 +1,4 @@
-import {
-  BellOutlined,
-  LogoutOutlined,
-  SearchOutlined,
-} from "@ant-design/icons";
 import React, { useState } from "react";
-import logoutIcon from "../../assets/logout.png";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { logout } from "../../redux/slices/authSlice";
@@ -38,6 +32,22 @@ const HeaderLayout = ({ title }) => {
     localStorage.removeItem("shopHeaderTitle");
     localStorage.removeItem("adminHeaderTitle");
     navigate("/"); // Redirect to login page after logout
+  };
+
+  const handleUpdateProfile = () => {
+    // Determine the redirect path based on the role
+    const redirectPath =
+      role === "Admin" ? "/admin/update-profile" : "/shop/update-profile";
+    navigate(redirectPath); // Redirect to the appropriate change-password page
+    setIsOpen(false); // Close the dropdown after clicking
+  };
+
+  const handleChangePassword = () => {
+    // Determine the redirect path based on the role
+    const redirectPath =
+      role === "Admin" ? "/admin/change-password" : "/shop/change-password";
+    navigate(redirectPath); // Redirect to the appropriate change-password page
+    setIsOpen(false); // Close the dropdown after clicking
   };
 
   return (
@@ -89,9 +99,14 @@ const HeaderLayout = ({ title }) => {
             className="flex items-center gap-2"
           >
             <img
-              src="https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcRp5R2sG1ItQOjF1dQE9ezo7s1GAQnZ674Da7Sf2N47DtlP4zJNdFN_rngXs0xVl6jcbNdC0gqVxRcmlYs"
+              src={
+                user?.avatar || "https://via.placeholder.com/40?text=No+Avatar" // Fallback image if avatar is missing
+              }
               className="w-10 h-10 rounded-full object-cover"
               alt="profile"
+              onError={(e) => {
+                e.target.src = "https://via.placeholder.com/40?text=No+Avatar"; // Fallback if image fails to load
+              }}
             />
             <div className="text-left">
               <div className="text-gray-900 font-medium">{user?.name}</div>
@@ -116,7 +131,10 @@ const HeaderLayout = ({ title }) => {
 
           {isOpen && (
             <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-lg py-1 z-50">
-              <button className="w-full px-4 py-3 text-gray-700 hover:bg-gray-50 flex items-center gap-3">
+              <button
+                onClick={handleUpdateProfile}
+                className="w-full px-4 py-3 text-gray-700 hover:bg-gray-50 flex items-center gap-3"
+              >
                 <Icon>
                   <svg
                     viewBox="0 0 24 24"
@@ -135,7 +153,10 @@ const HeaderLayout = ({ title }) => {
                 Quản Lý Tài Khoản
               </button>
 
-              <button className="w-full px-4 py-3 text-gray-700 hover:bg-gray-50 flex items-center gap-3">
+              <button
+                onClick={handleChangePassword}
+                className="w-full px-4 py-3 text-gray-700 hover:bg-gray-50 flex items-center gap-3"
+              >
                 <Icon color="text-pink-400">
                   <svg
                     viewBox="0 0 24 24"
