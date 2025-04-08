@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
   getRequest,
+  getRequestParams,
   postRequest,
   putRequest,
 } from "../../services/httpMethods";
@@ -10,6 +11,7 @@ const initialState = {
   listProduct: [],
   listFood: [], // Add state for food
   listMedicine: [], // Add state for medicine
+  productsById: {}, // Store products as a map: { [productId]: product }
 };
 
 // GET
@@ -22,6 +24,21 @@ export const getListProductManagement = createAsyncThunk(
       return res.data;
     } catch (error) {
       console.log("Error", error);
+    }
+  }
+);
+
+// GET PRODUCT BY ID
+export const getProductById = createAsyncThunk(
+  "Product/getById",
+  async (productId, { rejectWithValue }) => {
+    try {
+      const res = await getRequestParams(`Product/${productId}`);
+      console.log("🔍 Product by ID Response:", res);
+      return { productId, product: res.data }; // Return both productId and product data
+    } catch (error) {
+      console.log("❌ Get Product by ID Error:", error);
+      return rejectWithValue(error.response?.data || "Failed to fetch product");
     }
   }
 );
@@ -196,9 +213,16 @@ const productManagementSlice = createSlice({
       .addCase(getListProductManagement.fulfilled, (state, action) => {
         state.listProduct = action.payload;
       })
+      // Add the new case for getProductById
+      .addCase(getProductById.fulfilled, (state, action) => {
+        const { productId, product } = action.payload;
+        state.productsById[productId] = product; // Store product in map
+      })
+      // Search
       .addCase(searchProductManagement.fulfilled, (state, action) => {
         state.listProduct = action.payload;
       })
+      // Create
       .addCase(createProduct.fulfilled, (state, action) => {
         state.listProduct.push(action.payload);
       })
@@ -208,6 +232,7 @@ const productManagementSlice = createSlice({
       .addCase(createMedicine.fulfilled, (state, action) => {
         state.listMedicine.push(action.payload);
       })
+      // Update
       .addCase(updateProductManagement.fulfilled, (state, action) => {
         const updateProduct = action.payload;
         const index = state.listProduct.findIndex(

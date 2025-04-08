@@ -1,15 +1,18 @@
 import { Button, Input, Pagination, Spin, Table } from "antd";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import useParameterList from "../../../hooks/useParameterList";
-import { getListParameter } from "../../../redux/slices/parameterSlice";
 import { ReloadOutlined, SearchOutlined } from "@ant-design/icons";
+import UpdatePondParameter from "./UpdatePondParameter";
+
+const renderUpdatePondParameter = (record) => {
+  return <UpdatePondParameter record={record} />;
+};
 
 function PondParameterTable({ dataSource }) {
   console.log("Datasource: ", dataSource);
   // const packageList = useSelector(getListMembershipPackageSelector);
   // console.log("package list", packageList);
-  const dispatch = useDispatch();
+  //const dispatch = useDispatch();
 
   // pagination
   const [loading, setLoading] = useState(false);
@@ -35,8 +38,6 @@ function PondParameterTable({ dataSource }) {
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
-
-  //const [selectedType] = useState("pond");
 
   const columns = [
     {
@@ -84,14 +85,15 @@ function PondParameterTable({ dataSource }) {
       dataIndex: "measurementInstruction",
       key: "measurementInstruction",
     },
+    {
+      title: "Chỉnh Sửa",
+      key: "edit",
+      width: 100,
+      render: (record) => {
+        return renderUpdatePondParameter(record);
+      },
+    },
   ];
-
-  // useEffect(() => {
-  //   setLoading(true);
-  //   dispatch(getListParameter(selectedType))
-  //     .then(() => setLoading(false))
-  //     .catch(() => setLoading(false));
-  // }, [selectedType, dispatch]);
 
   useEffect(() => {
     setLoading(true);
@@ -99,19 +101,6 @@ function PondParameterTable({ dataSource }) {
       setLoading(false);
     }, 2000);
   }, [dataSource, currentPage, pageSize, searchParameterName, searchUnitName]);
-
-  // // Get List
-  // const GetListTable = () => {
-  //   setLoading(true);
-  //   dispatch(useParameterList())
-  //     .then(() => {
-  //       setLoading(false);
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error fetching data:", error);
-  //       setLoading(false);
-  //     });
-  // };
 
   return (
     <div className="w-full">
@@ -159,7 +148,6 @@ function PondParameterTable({ dataSource }) {
           pagination={false}
           className="[&_.ant-table-thead_.ant-table-cell]:bg-[#fafafa] [&_.ant-table-thead_.ant-table-cell]:font-medium [&_.ant-table-cell]:py-4"
           style={{ marginBottom: "1rem" }}
-          //onChange={GetListTable}
         />
       </Spin>
       <Pagination

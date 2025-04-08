@@ -143,8 +143,8 @@ const AddPondParameter = ({ type = "Pond" }) => {
             <Button
               type="primary"
               icon={<CloudUploadOutlined style={{ marginRight: "8px" }} />}
-              href={`/sample_${type.toLowerCase()}_parameters.xlsx`}
-              download
+              href={`/PondStandardParam_Template.xlsx`}
+              download="PondStandardParam_Template.xlsx"
             >
               Tải mẫu thông số {type}
             </Button>

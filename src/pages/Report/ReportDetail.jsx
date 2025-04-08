@@ -14,13 +14,13 @@ import {
 import { useSelector, useDispatch } from "react-redux";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { getListReportSelector } from "../../redux/selector";
-import useReportList from "../../hooks/useReportList";
 import { getOrderDetail } from "../../redux/slices/orderSlice";
 import {
   getListReport,
   updateReportStatus,
 } from "../../redux/slices/reportSlice";
-import { EditOutlined, LeftOutlined } from "@ant-design/icons";
+import { getProductById } from "../../redux/slices/productManagementSlice";
+import { LeftOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 
 function ReportDetail() {
@@ -37,11 +37,12 @@ function ReportDetail() {
   const { loading: reportLoading = false, error: reportError = null } =
     useSelector((state) => state.reportSlice || {});
   const [reportStatus, setReportStatus] = useState(null);
+  const [productDetails, setProductDetails] = useState([]);
+  const [isFetchingProducts, setIsFetchingProducts] = useState(false);
 
-  // Get the rowIndex from the navigation state
-  const rowIndex = location.state?.rowIndex || "N/A"; // Fallback to "N/A" if not provided
+  const rowIndex = location.state?.rowIndex || "N/A";
 
-  // Fetch the report list if it's not already loaded
+  // Fetch report list if not already loaded
   useEffect(() => {
     if (!reportList || reportList.length === 0) {
       dispatch(getListReport())
@@ -54,27 +55,29 @@ function ReportDetail() {
     }
   }, [dispatch, reportList]);
 
-  // Memoize report to avoid unnecessary useEffect re-runs
   const report = useMemo(
     () => reportList.find((item) => item.reportId === reportId) || {},
     [reportList, reportId]
   );
 
-  // Calculate rowIndex as a fallback if not provided in navigation state
   if (!rowIndex) {
     const reportIndex = reportList.findIndex(
       (item) => item.reportId === reportId
     );
-    rowIndex = reportIndex !== -1 ? reportIndex + 1 : "N/A"; // Add 1 to convert to 1-based index
+    rowIndex = reportIndex !== -1 ? reportIndex + 1 : "N/A";
   }
 
-  // Fetch order details when report is found
-  //   const report = reportList.find((item) => item.reportId === reportId) || {};
+  // Reset productDetails when reportId changes
+  useEffect(() => {
+    setProductDetails([]);
+  }, [reportId]);
+
+  // Fetch order details for the current report
   useEffect(() => {
     if (report.orderId) {
       dispatch(getOrderDetail(report.orderId));
     }
-  }, [dispatch, report.orderId, reportList]); // Added reportList to dependencies to prevent re-fetching on every render
+  }, [dispatch, report.orderId, reportList]);
 
   // Set initial report status
   useEffect(() => {
@@ -83,7 +86,50 @@ function ReportDetail() {
     }
   }, [report]);
 
-  // Handle case when report is not found
+  // Fetch product details using getProductById when orderDetail changes
+  useEffect(() => {
+    const fetchProductDetails = async () => {
+      if (orderDetail?.details?.length > 0) {
+        setIsFetchingProducts(true);
+        const productPromises = orderDetail.details.map(async (item) => {
+          try {
+            const result = await dispatch(
+              getProductById(item.productId)
+            ).unwrap();
+            const productData = result.product || {};
+            return {
+              ...item,
+              productName: productData.productName || "Unknown Product",
+              price: productData.price || 0,
+              quantity: item.quantity || 1,
+              image: productData.image || "",
+              total: (productData.price || 0) * (item.quantity || 1),
+            };
+          } catch (error) {
+            console.error(`Error fetching product ${item.productId}:`, error);
+            return {
+              ...item,
+              productName: "Unknown Product",
+              price: 0,
+              quantity: item.quantity || 1,
+              image: "",
+              total: 0,
+            };
+          }
+        });
+
+        const fetchedProducts = await Promise.all(productPromises);
+        setProductDetails(fetchedProducts);
+        setIsFetchingProducts(false);
+      } else {
+        setProductDetails([]);
+        setIsFetchingProducts(false);
+      }
+    };
+
+    fetchProductDetails();
+  }, [dispatch, orderDetail]); // Removed productsById from dependencies
+
   if (!report.reportId) {
     return (
       <div style={{ padding: "20px", textAlign: "center" }}>
@@ -95,7 +141,6 @@ function ReportDetail() {
     );
   }
 
-  // Helper function to map status to display text
   const getStatusDisplayText = (status) => {
     switch (status) {
       case "Approve":
@@ -103,11 +148,10 @@ function ReportDetail() {
       case "Reject":
         return "Từ Chối";
       default:
-        return "N/A"; // Fallback for unknown status
+        return "N/A";
     }
   };
 
-  // Helper function to determine tag color based on status
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
       case "pending":
@@ -117,16 +161,14 @@ function ReportDetail() {
       case "approve":
         return "green";
       case "complete":
-        return "green"; // Added for the "complete" status in the screenshot
+        return "green";
       default:
         return "gold";
     }
   };
 
-  // Function to determine the tag color for order status
   const getOrderStatusColor = (status) => {
     const normalizedStatus = status?.toLowerCase();
-    console.log("Order Status:", status, "Normalized:", normalizedStatus); // Debug log
     switch (normalizedStatus) {
       case "complete":
         return "green";
@@ -139,37 +181,28 @@ function ReportDetail() {
     }
   };
 
-  // Handle Approve/Reject actions with API integration
   const handleStatusUpdate = async (newStatus) => {
     try {
-      // Dispatch the updateReportStatus thunk with reportId and new status
       await dispatch(
         updateReportStatus({ reportId, statuz: newStatus })
       ).unwrap();
-      // Update local state optimistically
       setReportStatus(newStatus);
-      // Show success message based on newStatus
       const statusMessage =
         newStatus.toLowerCase() === "approve"
           ? "chấp nhận"
           : newStatus.toLowerCase() === "reject"
           ? "từ chối"
           : newStatus.toLowerCase();
-      // Show success message
       message.success(`Báo cáo đã được ${statusMessage} thành công!`);
-      // Refetch the report list to sync with backend
       await dispatch(getListReport());
     } catch (error) {
-      // Handle any errors from the thunk (e.g., network errors or invalid status)
       message.error(
         `Failed to update report status: ${error.message || "Unknown error"}`
       );
-      // Revert to previous status if update fails
       setReportStatus(report.statuz);
     }
   };
 
-  // Fallback order details if API fails or data is not available
   const fallbackOrderDetails = {
     member: "N/A",
     phoneNumber: "N/A",
@@ -189,91 +222,80 @@ function ReportDetail() {
 
   const columns = [
     {
-      title: "ID Sản Phẩm",
+      //title: "ID Sản Phẩm",
       dataIndex: "productId",
       key: "productId",
-      width: "5%",
+      render: (_, __, index) => index + 1,
     },
     {
-      title: "Tên Sản Phẩm",
+      title: "Sản Phẩm",
       dataIndex: "productName",
       key: "productName",
-      width: "30%",
+      render: (_, record) => (
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <Image
+            width={50}
+            height={50}
+            src={record.image}
+            alt={record.productName}
+            style={{ objectFit: "cover", borderRadius: 5 }}
+            preview={{
+              mask: "Click to view",
+            }}
+          />
+          <span>{record.productName}</span>
+        </div>
+      ),
     },
     {
       title: "Giá",
       dataIndex: "price",
       key: "price",
-      width: "15%",
+      render: (price) => `${price.toLocaleString()} VND`,
     },
     {
       title: "Số Lượng",
       dataIndex: "quantity",
       key: "quantity",
-      width: "10%",
     },
     {
       title: "Tổng Tiền",
       dataIndex: "total",
       key: "total",
-      width: "20%",
-    },
-    {
-      title: "Ghi Nhận Thực Tế",
-      dataIndex: "actualRecord",
-      key: "actualRecord",
-      width: "20%",
-      render: (_, record) => (
-        <div>
-          <div>Phí: {record.fee}</div>
-          <div>Thời Gian: {record.time}</div>
-        </div>
-      ),
-    },
-    {
-      title: "",
-      dataIndex: "action",
-      key: "action",
-      render: (_, record) => (
-        <div>
-          <Button type="link" className="p-0" icon={<EditOutlined />}>
-            Chỉnh Sửa
-          </Button>
-        </div>
-      ),
+      render: (total) => `${total.toLocaleString()} VND`,
     },
   ];
 
-  const data =
-    orderDetail?.details?.map((item, index) => ({
-      key: index + 1,
-      productId: item.productId,
-      productName: item.productName || "Unknown Product",
-      price: item.price || "N/A",
-      quantity: item.quantity,
-      total: item.price ? `${item.quantity * item.price} VND` : "N/A",
-      fee: item.fee || "No Record",
-      time: item.time || "No Record",
-    })) || [];
+  const data = productDetails.map((item, index) => ({
+    key: index + 1,
+    productId: item.productId,
+    productName: item.productName,
+    price: item.price,
+    quantity: item.quantity,
+    total: item.total,
+    image: item.image,
+  }));
 
   return (
     <div style={{ padding: "20px", maxWidth: "1920px", margin: "0 auto" }}>
       <Button
         type="text"
         icon={<LeftOutlined />}
-        onClick={() => navigate("/admin/report")}
+        onClick={() => {
+          console.log("Navigating to /admin/report");
+          navigate("/admin/report");
+        }}
         style={{ marginBottom: "20px" }}
       >
         Trang Chủ
       </Button>
 
       <Row gutter={16}>
-        {/* Left Section: Order Details */}
         <Col span={12}>
           <Card title={`Đơn Hàng #${rowIndex}`}>
             <Spin spinning={orderLoading}>
               <Descriptions
-                bordered={false} // Match screenshot style
+                bordered={false}
                 column={1}
                 size="middle"
                 labelStyle={{
@@ -300,9 +322,6 @@ function ReportDetail() {
                 <Descriptions.Item label="Loại Ship">
                   {displayOrderDetails.shipType}
                 </Descriptions.Item>
-                <Descriptions.Item label="Phí Ship">
-                  <span>{displayOrderDetails.shipFee}</span>
-                </Descriptions.Item>
                 <Descriptions.Item label="Ghi Chú">
                   {displayOrderDetails.note}
                 </Descriptions.Item>
@@ -321,63 +340,15 @@ function ReportDetail() {
                   </Tag>
                 </Descriptions.Item>
               </Descriptions>
-
-              {/* <div style={{ marginTop: "20px" }}>
-                <h3>Status History</h3>
-                {displayOrderDetails.statusHistory?.length > 0
-                  ? displayOrderDetails.statusHistory.map((history, index) => (
-                      <div
-                        key={index}
-                        style={{
-                          display: "flex",
-                          gap: "10px",
-                          alignItems: "center",
-                        }}
-                      >
-                        <span style={{ color: "#888" }}>•</span>
-                        <span>{history.time}</span>
-                        <Tag color="gold" style={{ borderRadius: "10px" }}>
-                          {history.status}
-                        </Tag>
-                      </div>
-                    ))
-                  : "No history available"}
-              </div> */}
-
-              {/* <div style={{ marginTop: "20px", display: "flex", gap: "10px" }}>
-                <Button
-                  danger
-                  onClick={() =>
-                    message.info(
-                      "Cancel Order functionality would be implemented here"
-                    )
-                  }
-                  style={{ borderRadius: "20px" }}
-                >
-                  Cancel Order
-                </Button>
-                <Button
-                  type="primary"
-                  onClick={() =>
-                    message.info(
-                      "Confirm Order functionality would be implemented here"
-                    )
-                  }
-                  style={{ borderRadius: "20px" }}
-                >
-                  Confirm Order
-                </Button>
-              </div> */}
             </Spin>
           </Card>
         </Col>
 
-        {/* Right Section: Report Details */}
         <Col span={12}>
           <Card title="Chi Tiết Báo Cáo">
             <Spin spinning={reportLoading}>
               <Descriptions
-                bordered={false} // Match screenshot style
+                bordered={false}
                 column={1}
                 size="middle"
                 labelStyle={{
@@ -409,7 +380,7 @@ function ReportDetail() {
                       textAlign: "center",
                       fontSize: "14px",
                       padding: "5px",
-                      borderRadius: "10px", // Match screenshot tag style
+                      borderRadius: "10px",
                     }}
                   >
                     {getStatusDisplayText(reportStatus) || "N/A"}
@@ -465,31 +436,38 @@ function ReportDetail() {
         </Col>
       </Row>
 
-      {/* Full Width Order Detail Card */}
       <div className="w-full bg-white rounded-lg p-6 border border-gray-200 mt-5">
         <h2 className="text-lg font-semibold mb-4">Chi Tiết Đơn Hàng</h2>
-        <Table
-          columns={columns}
-          dataSource={data}
-          pagination={false}
-          className="mb-4"
-        />
-        <div className="flex flex-col items-end space-y-2 mt-4">
-          <div className="flex justify-end">
-            <span className="text-gray-600 w-32">Temporary Price:</span>
-            <span className="w-32 text-right">8,800,000 VND</span>
-          </div>
-          <div className="flex justify-end">
-            <span className="text-gray-600 w-32">Delivery Fee:</span>
-            <span className="w-32 text-right">200,000 VND</span>
-          </div>
-          <div className="flex justify-end">
-            <span className="font-bold w-32">Total:</span>
-            <span className="w-32 text-right text-red-500 font-bold">
-              9,000,000 VND
-            </span>
-          </div>
-        </div>
+        <Spin spinning={isFetchingProducts}>
+          <Table
+            columns={columns}
+            dataSource={data}
+            pagination={false}
+            className="mb-4"
+          />
+          {data.length > 0 && (
+            <div className="flex flex-col items-end space-y-2 mt-4">
+              <div className="flex justify-end">
+                <span className="text-gray-600 w-32">Giá:</span>
+                <span className="w-32 text-right">
+                  {data
+                    .reduce((sum, item) => sum + item.total, 0)
+                    .toLocaleString()}{" "}
+                  VND
+                </span>
+              </div>
+              <div className="flex justify-end">
+                <span className="font-bold w-32">Tổng:</span>
+                <span className="w-32 text-right text-red-500 font-bold">
+                  {data
+                    .reduce((sum, item) => sum + item.total, 0)
+                    .toLocaleString()}{" "}
+                  VND
+                </span>
+              </div>
+            </div>
+          )}
+        </Spin>
       </div>
     </div>
   );

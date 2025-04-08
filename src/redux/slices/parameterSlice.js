@@ -1,5 +1,9 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getRequest, postRequestFormData } from "../../services/httpMethods";
+import {
+  getRequest,
+  postRequest,
+  postRequestFormData,
+} from "../../services/httpMethods";
 
 const initialState = {
   token: "",
@@ -54,6 +58,29 @@ export const createParameter = createAsyncThunk(
       const data = await response.data; // Note: axios response uses .data property
       // After successful upsert, fetch the updated list of parameters
       await dispatch(getListParameter({ type })).unwrap();
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// POST - Edit Pond Parameter
+export const editPondParameter = createAsyncThunk(
+  "parameter/editPondParameter",
+  async (parameterData, { rejectWithValue, dispatch }) => {
+    try {
+      const response = await postRequest(
+        "Parameter/edit-pond-param",
+        parameterData
+      );
+      const data = await response.data;
+
+      // Optionally refresh the parameter list after editing
+      if (parameterData.type) {
+        await dispatch(getListParameter({ type: parameterData.type })).unwrap();
+      }
+
       return data;
     } catch (error) {
       return rejectWithValue(error.message);
@@ -121,6 +148,22 @@ const parameterSlice = createSlice({
         state.loading = false;
         state.success = false;
         state.error = action.payload || "Failed to create parameter";
+      });
+    // Handle editPondParameter
+    builder
+      .addCase(editPondParameter.pending, (state) => {
+        state.loading = true;
+        state.success = false;
+        state.error = null;
+      })
+      .addCase(editPondParameter.fulfilled, (state, action) => {
+        state.loading = false;
+        // List is updated via getListParameter dispatch in the thunk
+      })
+      .addCase(editPondParameter.rejected, (state, action) => {
+        state.loading = false;
+        state.success = false;
+        state.error = action.payload || "Failed to edit parameter";
       });
   },
 });

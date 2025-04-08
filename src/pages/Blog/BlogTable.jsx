@@ -1,10 +1,7 @@
 import {
   Button,
-  DatePicker,
   Image,
   Input,
-  Modal,
-  notification,
   Pagination,
   Select,
   Spin,
@@ -21,7 +18,6 @@ import {
   ReloadOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router";
-import { approveBlog, getListBlog } from "../../redux/slices/blogSlice";
 import UpdateBlog from "./UpdateBlog";
 import dayjs from "dayjs";
 
@@ -75,39 +71,39 @@ function BlogTable({ dataSource }) {
     console.log("Navigating to detail page with ID:", blogId);
   };
 
-  const handleStatusChange = (blogId, isApproved) => {
-    const newStatus = !isApproved;
+  // const handleStatusChange = (blogId, isApproved) => {
+  //   const newStatus = !isApproved;
 
-    Modal.confirm({
-      title: "Xác nhận Thay đổi Trạng thái",
-      content: `Bạn có chắc chắn muốn thay đổi trạng thái thành ${
-        newStatus ? "Chấp Nhận" : "Từ Chối"
-      }?`,
-      okText: "Có",
-      cancelText: "Không",
-      centered: true,
-      onOk: async () => {
-        try {
-          await dispatch(approveBlog({ blogId, newStatus })).unwrap();
-          dispatch(getListBlog()); // Refresh list after update
+  //   Modal.confirm({
+  //     title: "Xác nhận Thay đổi Trạng thái",
+  //     content: `Bạn có chắc chắn muốn thay đổi trạng thái thành ${
+  //       newStatus ? "Chấp Nhận" : "Từ Chối"
+  //     }?`,
+  //     okText: "Có",
+  //     cancelText: "Không",
+  //     centered: true,
+  //     onOk: async () => {
+  //       try {
+  //         await dispatch(approveBlog({ blogId, newStatus })).unwrap();
+  //         dispatch(getListBlog()); // Refresh list after update
 
-          notification.success({
-            message: "Trạng thái đã được cập nhật",
-            // description: `Bạn có chắc chắn muốn thay đổi trạng thái thành ${
-            //   newStatus ? "Chấp Nhận" : "Từ Chối"
-            // }`,
-            placement: "top",
-          });
-        } catch (error) {
-          notification.error({
-            message: "Update Failed",
-            description: "Failed to update blog status. Please try again!",
-            placement: "top",
-          });
-        }
-      },
-    });
-  };
+  //         notification.success({
+  //           message: "Trạng thái đã được cập nhật",
+  //           // description: `Bạn có chắc chắn muốn thay đổi trạng thái thành ${
+  //           //   newStatus ? "Chấp Nhận" : "Từ Chối"
+  //           // }`,
+  //           placement: "top",
+  //         });
+  //       } catch (error) {
+  //         notification.error({
+  //           message: "Update Failed",
+  //           description: "Failed to update blog status. Please try again!",
+  //           placement: "top",
+  //         });
+  //       }
+  //     },
+  //   });
+  // };
 
   // Reset all filters
   const handleResetFilters = () => {
@@ -183,7 +179,7 @@ function BlogTable({ dataSource }) {
             style={{ width: "100px", textAlign: "center", cursor: "pointer" }}
             icon={approved ? <CheckCircleOutlined /> : <CloseCircleOutlined />}
             color={approved ? "green" : "red"}
-            onClick={() => handleStatusChange(record.blogId, approved)}
+            //onClick={() => handleStatusChange(record.blogId, approved)}
           >
             {approved ? "Chấp Thuận" : "Từ Chối"}
           </Tag>
@@ -195,10 +191,10 @@ function BlogTable({ dataSource }) {
       key: "action",
       render: (record) => (
         <div style={{ display: "flex", gap: "10px" }}>
-          <EyeOutlined
+          {/* <EyeOutlined
             style={{ fontSize: "1.5rem", cursor: "pointer" }}
             onClick={() => handleViewDetail(record.blogId)}
-          />
+          /> */}
           <UpdateBlog record={record} />
         </div>
       ),
@@ -252,15 +248,6 @@ function BlogTable({ dataSource }) {
           }}
           style={{ width: 200 }}
         />
-        {/* <DatePicker
-          placeholder="Select report date"
-          value={searchDate}
-          onChange={(date) => {
-            setSearchDate(date);
-            setCurrentPage(1);
-          }}
-          style={{ width: 200 }}
-        /> */}
         <Select
           placeholder="Trạng Thái"
           value={searchStatus}

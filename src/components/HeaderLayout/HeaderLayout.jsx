@@ -100,12 +100,12 @@ const HeaderLayout = ({ title }) => {
           >
             <img
               src={
-                user?.avatar || "https://via.placeholder.com/40?text=No+Avatar" // Fallback image if avatar is missing
+                user?.avatar || "" // Fallback image if avatar is missing
               }
               className="w-10 h-10 rounded-full object-cover"
               alt="profile"
               onError={(e) => {
-                e.target.src = "https://via.placeholder.com/40?text=No+Avatar"; // Fallback if image fails to load
+                e.target.src = ""; // Fallback if image fails to load
               }}
             />
             <div className="text-left">

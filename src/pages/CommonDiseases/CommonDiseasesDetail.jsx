@@ -247,7 +247,7 @@ const CommonDiseasesDetail = () => {
                 </div>
 
                 {/* Medicines */}
-                <div>
+                {/* <div>
                   <Text strong className="text-green-600">
                     Thuốc
                   </Text>
@@ -274,7 +274,7 @@ const CommonDiseasesDetail = () => {
                       className="mt-2"
                     />
                   )}
-                </div>
+                </div> */}
 
                 {/* Save & Cancel Buttons */}
                 {editMode && (

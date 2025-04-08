@@ -133,7 +133,7 @@ const ShopLayout = ({ children }) => {
           items={[
             {
               key: "/shop/dashboard",
-              label: "Dashboard",
+              label: "Bảng Điều Khiển",
               style: { color: "white" },
               className: "group", // Add group class to the Blog menu item
               icon: (

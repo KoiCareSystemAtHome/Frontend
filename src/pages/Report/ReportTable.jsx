@@ -11,11 +11,10 @@ import {
 } from "antd";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import useReportList from "../../hooks/useReportList";
 import { getListReportSelector } from "../../redux/selector";
 import { useNavigate } from "react-router";
 import dayjs from "dayjs";
-import { ReloadOutlined } from "@ant-design/icons";
+import { EyeOutlined, ReloadOutlined } from "@ant-design/icons";
 
 // const renderUpdateReport = (record) => <UpdateReport record={record} />;
 
@@ -87,7 +86,7 @@ function ReportTable({ dataSource }) {
         return dateA.isBefore(dateB) ? -1 : dateA.isAfter(dateB) ? 1 : 0;
       },
       sortDirections: ["ascend", "descend"],
-      defaultSortOrder: "descend",
+      //defaultSortOrder: "descend",
     },
     {
       title: "Lý Do",
@@ -145,17 +144,15 @@ function ReportTable({ dataSource }) {
       // render: (_, record) => renderUpdateReport(record),
       render: (_, record, index) => (
         <div style={{ display: "flex", gap: "10px" }}>
-          <Button
-            type="primary"
+          <EyeOutlined
+            style={{ fontSize: "1.5rem", cursor: "pointer" }}
             onClick={() =>
               handleViewDetail(
                 record.reportId,
                 index + 1 + (currentPage - 1) * pageSize
               )
             }
-          >
-            Xem
-          </Button>
+          />
         </div>
       ),
     },

@@ -21,6 +21,7 @@ import {
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+import TextArea from "antd/es/input/TextArea";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -161,22 +162,6 @@ const UpdateMembership = (props) => {
             </Col>
             {/* 2nd column */}
             <Col>
-              <p className="modalContent">Mô Tả</p>
-              <Form.Item
-                name="packageDescription"
-                initialValue={record.packageDescription}
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng nhập mô tả!",
-                  },
-                ]}
-              >
-                <Input placeholder="Mô Tả"></Input>
-              </Form.Item>
-            </Col>
-            {/* 3rd column */}
-            <Col>
               <p className="modalContent">Giá</p>
               <Form.Item
                 name="packagePrice"
@@ -196,10 +181,7 @@ const UpdateMembership = (props) => {
                 ></Input>
               </Form.Item>
             </Col>
-          </Row>
-          {/* 2nd Row */}
-          <Row style={{ justifyContent: "space-between" }}>
-            {/* 1st column */}
+            {/* 3rd column */}
             <Col>
               <p className="modalContent">Loại Gói</p>
               <Form.Item
@@ -215,7 +197,10 @@ const UpdateMembership = (props) => {
                 <Input placeholder="Loại Gói"></Input>
               </Form.Item>
             </Col>
-            {/* 2nd column */}
+          </Row>
+          {/* 2nd Row */}
+          <Row style={{ justifyContent: "space-between" }}>
+            {/* 1st column */}
             <Col>
               <p className="modalContent">Ngày Bắt Đầu</p>
               <Form.Item
@@ -241,7 +226,7 @@ const UpdateMembership = (props) => {
                 ></DatePicker>
               </Form.Item>
             </Col>
-            {/* 3rd column */}
+            {/* 2nd column */}
             <Col>
               <p className="modalContent">Ngày Kết Thúc</p>
               <Form.Item
@@ -267,10 +252,7 @@ const UpdateMembership = (props) => {
                 ></DatePicker>
               </Form.Item>
             </Col>
-          </Row>
-          {/* 3rd Row */}
-          <Row>
-            {/* 1st column */}
+            {/* 3rd column */}
             <Col>
               <p className="modalContent">Giai Đoạn</p>
               <Form.Item
@@ -287,6 +269,22 @@ const UpdateMembership = (props) => {
               </Form.Item>
             </Col>
           </Row>
+          {/* 3rd Row */}
+          <Col>
+            <p className="modalContent">Mô Tả</p>
+            <Form.Item
+              name="packageDescription"
+              initialValue={record.packageDescription}
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng nhập mô tả!",
+                },
+              ]}
+            >
+              <TextArea rows={6} placeholder="Mô Tả"></TextArea>
+            </Form.Item>
+          </Col>
           <Row className="membershipButton">
             <Form.Item>
               <Button

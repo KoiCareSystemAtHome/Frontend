@@ -1,13 +1,11 @@
-import React, { useEffect } from "react";
-import { Table, Button, Tag } from "antd";
-import { ArrowLeftOutlined, EditOutlined } from "@ant-design/icons";
-import { useNavigate, useParams } from "react-router";
+import React, { useEffect, useState } from "react";
+import { Table, Button, Tag, Spin, Image } from "antd";
+import { ArrowLeftOutlined } from "@ant-design/icons";
+import { useLocation, useNavigate, useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { getOrderDetail } from "../../redux/slices/orderSlice";
-import {
-  fetchOrderTracking,
-  updateOrderStatus,
-} from "../../redux/slices/ghnSlice";
+import { fetchOrderTracking } from "../../redux/slices/ghnSlice";
+import { getProductById } from "../../redux/slices/productManagementSlice"; // Import getProductById
 
 // Hàm định dạng ngày giờ
 const formatDateTime = (dateString) => {
@@ -46,10 +44,19 @@ const statusTranslations = {
   lost: "Mất hàng",
 };
 
+// Hàm định dạng tiền tệ
+const formatCurrency = (value) => {
+  return value.toLocaleString("vi-VN", { style: "currency", currency: "VND" });
+};
+
 function OrderDetail() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { orderId } = useParams();
+  const location = useLocation(); // Use useLocation to get navigation state
+
+  // Get rowIndex from navigation state, default to "N/A" if not provided
+  const rowIndex = location.state?.rowIndex || "N/A";
 
   // Lấy dữ liệu từ orderSlice
   const {
@@ -60,19 +67,21 @@ function OrderDetail() {
 
   // Lấy dữ liệu từ ghnSlice (dữ liệu tracking)
   const {
-    orderTracking: trackingData, // Sửa tên để rõ ràng hơn
-    loadingTracking: trackingLoading, // Sửa tên để rõ ràng hơn
-    errorTracking: trackingError, // Sửa tên để rõ ràng hơn
+    orderTracking: trackingData,
+    loadingTracking: trackingLoading,
+    errorTracking: trackingError,
   } = useSelector((state) => state.ghnSlice || {});
+
+  // State để lưu chi tiết sản phẩm
+  const [productDetails, setProductDetails] = useState([]);
+  const [isFetchingProducts, setIsFetchingProducts] = useState(false);
 
   // Gọi API để lấy chi tiết đơn hàng và lịch sử trạng thái
   useEffect(() => {
-    // Lấy chi tiết đơn hàng
     console.log("Fetching order details for ID:", orderId);
     if (orderId) {
       dispatch(getOrderDetail(orderId)).then((res) => {
         console.log("Fetched order Detail:", res);
-        // Sau khi lấy được chi tiết đơn hàng, lấy order_code để gọi tracking-order
         if (res.payload?.oder_code) {
           console.log(
             "Calling fetchOrderTracking with order_code:",
@@ -90,6 +99,49 @@ function OrderDetail() {
     }
   }, [dispatch, orderId]);
 
+  // Fetch product details using getProductById when order changes
+  useEffect(() => {
+    const fetchProductDetails = async () => {
+      if (order?.details?.length > 0) {
+        setIsFetchingProducts(true);
+        const productPromises = order.details.map(async (item) => {
+          try {
+            const result = await dispatch(
+              getProductById(item.productId)
+            ).unwrap();
+            const productData = result.product || {};
+            return {
+              ...item,
+              productName: productData.productName || "Unknown Product",
+              price: productData.price || 0,
+              quantity: item.quantity || 1,
+              image: productData.image,
+              total: (productData.price || 0) * (item.quantity || 1),
+            };
+          } catch (error) {
+            console.error(`Error fetching product ${item.productId}:`, error);
+            return {
+              ...item,
+              productName: "Unknown Product",
+              price: 0,
+              quantity: item.quantity || 1,
+              total: 0,
+            };
+          }
+        });
+
+        const fetchedProducts = await Promise.all(productPromises);
+        setProductDetails(fetchedProducts);
+        setIsFetchingProducts(false);
+      } else {
+        setProductDetails([]);
+        setIsFetchingProducts(false);
+      }
+    };
+
+    fetchProductDetails();
+  }, [dispatch, order]); // Dependency on order
+
   // Xử lý trạng thái loading và error
   if (orderStatus === "loading") return <p>Loading order details...</p>;
   if (orderStatus === "failed") return <p>Error: {orderError}</p>;
@@ -105,46 +157,64 @@ function OrderDetail() {
 
   const columns = [
     {
-      title: "Mã Sản Phẩm",
+      //title: "Mã Sản Phẩm",
       dataIndex: "productId",
       key: "productId",
-      width: "5%",
+      render: (_, __, index) => index + 1,
     },
     {
-      title: "Tên Sản Phẩm",
+      title: "Sản Phẩm",
       dataIndex: "productName",
       key: "productName",
-      width: "30%",
+      render: (_, record) => (
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <Image
+            width={50}
+            height={50}
+            src={record.image}
+            alt={record.productName}
+            style={{ objectFit: "cover", borderRadius: 5 }}
+            preview={{
+              mask: "Click to view",
+            }}
+          />
+          <span>{record.productName}</span>
+        </div>
+      ),
     },
     {
       title: "Giá",
       dataIndex: "price",
       key: "price",
-      width: "15%",
+      render: (price) => formatCurrency(price),
     },
     {
       title: "Số Lượng",
       dataIndex: "quantity",
       key: "quantity",
-      width: "10%",
     },
     {
       title: "Tổng",
       dataIndex: "total",
       key: "total",
-      width: "20%",
+      render: (total) => formatCurrency(total),
     },
   ];
 
-  const data =
-    order?.details?.map((item, index) => ({
-      key: index + 1,
-      productId: item.productId,
-      productName: item.productName || "Unknown Product",
-      price: item.price || "N/A",
-      quantity: item.quantity,
-      total: item.price ? `${item.quantity * item.price} VND` : "N/A",
-    })) || [];
+  const data = productDetails.map((item, index) => ({
+    key: index + 1,
+    productId: item.productId,
+    productName: item.productName,
+    price: item.price,
+    quantity: item.quantity,
+    total: item.total,
+    image: item.image,
+  }));
+
+  // Calculate totals
+  const subtotal = productDetails.reduce((sum, item) => sum + item.total, 0);
+  const shippingFee = Number(order?.shipFee) || 0; // Use actual shipping fee from order
+  const total = subtotal + shippingFee;
 
   return (
     <div className="w-full">
@@ -159,7 +229,7 @@ function OrderDetail() {
           Return
         </Button>
         <h1 className="text-2xl font-normal mt-4">
-          Chi Tiết Đơn Hàng # {order?.orderId}
+          Chi Tiết Đơn Hàng # {rowIndex}
         </h1>
       </div>
 
@@ -181,7 +251,9 @@ function OrderDetail() {
                 </div>
                 <div className="flex">
                   <span className="w-32 text-gray-600">Địa Chỉ</span>
-                  <span>{`${order?.customerAddress.wardName}, ${order?.customerAddress.districtName}, ${order?.customerAddress.provinceName}`}</span>
+                  <span>{`${order?.customerAddress?.wardName || ""}, ${
+                    order?.customerAddress?.districtName || ""
+                  }, ${order?.customerAddress?.provinceName || ""}`}</span>
                 </div>
                 <div className="flex">
                   <span className="w-32 text-gray-600">Mã Đơn Hàng</span>
@@ -189,7 +261,11 @@ function OrderDetail() {
                 </div>
                 <div className="flex">
                   <span className="w-32 text-gray-600">Phí Ship</span>
-                  <span>{order?.shipFee}</span>
+                  <span>
+                    {order?.shipFee
+                      ? formatCurrency(Number(order?.shipFee))
+                      : "N/A"}
+                  </span>
                 </div>
                 <div className="flex">
                   <span className="w-32 text-gray-600">Ghi Chú</span>
@@ -243,28 +319,36 @@ function OrderDetail() {
         {/* Full Width Order Detail Card */}
         <div className="w-full bg-white rounded-lg p-6 border border-gray-200">
           <h2 className="text-lg font-semibold mb-4">Thông Tin Đơn Hàng</h2>
-          <Table
-            columns={columns}
-            dataSource={data}
-            pagination={false}
-            className="mb-4"
-          />
-          <div className="flex flex-col items-end space-y-2 mt-4">
-            <div className="flex justify-end">
-              <span className="text-gray-600 w-32">Giá:</span>
-              <span className="w-32 text-right">8,800,000 VND</span>
-            </div>
-            <div className="flex justify-end">
-              <span className="text-gray-600 w-32">Phí Ship:</span>
-              <span className="w-32 text-right">200,000 VND</span>
-            </div>
-            <div className="flex justify-end">
-              <span className="font-bold w-32">Tổng:</span>
-              <span className="w-32 text-right text-red-500 font-bold">
-                9,000,000 VND
-              </span>
-            </div>
-          </div>
+          <Spin spinning={isFetchingProducts}>
+            <Table
+              columns={columns}
+              dataSource={data}
+              pagination={false}
+              className="mb-4"
+            />
+            {data.length > 0 && (
+              <div className="flex flex-col items-end space-y-2 mt-4">
+                <div className="flex justify-end">
+                  <span className="text-gray-600 w-32">Giá:</span>
+                  <span className="w-32 text-right">
+                    {formatCurrency(subtotal)}
+                  </span>
+                </div>
+                <div className="flex justify-end">
+                  <span className="text-gray-600 w-32">Phí Ship:</span>
+                  <span className="w-32 text-right">
+                    {formatCurrency(shippingFee)}
+                  </span>
+                </div>
+                <div className="flex justify-end">
+                  <span className="font-bold w-32">Tổng:</span>
+                  <span className="w-32 text-right text-red-500 font-bold">
+                    {formatCurrency(total)}
+                  </span>
+                </div>
+              </div>
+            )}
+          </Spin>
         </div>
       </div>
     </div>
@@ -272,250 +356,3 @@ function OrderDetail() {
 }
 
 export default OrderDetail;
-
-// import React, { useEffect } from "react";
-// import { Table, Button, Tag } from "antd";
-// import { ArrowLeftOutlined, EditOutlined } from "@ant-design/icons";
-// import { useNavigate, useParams } from "react-router";
-// import { useDispatch, useSelector } from "react-redux";
-// import { getOrderDetail } from "../../redux/slices/orderSlice";
-// import {
-//   fetchOrderTracking,
-//   updateOrderStatus,
-// } from "../../redux/slices/ghnSlice";
-
-// function OrderDetail() {
-//   const navigate = useNavigate();
-//   const dispatch = useDispatch();
-//   const { orderId } = useParams();
-//   const {
-//     orderDetail: order,
-//     status,
-//     error,
-//   } = useSelector((state) => state.orderSlice || {});
-
-//   useEffect(() => {
-//     console.log("Fetching order details for ID:", orderId);
-//     if (orderId) {
-//       dispatch(getOrderDetail(orderId)).then((res) => {
-//         console.log("Fetched order Detail:", res);
-//       });
-//     }
-//   }, [dispatch, orderId]);
-
-//   if (status === "loading") return <p>Loading order details...</p>;
-//   if (status === "failed") return <p>Error: {error}</p>;
-
-//   const handleRefund = () => {
-//     navigate("/shop/order-refund");
-//   };
-
-//   const columns = [
-//     {
-//       title: "Mã Sản Phẩm",
-//       dataIndex: "productId",
-//       key: "productId",
-//       width: "5%",
-//     },
-//     {
-//       title: "Tên Sản Phẩm",
-//       dataIndex: "productName",
-//       key: "productName",
-//       width: "30%",
-//     },
-//     {
-//       title: "Giá",
-//       dataIndex: "price",
-//       key: "price",
-//       width: "15%",
-//     },
-//     {
-//       title: "Số Lượng",
-//       dataIndex: "quantity",
-//       key: "quantity",
-//       width: "10%",
-//     },
-//     {
-//       title: "Tổng",
-//       dataIndex: "total",
-//       key: "total",
-//       width: "20%",
-//     },
-//     // {
-//     //   title: "Actual Record",
-//     //   dataIndex: "actualRecord",
-//     //   key: "actualRecord",
-//     //   width: "20%",
-//     //   render: (_, record) => (
-//     //     <div>
-//     //       <div>Fee: {record.fee}</div>
-//     //       <div>Time: {record.time}</div>
-//     //     </div>
-//     //   ),
-//     // },
-//     // {
-//     //   title: "",
-//     //   dataIndex: "action",
-//     //   key: "action",
-//     //   render: (_, record) => (
-//     //     <div>
-//     //       <Button type="link" className="p-0" icon={<EditOutlined />}>
-//     //         Edit
-//     //       </Button>
-//     //     </div>
-//     //   ),
-//     // },
-//   ];
-
-//   const data =
-//     order?.details?.map((item, index) => ({
-//       key: index + 1,
-//       productId: item.productId,
-//       productName: item.productName || "Unknown Product",
-//       price: item.price || "N/A",
-//       quantity: item.quantity,
-//       total: item.price ? `${item.quantity * item.price} VND` : "N/A",
-//       // fee: item.fee || "No Record",
-//       // time: item.time || "No Record",
-//     })) || [];
-
-//   return (
-//     <div className="w-full`">
-//       {/* Header */}
-//       <div className="mb-6">
-//         <Button
-//           type="link"
-//           className="flex items-center px-0"
-//           icon={<ArrowLeftOutlined />}
-//           onClick={() => navigate("/shop/orderManagement")}
-//         >
-//           Return
-//         </Button>
-//         <h1 className="text-2xl font-normal mt-4">
-//           Chi Tiết Đơn Hàng # {order?.orderId}
-//         </h1>
-//       </div>
-
-//       <div className="flex flex-col gap-6">
-//         {/* Top Row with General Info and Status */}
-//         <div className="flex gap-6">
-//           {/* General Information Card */}
-//           <div className="flex-grow">
-//             <div className="bg-white rounded-lg p-6 border border-gray-200">
-//               <h2 className="text-lg font-semibold mb-4">Thông tin chung</h2>
-//               <div className="space-y-3">
-//                 <div className="flex">
-//                   <span className="w-32 text-gray-600">Thành Viên</span>
-//                   <span>{order?.customerName}</span>
-//                 </div>
-//                 <div className="flex">
-//                   <span className="w-32 text-gray-600">Số Điện Thoại</span>
-//                   <span>{order?.customerPhoneNumber || "0123456789"}</span>
-//                 </div>
-//                 <div className="flex">
-//                   <span className="w-32 text-gray-600">Địa Chỉ</span>
-//                   <span>{`${order?.customerAddress.wardName}, ${order?.customerAddress.districtName}, ${order?.customerAddress.provinceName}`}</span>
-//                 </div>
-//                 <div className="flex">
-//                   <span className="w-32 text-gray-600">Mã Đơn Hàng</span>
-//                   <span>{order?.oder_code}</span>
-//                 </div>
-//                 <div className="flex">
-//                   <span className="w-32 text-gray-600">Phí Ship</span>
-//                   <span>{order?.shipFee}</span>
-//                 </div>
-//                 <div className="flex">
-//                   <span className="w-32 text-gray-600">Ghi Chú</span>
-//                   <span>{order?.note}</span>
-//                 </div>
-//                 {/* <div className="flex">
-//                   <span className="w-32 text-gray-600">Order Date</span>
-//                   <span>00:00 20th July, 2024</span>
-//                 </div>
-//                 <div className="flex">
-//                   <span className="w-32 text-gray-600">Payment Method</span>
-//                   <img
-//                     src="https://thuonghieumanh.vneconomy.vn/upload/vnpay.png"
-//                     alt="VNPay"
-//                     className="h-6"
-//                   />
-//                 </div>
-//                 <div className="flex">
-//                   <span className="w-32 text-gray-600">Payment Status</span>
-//                   <span>Not yet paid</span>
-//                 </div> */}
-//               </div>
-//             </div>
-//           </div>
-
-//           {/* Status Card */}
-//           <div className="w-96">
-//             <div className="bg-white rounded-lg p-6 border border-gray-200">
-//               <div className="mb-4 text-lg">
-//                 <span className="font-semibold text-xl">Trạng Thái: </span>
-//                 <Tag
-//                   color={
-//                     order?.status === "Completed" ||
-//                     order?.status === "Confirmed"
-//                       ? "green"
-//                       : order?.status === "Fail"
-//                       ? "red"
-//                       : "yellow"
-//                   }
-//                   className="ml-2 text-lg py-2 px-4"
-//                 >
-//                   {order?.status}
-//                 </Tag>
-//               </div>
-//               {/* <div className="space-y-2">
-//                 <Button danger block>
-//                   Cancel Order
-//                 </Button>
-//                 <Button type="primary" block onClick={handleRefund}>
-//                   Confirm Order
-//                 </Button>
-//               </div> */}
-//               <div className="mt-6">
-//                 <h3 className="font-semibold mb-2">Lịch Sử Trạng Thái</h3>
-//                 <div className="flex items-center gap-2">
-//                   <div className="w-2 h-2 rounded-full bg-gray-400"></div>
-//                   <span>17:30 12/05/2024</span>
-//                   <span className="text-gray-500">Pending</span>
-//                 </div>
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-
-//         {/* Full Width Order Detail Card */}
-//         <div className="w-full bg-white rounded-lg p-6 border border-gray-200">
-//           <h2 className="text-lg font-semibold mb-4">Thông Tin Đơn Hàng</h2>
-//           <Table
-//             columns={columns}
-//             dataSource={data}
-//             pagination={false}
-//             className="mb-4"
-//           />
-//           <div className="flex flex-col items-end space-y-2 mt-4">
-//             <div className="flex justify-end">
-//               <span className="text-gray-600 w-32">Giá:</span>
-//               <span className="w-32 text-right">8,800,000 VND</span>
-//             </div>
-//             <div className="flex justify-end">
-//               <span className="text-gray-600 w-32">Phí Ship:</span>
-//               <span className="w-32 text-right">200,000 VND</span>
-//             </div>
-//             <div className="flex justify-end">
-//               <span className="font-bold w-32">Tổng:</span>
-//               <span className="w-32 text-right text-red-500 font-bold">
-//                 9,000,000 VND
-//               </span>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-// export default OrderDetail;
