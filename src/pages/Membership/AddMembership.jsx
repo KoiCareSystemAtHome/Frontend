@@ -17,6 +17,7 @@ import {
   createPackage,
   getListMembershipPackage,
 } from "../../redux/slices/membershipPackageSlice";
+import TextArea from "antd/es/input/TextArea";
 //import { useDispatch } from "react-redux";
 
 const AddMembership = ({ onClose }) => {
@@ -122,17 +123,17 @@ const AddMembership = ({ onClose }) => {
             </Col>
             {/* 2nd column */}
             <Col>
-              <p className="modalContent">Mô Tả Gói</p>
+              <p className="modalContent">Loại Gói</p>
               <Form.Item
-                name="packageDescription"
+                name="type"
                 rules={[
                   {
                     required: true,
-                    message: "Vui lòng nhập mô tả!",
+                    message: "Vui lòng nhập loại gói!",
                   },
                 ]}
               >
-                <Input allowClear placeholder="Mô Tả Gói"></Input>
+                <Input allowClear placeholder="Loại Gói"></Input>
               </Form.Item>
             </Col>
             {/* 3rd column */}
@@ -160,21 +161,6 @@ const AddMembership = ({ onClose }) => {
           <Row style={{ justifyContent: "space-between" }}>
             {/* 1st column */}
             <Col>
-              <p className="modalContent">Loại Gói</p>
-              <Form.Item
-                name="type"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng nhập loại gói!",
-                  },
-                ]}
-              >
-                <Input allowClear placeholder="Loại Gói"></Input>
-              </Form.Item>
-            </Col>
-            {/* 2nd column */}
-            <Col>
               <p className="modalContent">Ngày Bắt Đầu</p>
               <Form.Item
                 name="startDate"
@@ -191,7 +177,7 @@ const AddMembership = ({ onClose }) => {
                 ></DatePicker>
               </Form.Item>
             </Col>
-            {/* 3rd column */}
+            {/* 2nd column */}
             <Col>
               <p className="modalContent">Ngày Kết Thúc</p>
               <Form.Item
@@ -209,10 +195,7 @@ const AddMembership = ({ onClose }) => {
                 ></DatePicker>
               </Form.Item>
             </Col>
-          </Row>
-          {/* 3rd Row */}
-          <Row>
-            {/* 1st Column */}
+            {/* 3rd column */}
             <Col>
               <p className="modalContent">Giai đoạn</p>
               <Form.Item
@@ -228,6 +211,21 @@ const AddMembership = ({ onClose }) => {
               </Form.Item>
             </Col>
           </Row>
+          {/* 3rd Row */}
+          <Col>
+            <p className="modalContent">Mô Tả</p>
+            <Form.Item
+              name="packageDescription"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng nhập mô tả!",
+                },
+              ]}
+            >
+              <TextArea rows={6} allowClear placeholder="Mô Tả"></TextArea>
+            </Form.Item>
+          </Col>
           <Row className="membershipButton">
             <Form.Item>
               <Button

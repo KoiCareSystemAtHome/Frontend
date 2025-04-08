@@ -311,10 +311,26 @@ const authSlice = createSlice({
       .addCase(updateProfile.fulfilled, (state, action) => {
         state.loading = false;
         state.error = null;
-        // Update the user in the state with the new profile data
-        state.user = { ...state.user, ...action.payload };
-        // Update localStorage with the new user data
-        localStorage.setItem("user", JSON.stringify(state.user));
+
+        const payload = action.meta.arg;
+
+        const updatedUser = {
+          ...state.user,
+          email: payload.email,
+          name: payload.name,
+          gender: payload.gender,
+          address: {
+            ...state.user?.address, // Preserve existing address fields if they exist
+            ...payload.address, // Spread new address data from payload
+          },
+          userReminder: payload.userReminder,
+          avatar: payload.avatar,
+          shopDescription: payload.shopDescription,
+          bizLicense: payload.bizLicense,
+        };
+
+        state.user = updatedUser;
+        localStorage.setItem("user", JSON.stringify(updatedUser));
       })
       .addCase(updateProfile.rejected, (state, action) => {
         state.loading = false;

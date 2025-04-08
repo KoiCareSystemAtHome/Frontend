@@ -18,6 +18,11 @@ import {
 } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { Option } from "antd/es/mentions";
+import UpdateFishParameter from "./UpdateFishParameter";
+
+const renderUpdateFishParameter = (record) => {
+  return <UpdateFishParameter record={record} />;
+};
 
 function FishParameterTable({ dataSource = [] }) {
   console.log("Datasource: ", dataSource);
@@ -159,6 +164,14 @@ function FishParameterTable({ dataSource = [] }) {
       key: "age",
       sorter: (a, b) => (a.age || 0) - (b.age || 0),
       render: (value) => value || "-",
+    },
+    {
+      title: "Chỉnh Sửa",
+      key: "edit",
+      width: 100,
+      render: (record) => {
+        return renderUpdateFishParameter(record);
+      },
     },
   ];
 

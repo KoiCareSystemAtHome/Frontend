@@ -78,18 +78,12 @@ function MemberTable({ dataSource }) {
       dataIndex: "email",
       key: "email",
     },
-    // {
-    //   title: "Phone Number",
-    //   dataIndex: "phone",
-    //   key: "phone",
-    // },
     {
       title: "Địa Chỉ",
       dataIndex: ["member", "address"],
       key: "address",
       render: (address) => {
         if (!address) return "N/A"; // Handle missing or null address
-
         try {
           // Parse the stringified JSON
           const parsedAddress = JSON.parse(address);
@@ -123,38 +117,6 @@ function MemberTable({ dataSource }) {
       key: "validUntil",
       render: (date) => formatDate(date), // Format the date here
     },
-    // {
-    //   title: "Status",
-    //   dataIndex: "status",
-    //   key: "status",
-    //   render: (status) => {
-    //     let backgroundColor;
-    //     if (status === "Active")
-    //       backgroundColor = "#22c55e"; // Green for Active
-    //     else if (status === "Inactive")
-    //       backgroundColor = "#ef4444"; // Red for Inactive
-    //     else if (status === "Expired") backgroundColor = "#facc15"; // Yellow for Expired
-    //     return (
-    //       <span
-    //         className={`px-3 py-1 rounded-full text-white text-xs flex items-center justify-center`}
-    //         style={{
-    //           backgroundColor,
-    //           width: "100px", // Fixed width
-    //           height: "30px", // Fixed height
-    //         }}
-    //       >
-    //         {status}
-    //       </span>
-    //     );
-    //   },
-    // },
-    // {
-    //   title: "Edit",
-    //   key: "edit",
-    //   render: (record) => {
-    //     return renderUpdateMember(record);
-    //   },
-    // },
   ];
 
   useEffect(() => {

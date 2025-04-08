@@ -149,7 +149,7 @@ const AdminLayout = ({ children }) => {
           items={[
             {
               key: "/admin/dashboard",
-              label: "Dashboard",
+              label: "Bảng Điều Khiển",
               style: { color: "white" },
               className: "group", // This makes the menu item act as a parent
               icon: (
@@ -239,26 +239,26 @@ const AdminLayout = ({ children }) => {
                 </span>
               ),
               children: [
-                {
-                  key: "/admin/parameter/fish",
-                  label: "Cá",
-                  style: { color: "white" },
-                  className: "group", // This makes the menu item act as a parent
-                  icon: (
-                    <span>
-                      <img
-                        src={fishIcon}
-                        alt="Fish Icon"
-                        className={`w-5 transition-all duration-200 
-                                    invert group-hover:invert-0 ${
-                                      selectedKey === "/admin/parameter/fish"
-                                        ? "invert-0"
-                                        : ""
-                                    }`}
-                      />
-                    </span>
-                  ),
-                },
+                // {
+                //   key: "/admin/parameter/fish",
+                //   label: "Cá",
+                //   style: { color: "white" },
+                //   className: "group", // This makes the menu item act as a parent
+                //   icon: (
+                //     <span>
+                //       <img
+                //         src={fishIcon}
+                //         alt="Fish Icon"
+                //         className={`w-5 transition-all duration-200
+                //                     invert group-hover:invert-0 ${
+                //                       selectedKey === "/admin/parameter/fish"
+                //                         ? "invert-0"
+                //                         : ""
+                //                     }`}
+                //       />
+                //     </span>
+                //   ),
+                // },
                 {
                   key: "/admin/parameter/pond",
                   label: "Hồ",
