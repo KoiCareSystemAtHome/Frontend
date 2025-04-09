@@ -61,8 +61,8 @@ const UpdateProfile = () => {
 
       setAvatarUrl(user.avatar || "");
       setAvatarPreview(user.avatar || "");
-      setBizLicenseUrl(user.bizLicense || "");
-      setBizLicensePreview(user.bizLicense || "");
+      setBizLicenseUrl(user.bzLicense || "");
+      setBizLicensePreview(user.bzLicense || "");
 
       form.setFieldsValue({
         email: user.email || "",

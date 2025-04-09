@@ -200,7 +200,7 @@ function ShopTable({ dataSource }) {
         return (
           <Image
             src={bizLicences}
-            alt="Not Available"
+            alt="N/A"
             style={{
               maxWidth: "100px",
               maxHeight: "100px",

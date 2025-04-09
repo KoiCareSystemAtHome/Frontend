@@ -9,6 +9,7 @@ import {
   Card,
   List,
   Empty,
+  Image,
 } from "antd";
 import { EditOutlined, LeftOutlined } from "@ant-design/icons";
 import { useNavigate, useParams } from "react-router-dom";
@@ -17,6 +18,7 @@ import {
   getDiseaseDetail,
   updateDisease,
 } from "../../redux/slices/diseasesSlice";
+import { getProductById } from "../../redux/slices/productManagementSlice";
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -31,6 +33,11 @@ const CommonDiseasesDetail = () => {
     error,
   } = useSelector((state) => state.diseasesSlice || {});
   console.log("Disease Data in Component:", disease);
+
+  // Access product data from productManagementSlice
+  const { productsById } = useSelector(
+    (state) => state.productManagementSlice || {}
+  );
 
   const [editMode, setEditMode] = useState(false);
   const [form] = Form.useForm();
@@ -59,6 +66,19 @@ const CommonDiseasesDetail = () => {
       });
     }
   }, [dispatch, diseaseId, form]);
+
+  // Fetch product details for each medicine
+  useEffect(() => {
+    if (disease?.medicines && disease.medicines.length > 0) {
+      disease.medicines.forEach((medicine) => {
+        const productId = medicine.productId;
+        // Only fetch if the product is not already in the state
+        if (productId && !productsById[productId]) {
+          dispatch(getProductById(productId));
+        }
+      });
+    }
+  }, [dispatch, disease, productsById]);
 
   const handleEditClick = () => setEditMode(true);
   const handleCancelEdit = () => {
@@ -90,7 +110,6 @@ const CommonDiseasesDetail = () => {
     borderRadius: "12px",
     boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
     width: "100%", // Ensure the card takes the full width
-    height: "675px", // Remove fixed height
   };
 
   return (
@@ -134,7 +153,7 @@ const CommonDiseasesDetail = () => {
         </div>
       ) : !disease ? (
         <div className="text-gray-500 text-center mt-10">
-          No disease data available
+          Không có dữ liệu bệnh tật nào có sẵn
         </div>
       ) : (
         <div className="px-4 sm:px-6 lg:px-8">
@@ -246,36 +265,6 @@ const CommonDiseasesDetail = () => {
                   )}
                 </div>
 
-                {/* Medicines */}
-                {/* <div>
-                  <Text strong className="text-green-600">
-                    Thuốc
-                  </Text>
-                  {disease?.medicines && disease.medicines.length > 0 ? (
-                    <List
-                      dataSource={disease.medicines}
-                      renderItem={(medicine) => (
-                        <List.Item className="pl-2">
-                          <Text className="text-gray-700">
-                            • {medicine.name || "Unnamed Medicine"}
-                          </Text>
-                        </List.Item>
-                      )}
-                      className="mt-2"
-                    />
-                  ) : (
-                    <Empty
-                      image={Empty.PRESENTED_IMAGE_SIMPLE}
-                      description={
-                        <Text className="text-gray-500">
-                          Không có thuốc nào có sẵn
-                        </Text>
-                      }
-                      className="mt-2"
-                    />
-                  )}
-                </div> */}
-
                 {/* Save & Cancel Buttons */}
                 {editMode && (
                   <div className="flex gap-4 mt-4">
@@ -286,6 +275,170 @@ const CommonDiseasesDetail = () => {
                   </div>
                 )}
               </div>
+            </div>
+
+            {/* Medicines */}
+            <div>
+              <Text strong className="text-green-600 text-lg">
+                Thuốc Điều Trị
+              </Text>
+              {disease?.medicines && disease.medicines.length > 0 ? (
+                <List
+                  dataSource={disease.medicines}
+                  renderItem={(medicine) => {
+                    const product = productsById[medicine.productId]; // Get the product details
+                    return (
+                      <List.Item className="pl-2">
+                        <div className="flex items-start">
+                          {/* Product Image */}
+                          <div className="mr-4">
+                            {product && product.image ? (
+                              <Image
+                                src={product.image}
+                                alt={medicine.name || "Medicine Image"}
+                                className="w-24 h-24 object-cover rounded-lg"
+                                style={{ width: "100px", height: "100px" }}
+                                onError={(e) => {
+                                  e.target.src =
+                                    "https://via.placeholder.com/100"; // Fallback image on error
+                                }}
+                              />
+                            ) : (
+                              <Image
+                                src="https://via.placeholder.com/100"
+                                alt="Placeholder"
+                                className="w-24 h-24 object-cover rounded-lg"
+                              />
+                            )}
+                          </div>
+
+                          {/* Medicine Details */}
+                          <div className="flex-1">
+                            <Text strong className="text-gray-700 text-lg">
+                              {medicine.name || "Unnamed Medicine"}
+                            </Text>
+
+                            {/* Display additional product details if available */}
+                            {!product ? (
+                              <Text className="text-gray-500">
+                                Đang tải thông tin sản phẩm...
+                              </Text>
+                            ) : product.error ? (
+                              <Text className="text-red-500">
+                                Lỗi khi tải thông tin sản phẩm:
+                                {product.error}
+                              </Text>
+                            ) : (
+                              <div className="mt-1">
+                                <div>
+                                  <strong>Mô tả sản phẩm:</strong>
+                                </div>
+                                <Text className="text-gray-600">
+                                  {product.description ||
+                                    "Không có mô tả sản phẩm."}
+                                </Text>
+                              </div>
+                            )}
+
+                            <div>
+                              <strong>Liều Dùng:</strong>
+                              {medicine.dosageForm ? (
+                                <Paragraph className="text-gray-600 mt-1">
+                                  {medicine.dosageForm
+                                    .split("\n")
+                                    .map((line, index) => (
+                                      <span key={index}>
+                                        {line}
+                                        <br />
+                                      </span>
+                                    ))}
+                                </Paragraph>
+                              ) : (
+                                <Text className="text-gray-600">
+                                  Không có liều lượng cụ thể.
+                                </Text>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </List.Item>
+                    );
+                  }}
+                  className="mt-2"
+                />
+              ) : (
+                <Empty
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
+                  description={
+                    <Text className="text-gray-500">
+                      Không có thuốc nào có sẵn
+                    </Text>
+                  }
+                  className="mt-2"
+                />
+              )}
+            </div>
+
+            {/* Sick Symptoms */}
+            <div>
+              <Text strong className="text-green-600 text-lg">
+                Triệu Chứng Bệnh
+              </Text>
+              {disease?.sickSymtomps && disease.sickSymtomps.length > 0 ? (
+                <List
+                  dataSource={disease.sickSymtomps}
+                  renderItem={(symptom) => (
+                    <List.Item className="pl-2">
+                      <Text className="text-gray-700">
+                        • {symptom.description || "Không có mô tả triệu chứng."}
+                      </Text>
+                    </List.Item>
+                  )}
+                  className="mt-2"
+                />
+              ) : (
+                <Empty
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
+                  description={
+                    <Text className="text-gray-500">
+                      Không có triệu chứng nào được ghi nhận
+                    </Text>
+                  }
+                  className="mt-2"
+                />
+              )}
+            </div>
+
+            {/* Side Effects */}
+            <div>
+              <Text strong className="text-green-600 text-lg">
+                Tác Dụng Phụ
+              </Text>
+              {disease?.sideEffect && disease.sideEffect.length > 0 ? (
+                <List
+                  dataSource={disease.sideEffect}
+                  renderItem={(effect) => (
+                    <List.Item className="pl-2">
+                      <Text className="text-gray-700">
+                        •{" "}
+                        {effect.description ||
+                          "Không có thông tin tác dụng phụ."}
+                      </Text>
+                    </List.Item>
+                  )}
+                  className="mt-2"
+                />
+              ) : (
+                <Empty
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
+                  description={
+                    <Text className="text-gray-500">
+                      Không có tác dụng phụ nào được ghi nhận
+                    </Text>
+                  }
+                  className="mt-2"
+                />
+              )}
             </div>
           </Card>
         </div>

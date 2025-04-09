@@ -19,16 +19,18 @@ import dashboardIcon from "../../assets/dashboard.png";
 import membershipIcon from "../../assets/membership.png";
 import parameterIcon from "../../assets/parameter.png";
 import accountIcon from "../../assets/account.png";
-import fishIcon from "../../assets/fish.png";
 import pondIcon from "../../assets/pond.png";
 import diseaseIcon from "../../assets/diseases.png";
 import reportIcon from "../../assets/report.png";
+import blogIcon from "../../assets/blog.png";
 import PondParameter from "../../pages/Parameter/Pond/PondParameter";
 import FishParameter from "../../pages/Parameter/Fish/FishParameter";
 import Report from "../../pages/Report/Report";
 import ReportDetail from "../../pages/Report/ReportDetail";
 import ChangePassword from "../../pages/ChangePassword/ChangePassword";
 import UpdateProfile from "../../pages/UpdateProfile/UpdateProfile";
+import ReviewBlog from "../../pages/ReviewBlog/ReviewBlog";
+import ReviewBlogDetail from "../../pages/ReviewBlog/ReviewBlogDetail";
 
 const { Sider, Content } = Layout;
 
@@ -221,65 +223,66 @@ const AdminLayout = ({ children }) => {
               ],
             },
             {
-              key: "/admin/parameter",
-              label: "Thông Số",
-              className: "text-white",
+              key: "/admin/parameter/pond",
+              label: "Thông Số Hồ",
+              style: { color: "white" },
+              className: "group", // This makes the menu item act as a parent
               icon: (
                 <span>
                   <img
-                    src={parameterIcon}
-                    alt="Membership Icon"
+                    src={pondIcon}
+                    alt="Pond Icon"
                     className={`w-5 transition-all duration-200 
                                     invert group-hover:invert-0 ${
-                                      selectedKey === "/admin/parameter"
+                                      selectedKey === "/admin/parameter/pond"
                                         ? "invert-0"
                                         : ""
                                     }`}
                   />
                 </span>
               ),
-              children: [
-                // {
-                //   key: "/admin/parameter/fish",
-                //   label: "Cá",
-                //   style: { color: "white" },
-                //   className: "group", // This makes the menu item act as a parent
-                //   icon: (
-                //     <span>
-                //       <img
-                //         src={fishIcon}
-                //         alt="Fish Icon"
-                //         className={`w-5 transition-all duration-200
-                //                     invert group-hover:invert-0 ${
-                //                       selectedKey === "/admin/parameter/fish"
-                //                         ? "invert-0"
-                //                         : ""
-                //                     }`}
-                //       />
-                //     </span>
-                //   ),
-                // },
-                {
-                  key: "/admin/parameter/pond",
-                  label: "Hồ",
-                  style: { color: "white" },
-                  className: "group", // This makes the menu item act as a parent
-                  icon: (
-                    <span>
-                      <img
-                        src={pondIcon}
-                        alt="Pond Icon"
-                        className={`w-5 transition-all duration-200 
-                                    invert group-hover:invert-0 ${
-                                      selectedKey === "/admin/parameter/pond"
-                                        ? "invert-0"
-                                        : ""
-                                    }`}
-                      />
-                    </span>
-                  ),
-                },
-              ],
+              // children: [
+              //   {
+              //     key: "/admin/parameter/fish",
+              //     label: "Cá",
+              //     style: { color: "white" },
+              //     className: "group", // This makes the menu item act as a parent
+              //     icon: (
+              //       <span>
+              //         <img
+              //           src={fishIcon}
+              //           alt="Fish Icon"
+              //           className={`w-5 transition-all duration-200
+              //                       invert group-hover:invert-0 ${
+              //                         selectedKey === "/admin/parameter/fish"
+              //                           ? "invert-0"
+              //                           : ""
+              //                       }`}
+              //         />
+              //       </span>
+              //     ),
+              //   },
+              //   {
+              //     key: "/admin/parameter/pond",
+              //     label: "Hồ",
+              //     style: { color: "white" },
+              //     className: "group", // This makes the menu item act as a parent
+              //     icon: (
+              //       <span>
+              //         <img
+              //           src={pondIcon}
+              //           alt="Pond Icon"
+              //           className={`w-5 transition-all duration-200
+              //                       invert group-hover:invert-0 ${
+              //                         selectedKey === "/admin/parameter/pond"
+              //                           ? "invert-0"
+              //                           : ""
+              //                       }`}
+              //         />
+              //       </span>
+              //     ),
+              //   },
+              // ],
             },
             {
               key: "/admin/diseases",
@@ -321,6 +324,26 @@ const AdminLayout = ({ children }) => {
                 </span>
               ),
             },
+            {
+              key: "/admin/review-blog",
+              label: "Duyệt Bài Viết",
+              style: { color: "white" },
+              className: "group",
+              icon: (
+                <span>
+                  <img
+                    src={blogIcon}
+                    alt="Report Icon"
+                    className={`w-5 transition-all duration-200 
+                                    invert group-hover:invert-0 ${
+                                      selectedKey === "/admin/review-blog"
+                                        ? "invert-0"
+                                        : ""
+                                    }`}
+                  />
+                </span>
+              ),
+            },
           ]}
         />
       </Sider>
@@ -348,7 +371,11 @@ const AdminLayout = ({ children }) => {
             <Route path="report-detail/:reportId" element={<ReportDetail />} />
             <Route path="change-password" element={<ChangePassword />} />
             <Route path="update-profile" element={<UpdateProfile />} />
-            {/* <Route path="feedback" element={<Feedback />} /> */}
+            <Route path="review-blog" element={<ReviewBlog />} />
+            <Route
+              path="review-blog-detail/:blogId"
+              element={<ReviewBlogDetail />}
+            />
           </Routes>
         </Content>
       </Layout>

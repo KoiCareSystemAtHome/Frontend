@@ -18,10 +18,9 @@ import {
   ReloadOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router";
-import UpdateBlog from "./UpdateBlog";
 import dayjs from "dayjs";
 
-function BlogTable({ dataSource }) {
+function ReviewBlogTable({ dataSource }) {
   console.log("Datasource: ", dataSource);
   // const blogList = useSelector(getListBlogSelector);
   // console.log("blog list", blogList);
@@ -67,7 +66,7 @@ function BlogTable({ dataSource }) {
   );
 
   const handleViewDetail = (blogId) => {
-    navigate(`/shop/blog-detail/${blogId}`);
+    navigate(`/admin/review-blog-detail/${blogId}`);
     console.log("Navigating to detail page with ID:", blogId);
   };
 
@@ -197,11 +196,10 @@ function BlogTable({ dataSource }) {
       key: "action",
       render: (record) => (
         <div style={{ display: "flex", gap: "10px" }}>
-          {/* <EyeOutlined
+          <EyeOutlined
             style={{ fontSize: "1.5rem", cursor: "pointer" }}
             onClick={() => handleViewDetail(record.blogId)}
-          /> */}
-          <UpdateBlog record={record} />
+          />
         </div>
       ),
     },
@@ -306,4 +304,4 @@ function BlogTable({ dataSource }) {
   );
 }
 
-export default BlogTable;
+export default ReviewBlogTable;

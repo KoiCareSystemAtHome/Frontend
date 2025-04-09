@@ -14,7 +14,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { getListReportSelector } from "../../redux/selector";
 import { useNavigate } from "react-router";
 import dayjs from "dayjs";
-import { EyeOutlined, ReloadOutlined } from "@ant-design/icons";
+import {
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  EyeOutlined,
+  ReloadOutlined,
+} from "@ant-design/icons";
 
 // const renderUpdateReport = (record) => <UpdateReport record={record} />;
 
@@ -124,12 +129,13 @@ function ReportTable({ dataSource }) {
         return (
           <Tag
             style={{
-              width: "90px",
+              width: "120px",
               textAlign: "center",
               cursor: "pointer",
               fontSize: "16px",
               padding: "5px", // More padding for a larger tag
             }}
+            icon={status ? <CheckCircleOutlined /> : <CloseCircleOutlined />}
             color={color}
           >
             {displayText}

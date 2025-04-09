@@ -245,10 +245,10 @@ function OrderDetail() {
                   <span className="w-32 text-gray-600">Thành Viên</span>
                   <span>{order?.customerName}</span>
                 </div>
-                <div className="flex">
+                {/* <div className="flex">
                   <span className="w-32 text-gray-600">Số Điện Thoại</span>
                   <span>{order?.customerPhoneNumber || "0123456789"}</span>
-                </div>
+                </div> */}
                 <div className="flex">
                   <span className="w-32 text-gray-600">Địa Chỉ</span>
                   <span>{`${order?.customerAddress?.wardName || ""}, ${
