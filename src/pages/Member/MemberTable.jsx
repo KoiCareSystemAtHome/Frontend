@@ -110,12 +110,16 @@ function MemberTable({ dataSource }) {
       dataIndex: "createdDate",
       key: "createdDate",
       render: (date) => formatDate(date), // Format the date here
+      sorter: (a, b) => new Date(a.createdDate) - new Date(b.createdDate), // Sort by createdDate
+      sortDirections: ["ascend", "descend"], // Enable ascending and descending sort
     },
     {
       title: "Ngày Kết Thúc",
       dataIndex: "validUntil",
       key: "validUntil",
       render: (date) => formatDate(date), // Format the date here
+      sorter: (a, b) => new Date(a.validUntil) - new Date(b.validUntil), // Sort by validUntil
+      sortDirections: ["ascend", "descend"], // Enable ascending and descending sort
     },
   ];
 
@@ -127,17 +131,17 @@ function MemberTable({ dataSource }) {
   }, [dataSource, currentPage, pageSize, searchText, createdDate, validUntil]);
 
   // Get List
-  const GetListTable = () => {
-    setLoading(true);
-    dispatch(useMemberList())
-      .then(() => {
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-        setLoading(false);
-      });
-  };
+  // const GetListTable = () => {
+  //   setLoading(true);
+  //   dispatch(useMemberList())
+  //     .then(() => {
+  //       setLoading(false);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching data:", error);
+  //       setLoading(false);
+  //     });
+  // };
 
   return (
     <div className="w-full">
@@ -205,7 +209,7 @@ function MemberTable({ dataSource }) {
           pagination={false}
           className="[&_.ant-table-thead_.ant-table-cell]:bg-[#fafafa] [&_.ant-table-thead_.ant-table-cell]:font-medium [&_.ant-table-cell]:py-4"
           style={{ marginBottom: "1rem" }}
-          onChange={GetListTable}
+          //onChange={GetListTable}
         />
       </Spin>
       <Pagination

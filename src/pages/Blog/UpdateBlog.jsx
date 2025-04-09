@@ -253,7 +253,7 @@ const UpdateBlog = (props) => {
                   },
                 ]}
               >
-                <Select placeholder="Status">
+                <Select disabled placeholder="Status">
                   <Select.Option value={true}>Chấp Nhận</Select.Option>
                   <Select.Option value={false}>Từ Chối</Select.Option>
                 </Select>

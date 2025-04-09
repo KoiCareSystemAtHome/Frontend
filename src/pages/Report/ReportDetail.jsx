@@ -133,9 +133,9 @@ function ReportDetail() {
   if (!report.reportId) {
     return (
       <div style={{ padding: "20px", textAlign: "center" }}>
-        <h2>Report not found</h2>
+        <h2>Báo cáo không tìm thấy</h2>
         <Button type="primary" onClick={() => navigate("/admin/report")}>
-          Go Back to Reports
+          Quay lại danh sách báo cáo
         </Button>
       </div>
     );
@@ -167,10 +167,30 @@ function ReportDetail() {
     }
   };
 
+  const getOrderStatusDisplayText = (status) => {
+    const normalizedStatus = status?.toLowerCase();
+    switch (normalizedStatus) {
+      case "complete":
+        return "Hoàn Thành";
+      case "completed":
+        return "Hoàn Thành";
+      case "confirmed":
+        return "Đã Xác Nhận";
+      case "fail":
+        return "Thất Bại";
+      case "in progress":
+        return "Đang Xử Lý";
+      default:
+        return status || "N/A";
+    }
+  };
+
   const getOrderStatusColor = (status) => {
     const normalizedStatus = status?.toLowerCase();
     switch (normalizedStatus) {
       case "complete":
+        return "green";
+      case "completed":
         return "green";
       case "confirmed":
         return "blue";
@@ -251,7 +271,7 @@ function ReportDetail() {
       title: "Giá",
       dataIndex: "price",
       key: "price",
-      render: (price) => `${price.toLocaleString()} VND`,
+      render: (price) => `${price.toLocaleString()} đ`,
     },
     {
       title: "Số Lượng",
@@ -262,7 +282,7 @@ function ReportDetail() {
       title: "Tổng Tiền",
       dataIndex: "total",
       key: "total",
-      render: (total) => `${total.toLocaleString()} VND`,
+      render: (total) => `${total.toLocaleString()} đ`,
     },
   ];
 
@@ -308,9 +328,9 @@ function ReportDetail() {
                 <Descriptions.Item label="Tên Thành Viên">
                   {displayOrderDetails.customerName}
                 </Descriptions.Item>
-                <Descriptions.Item label="Số Điện Thoại">
+                {/* <Descriptions.Item label="Số Điện Thoại">
                   {displayOrderDetails.customerPhoneNumber}
-                </Descriptions.Item>
+                </Descriptions.Item> */}
                 <Descriptions.Item label="Địa Chỉ">
                   {displayOrderDetails.customerAddress?.provinceName},{" "}
                   {displayOrderDetails.customerAddress?.districtName},{" "}
@@ -329,14 +349,14 @@ function ReportDetail() {
                   <Tag
                     color={getOrderStatusColor(displayOrderDetails.status)}
                     style={{
-                      width: "80px",
+                      width: "90px",
                       textAlign: "center",
                       fontSize: "14px",
                       padding: "5px",
-                      borderRadius: "10px",
+                      borderRadius: "5px",
                     }}
                   >
-                    {displayOrderDetails.status}
+                    {getOrderStatusDisplayText(displayOrderDetails.status)}
                   </Tag>
                 </Descriptions.Item>
               </Descriptions>
@@ -376,11 +396,11 @@ function ReportDetail() {
                   <Tag
                     color={getStatusColor(reportStatus)}
                     style={{
-                      width: "80px",
+                      width: "90px",
                       textAlign: "center",
                       fontSize: "14px",
                       padding: "5px",
-                      borderRadius: "10px",
+                      borderRadius: "5px",
                     }}
                   >
                     {getStatusDisplayText(reportStatus) || "N/A"}
@@ -417,7 +437,7 @@ function ReportDetail() {
                   onClick={() => handleStatusUpdate("Approve")}
                   disabled={reportStatus === "Approve"}
                   loading={reportLoading}
-                  style={{ borderRadius: "20px" }}
+                  style={{ borderRadius: "5px" }}
                 >
                   Chấp Nhận
                 </Button>
@@ -426,7 +446,7 @@ function ReportDetail() {
                   onClick={() => handleStatusUpdate("Reject")}
                   disabled={reportStatus === "Reject"}
                   loading={reportLoading}
-                  style={{ borderRadius: "20px" }}
+                  style={{ borderRadius: "5px" }}
                 >
                   Từ Chối
                 </Button>
@@ -453,7 +473,7 @@ function ReportDetail() {
                   {data
                     .reduce((sum, item) => sum + item.total, 0)
                     .toLocaleString()}{" "}
-                  VND
+                  đ
                 </span>
               </div>
               <div className="flex justify-end">
@@ -462,7 +482,7 @@ function ReportDetail() {
                   {data
                     .reduce((sum, item) => sum + item.total, 0)
                     .toLocaleString()}{" "}
-                  VND
+                  đ
                 </span>
               </div>
             </div>
