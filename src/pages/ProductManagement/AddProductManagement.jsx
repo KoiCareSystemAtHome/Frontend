@@ -14,7 +14,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   createProduct,
-  getListProductManagement,
+  getProductsByShopId,
 } from "../../redux/slices/productManagementSlice";
 import { DeleteOutlined, InboxOutlined, PlusOutlined } from "@ant-design/icons";
 import { getListCategorySelector } from "../../redux/selector";
@@ -203,7 +203,7 @@ const AddProductManagement = ({ onClose, shopId }) => {
     try {
       await dispatch(createProduct(payload)).unwrap();
       openNotification("success", "Thêm Dụng Cụ Thành Công!");
-      dispatch(getListProductManagement());
+      dispatch(getProductsByShopId(currentShopId));
       handleCancel();
       form.resetFields();
     } catch (error) {
@@ -351,7 +351,7 @@ const AddProductManagement = ({ onClose, shopId }) => {
           {/* 3rd Row */}
           <Row>
             {/* 1st Column */}
-            <Col>
+            {/* <Col>
               <p className="modalContent">Ngày Sản Xuất</p>
               <Form.Item
                 name="ManufactureDate"
@@ -367,9 +367,9 @@ const AddProductManagement = ({ onClose, shopId }) => {
                   placeholder="Ngày Sản Xuất"
                 ></DatePicker>
               </Form.Item>
-            </Col>
+            </Col> */}
             {/* 2nd Column */}
-            <Col style={{ marginLeft: "6px" }}>
+            {/* <Col style={{ marginLeft: "6px" }}>
               <p className="modalContent">Ngày Hết Hạn</p>
               <Form.Item
                 name="ExpiryDate"
@@ -385,7 +385,7 @@ const AddProductManagement = ({ onClose, shopId }) => {
                   placeholder="Ngày Hết Hạn"
                 ></DatePicker>
               </Form.Item>
-            </Col>
+            </Col> */}
           </Row>
           {/* 4th Row */}
           <Col style={{ marginRight: "6px" }}>
@@ -452,7 +452,7 @@ const AddProductManagement = ({ onClose, shopId }) => {
                         </Form.Item>
                       </Col>
                       <Col span={4}>
-                        {fields.length > 1 ? (
+                        {fields.length > 0 ? (
                           <Button
                             type="link"
                             danger

@@ -2,7 +2,6 @@ import { EditOutlined, InboxOutlined, PlusOutlined } from "@ant-design/icons";
 import {
   Button,
   Col,
-  DatePicker,
   Form,
   Input,
   message,
@@ -18,6 +17,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getListProductManagement,
+  getProductsByShopId,
   updateFoodManagement,
 } from "../../redux/slices/productManagementSlice";
 import { getListCategorySelector } from "../../redux/selector";
@@ -25,7 +25,7 @@ import { getListCategory } from "../../redux/slices/categorySlice";
 import { getParameters } from "../../redux/slices/parameterSlice";
 import { uploadImage } from "../../redux/slices/authSlice";
 
-const UpdateFood = (props) => {
+const UpdateFood = (props, { shopId }) => {
   const { record } = props;
   const [form] = Form.useForm();
   const dispatch = useDispatch();
@@ -35,6 +35,8 @@ const UpdateFood = (props) => {
   const [parameters, setParameters] = useState([]);
   const [parameterImpactsArray, setParameterImpactsArray] = useState([]);
   const categories = useSelector(getListCategorySelector);
+  const loggedInUser = useSelector((state) => state.authSlice.user);
+  const currentShopId = shopId || loggedInUser?.shopId;
 
   // Fetch categories when the component mounts
   useEffect(() => {
@@ -92,7 +94,7 @@ const UpdateFood = (props) => {
       price: record.price,
       stockQuantity: record.stockQuantity,
       shopId: record.shopId,
-      categoryId: record.categoryId,
+      categoryId: record.category?.categoryId,
       brand: record.brand,
       manufactureDate: record.manufactureDate
         ? dayjs
@@ -218,7 +220,7 @@ const UpdateFood = (props) => {
         description: values.description,
         price: Number(values.price),
         stockQuantity: Number(values.stockQuantity),
-        shopId: values.shopId,
+        shopId: currentShopId,
         categoryId: values.categoryId,
         brand: values.brand,
         manufactureDate: values.manufactureDate
@@ -250,7 +252,7 @@ const UpdateFood = (props) => {
           setIsEditOpen(false);
           message.success("Cập nhật Thức Ăn thành công!");
           openNotification("success", `Cập nhật Thức Ăn thành công!`);
-          dispatch(getListProductManagement());
+          dispatch(getProductsByShopId(currentShopId));
         })
         .catch((error) => {
           console.error("Update error:", error);
@@ -391,7 +393,7 @@ const UpdateFood = (props) => {
           </Row>
           {/* 3rd Row */}
           <Row style={{ justifyContent: "space-between" }}>
-            <Col>
+            {/* <Col>
               <p className="modalContent">Ngày Sản Xuất</p>
               <Form.Item
                 name="manufactureDate"
@@ -424,7 +426,7 @@ const UpdateFood = (props) => {
                   placeholder="Ngày Hết Hạn"
                 />
               </Form.Item>
-            </Col>
+            </Col> */}
             <Col>
               <p className="modalContent">Tên Thức Ăn</p>
               <Form.Item
@@ -439,9 +441,6 @@ const UpdateFood = (props) => {
                 <Input placeholder="Tên Thức Ăn" />
               </Form.Item>
             </Col>
-          </Row>
-          {/* 4th Row: New Fields (name, ageFrom, ageTo) */}
-          <Row>
             <Col>
               <p className="modalContent">Độ Tuổi Từ</p>
               <Form.Item
@@ -471,6 +470,8 @@ const UpdateFood = (props) => {
               </Form.Item>
             </Col>
           </Row>
+          {/* 4th Row: New Fields (name, ageFrom, ageTo) */}
+          <Row></Row>
           {/* 5th Row: Parameter Impacts */}
           <Col style={{ marginLeft: "6px" }}>
             <p className="modalContent">Thông Số Ảnh Hưởng</p>
@@ -540,7 +541,7 @@ const UpdateFood = (props) => {
                         </Form.Item>
                       </Col>
                       <Col span={4}>
-                        {fields.length > 1 ? (
+                        {fields.length > 0 ? (
                           <Button
                             type="link"
                             danger
@@ -575,7 +576,7 @@ const UpdateFood = (props) => {
           </Col>
           {/* 6th Row: Shop ID (Hidden) */}
           <Row style={{ justifyContent: "space-between" }}>
-            <Col>
+            {/* <Col>
               <Form.Item
                 name="shopId"
                 rules={[
@@ -587,7 +588,7 @@ const UpdateFood = (props) => {
               >
                 <Input hidden placeholder="Shop ID" />
               </Form.Item>
-            </Col>
+            </Col> */}
             <Col>
               {/* <p className="modalContent">Product ID</p> */}
               <Form.Item

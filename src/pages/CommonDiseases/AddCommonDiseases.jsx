@@ -64,9 +64,7 @@ const AddCommonDiseases = ({ onClose }) => {
     if (isAddOpen) {
       const fetchMedicines = async () => {
         try {
-          const response = await axios.get(
-            "http://14.225.206.203:8080/all-medicine"
-          );
+          const response = await axios.get("https://loco.com.co/all-medicine");
           setMedicines(response.data);
         } catch (error) {
           console.error("Failed to fetch medicines:", error);

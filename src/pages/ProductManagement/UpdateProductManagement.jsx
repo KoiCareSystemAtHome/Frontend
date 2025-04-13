@@ -2,7 +2,6 @@ import { EditOutlined, InboxOutlined, PlusOutlined } from "@ant-design/icons";
 import {
   Button,
   Col,
-  DatePicker,
   Form,
   Input,
   message,
@@ -17,7 +16,7 @@ import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  getListProductManagement,
+  getProductsByShopId,
   updateProductManagement,
 } from "../../redux/slices/productManagementSlice";
 import { getListCategory } from "../../redux/slices/categorySlice";
@@ -25,7 +24,7 @@ import { getListCategorySelector } from "../../redux/selector";
 import { getParameters } from "../../redux/slices/parameterSlice";
 import { uploadImage } from "../../redux/slices/authSlice";
 
-const UpdateProductManagement = (props) => {
+const UpdateProductManagement = (props, { shopId }) => {
   const { record } = props;
   const [form] = Form.useForm();
   const dispatch = useDispatch();
@@ -35,6 +34,8 @@ const UpdateProductManagement = (props) => {
   const [parameters, setParameters] = useState([]);
   const [parameterImpactsArray, setParameterImpactsArray] = useState([]); // Store the transformed parameter impacts
   const categories = useSelector(getListCategorySelector);
+  const loggedInUser = useSelector((state) => state.authSlice.user);
+  const currentShopId = shopId || loggedInUser?.shopId;
 
   // Fetch categories when the component mounts
   useEffect(() => {
@@ -93,7 +94,7 @@ const UpdateProductManagement = (props) => {
       price: record.price,
       stockQuantity: record.stockQuantity,
       shopId: record.shopId,
-      categoryId: record.categoryId,
+      categoryId: record.category?.categoryId,
       brand: record.brand,
       manufactureDate: record.manufactureDate
         ? dayjs
@@ -216,7 +217,7 @@ const UpdateProductManagement = (props) => {
         description: values.description,
         price: Number(values.price),
         stockQuantity: Number(values.stockQuantity),
-        shopId: values.shopId,
+        shopId: currentShopId,
         categoryId: values.categoryId,
         brand: values.brand,
         manufactureDate: values.manufactureDate
@@ -245,7 +246,7 @@ const UpdateProductManagement = (props) => {
           setIsEditOpen(false);
           message.success(`Cập Nhật Dụng Cụ Thành Công!`);
           //openNotification("success", `Cập Nhật Dụng Cụ Thành Công!`);
-          dispatch(getListProductManagement());
+          dispatch(getProductsByShopId(currentShopId));
         })
         .catch((error) => {
           console.error("Update error:", error);
@@ -386,7 +387,7 @@ const UpdateProductManagement = (props) => {
           </Row>
           {/* 3rd Row */}
           <Row>
-            <Col>
+            {/* <Col>
               <p className="modalContent">Ngày Sản Xuất</p>
               <Form.Item
                 name="manufactureDate"
@@ -419,7 +420,7 @@ const UpdateProductManagement = (props) => {
                   placeholder="Ngày Hết Hạn"
                 />
               </Form.Item>
-            </Col>
+            </Col> */}
           </Row>
           {/* 4th Row */}
           <Col style={{ marginLeft: "6px" }}>
@@ -490,7 +491,7 @@ const UpdateProductManagement = (props) => {
                         </Form.Item>
                       </Col>
                       <Col span={4}>
-                        {fields.length > 1 ? (
+                        {fields.length > 0 ? (
                           <Button
                             type="link"
                             danger
@@ -525,8 +526,8 @@ const UpdateProductManagement = (props) => {
           </Col>
           {/* 5th Row */}
           <Row style={{ justifyContent: "space-between" }}>
-            <Col>
-              {/* <p className="modalContent">Shop ID</p> */}
+            {/* <Col>
+              <p className="modalContent">Shop ID</p>
               <Form.Item
                 name="shopId"
                 rules={[
@@ -538,7 +539,7 @@ const UpdateProductManagement = (props) => {
               >
                 <Input hidden placeholder="Shop ID" />
               </Form.Item>
-            </Col>
+            </Col> */}
             <Col>
               {/* <p className="modalContent">Product ID</p> */}
               <Form.Item

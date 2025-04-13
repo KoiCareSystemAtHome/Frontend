@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   createFood,
   getListProductManagement,
+  getProductsByShopId,
 } from "../../redux/slices/productManagementSlice";
 import { InboxOutlined, PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import { getListCategory } from "../../redux/slices/categorySlice";
@@ -209,7 +210,7 @@ const AddProductFood = ({ onClose, shopId }) => {
     try {
       await dispatch(createFood(payload)).unwrap(); // Removed unused 'result'
       openNotification("success", "Thêm Thức Ăn Thành Công!");
-      dispatch(getListProductManagement());
+      dispatch(getProductsByShopId(currentShopId));
       handleCancel();
       form.resetFields();
     } catch (error) {
@@ -357,7 +358,7 @@ const AddProductFood = ({ onClose, shopId }) => {
               </Form.Item>
             </Col>
             {/* 2nd Column */}
-            <Col>
+            {/* <Col>
               <p className="modalContent">Ngày Sản Xuất</p>
               <Form.Item
                 name="ManufactureDate"
@@ -373,9 +374,9 @@ const AddProductFood = ({ onClose, shopId }) => {
                   placeholder="Ngày Sản Xuất"
                 ></DatePicker>
               </Form.Item>
-            </Col>
+            </Col> */}
             {/* 3rd Column */}
-            <Col>
+            {/* <Col>
               <p className="modalContent">Ngày Hết Hạn</p>
               <Form.Item
                 name="ExpiryDate"
@@ -391,11 +392,7 @@ const AddProductFood = ({ onClose, shopId }) => {
                   placeholder="Ngày Hết Hạn"
                 ></DatePicker>
               </Form.Item>
-            </Col>
-          </Row>
-          {/* 4th Row */}
-          <Row>
-            {/* 3rd Column - Category */}
+            </Col> */}
             <Col>
               <p className="modalContent">Loại</p>
               <Form.Item
@@ -424,9 +421,23 @@ const AddProductFood = ({ onClose, shopId }) => {
                 </Select>
               </Form.Item>
             </Col>
-            {/* 1st Column */}
-
-            {/* 2nd Column */}
+            <Col style={{ marginLeft: "6px" }}>
+              <p className="modalContent">Tên Thức Ăn</p>
+              <Form.Item
+                name="Name"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng nhập tên thức ăn!",
+                  },
+                ]}
+              >
+                <Input allowClear placeholder="Tên Thức Ăn"></Input>
+              </Form.Item>
+            </Col>
+          </Row>
+          {/* 4th Row */}
+          <Row>
             {/* <Col>
               <p className="modalContent">Type</p>
               <Form.Item
@@ -449,21 +460,6 @@ const AddProductFood = ({ onClose, shopId }) => {
                 </Select>
               </Form.Item>
             </Col> */}
-            {/* 3rd Column */}
-            <Col style={{ marginLeft: "6px" }}>
-              <p className="modalContent">Tên Thức Ăn</p>
-              <Form.Item
-                name="Name"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng nhập tên thức ăn!",
-                  },
-                ]}
-              >
-                <Input allowClear placeholder="Tên Thức Ăn"></Input>
-              </Form.Item>
-            </Col>
           </Row>
           {/* 5th Row */}
           {/* 1st column */}
@@ -535,7 +531,7 @@ const AddProductFood = ({ onClose, shopId }) => {
                         </Form.Item>
                       </Col>
                       <Col span={4}>
-                        {fields.length > 1 ? (
+                        {fields.length > 0 ? (
                           <Button
                             type="link"
                             danger

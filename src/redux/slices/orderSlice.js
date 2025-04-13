@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getRequest } from "../../services/httpMethods";
+import { getRequest, putRequest } from "../../services/httpMethods";
 import { updateOrderStatus } from "./ghnSlice";
 
 // Initial State
@@ -40,6 +40,24 @@ export const getOrderDetail = createAsyncThunk(
   }
 );
 
+// REJECT ORDER
+export const rejectOrder = createAsyncThunk(
+  "Order/rejectOrder",
+  async ({ orderId, reason }, { rejectWithValue }) => {
+    try {
+      const res = await putRequest("Order/RejectOrder", {
+        orderId,
+        reason,
+      });
+      console.log("Reject Order Response:", res?.data);
+      return { orderId, reason };
+    } catch (error) {
+      console.log("Error rejecting order:", error);
+      return rejectWithValue(error.response?.data || "Failed to reject order");
+    }
+  }
+);
+
 const orderSlice = createSlice({
   name: "order",
   initialState,
@@ -56,6 +74,29 @@ const orderSlice = createSlice({
         state.listOrder = action.payload;
       })
       .addCase(getListOrder.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      // Reject Order
+      .addCase(rejectOrder.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(rejectOrder.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        const { orderId } = action.payload;
+        // Update the order in listOrder if it exists
+        const orderIndex = state.listOrder.findIndex(
+          (order) => order.id === orderId
+        );
+        if (orderIndex !== -1) {
+          state.listOrder[orderIndex].status = "rejected"; // Update status in the list
+        }
+        // Update orderDetail if it matches the rejected order
+        if (state.orderDetail && state.orderDetail.id === orderId) {
+          state.orderDetail.status = "rejected";
+        }
+      })
+      .addCase(rejectOrder.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
       })

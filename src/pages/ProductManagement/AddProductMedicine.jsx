@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   createMedicine,
   getListProductManagement,
+  getProductsByShopId,
 } from "../../redux/slices/productManagementSlice";
 import { getListCategory } from "../../redux/slices/categorySlice";
 import { InboxOutlined, PlusOutlined, DeleteOutlined } from "@ant-design/icons";
@@ -251,7 +252,7 @@ const AddProductMedicine = ({ onClose, shopId }) => {
     try {
       await dispatch(createMedicine(payload)).unwrap();
       openNotification("success", "Thêm Thuốc Thành Công!");
-      dispatch(getListProductManagement());
+      dispatch(getProductsByShopId(currentShopId));
       handleCancel();
       form.resetFields();
     } catch (error) {
@@ -384,7 +385,7 @@ const AddProductMedicine = ({ onClose, shopId }) => {
           {/* 3rd Row */}
           <Row style={{ justifyContent: "space-between" }}>
             {/* 1st Column */}
-            <Col>
+            {/* <Col>
               <p className="modalContent">Ngày Sản Xuất</p>
               <Form.Item
                 name="ManufactureDate"
@@ -400,9 +401,9 @@ const AddProductMedicine = ({ onClose, shopId }) => {
                   placeholder="Ngày Sản Xuất"
                 />
               </Form.Item>
-            </Col>
+            </Col> */}
             {/* 2nd Column */}
-            <Col>
+            {/* <Col>
               <p className="modalContent">Ngày Hết Hạn</p>
               <Form.Item
                 name="ExpiryDate"
@@ -418,7 +419,7 @@ const AddProductMedicine = ({ onClose, shopId }) => {
                   placeholder="Ngày Hết Hạn"
                 />
               </Form.Item>
-            </Col>
+            </Col> */}
             {/* 3rd Column - Category */}
             <Col>
               <p className="modalContent">Loại</p>
@@ -448,10 +449,6 @@ const AddProductMedicine = ({ onClose, shopId }) => {
                 </Select>
               </Form.Item>
             </Col>
-          </Row>
-          {/* 4th Row */}
-          <Row style={{ justifyContent: "space-between" }}>
-            {/* 1st Column - Dosage Form */}
             <Col>
               <p className="modalContent">Liều Dùng</p>
               <Form.Item
@@ -466,7 +463,6 @@ const AddProductMedicine = ({ onClose, shopId }) => {
                 <Input allowClear placeholder="Liều Dùng" />
               </Form.Item>
             </Col>
-            {/* 2nd Column - Symptoms */}
             <Col>
               <p className="modalContent">Triệu Chứng</p>
               <Form.Item
@@ -493,13 +489,16 @@ const AddProductMedicine = ({ onClose, shopId }) => {
                 </Select>
               </Form.Item>
             </Col>
+          </Row>
+          {/* 4th Row */}
+          <Row style={{ justifyContent: "space-between" }}>
             {/* 3rd Column - Pond Param ID */}
             <Col>
-              <p className="modalContent">Tham Số Hồ</p>
+              <p className="modalContent">Thông Số Hồ</p>
               <Form.Item name="PondParamId">
                 <Select
                   allowClear
-                  placeholder="Tham Số Hồ (Tùy Chọn)"
+                  placeholder="Thông Số Hồ (Tùy Chọn)"
                   style={{ width: "270px" }}
                   loading={isLoadingPondParams}
                 >
@@ -584,7 +583,7 @@ const AddProductMedicine = ({ onClose, shopId }) => {
                         </Form.Item>
                       </Col>
                       <Col span={4}>
-                        {fields.length > 1 ? (
+                        {fields.length > 0 ? (
                           <Button
                             type="link"
                             danger
