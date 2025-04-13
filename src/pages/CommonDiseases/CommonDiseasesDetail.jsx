@@ -231,14 +231,14 @@ const CommonDiseasesDetail = () => {
                       <Form.Item name="foodModifyPercent">
                         <Input
                           type="number"
-                          suffix="g"
+                          suffix="%"
                           placeholder="Enter food percentage"
                         />
                       </Form.Item>
                     </Form>
                   ) : (
                     <Text className="pl-2 text-gray-700">
-                      {disease?.foodModifyPercent || 0} g
+                      {disease?.foodModifyPercent || 0} %
                     </Text>
                   )}
                 </div>
@@ -253,14 +253,14 @@ const CommonDiseasesDetail = () => {
                       <Form.Item name="saltModifyPercent">
                         <Input
                           type="number"
-                          suffix="g"
+                          suffix="%"
                           placeholder="Enter salt percentage"
                         />
                       </Form.Item>
                     </Form>
                   ) : (
                     <Text className="pl-2 text-gray-700">
-                      {disease?.saltModifyPercent || 0} g
+                      {disease?.saltModifyPercent || 0} %
                     </Text>
                   )}
                 </div>

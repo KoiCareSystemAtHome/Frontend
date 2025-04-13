@@ -287,6 +287,8 @@ function OrderDetail() {
                       ? "green"
                       : order?.status === "Fail"
                       ? "red"
+                      : order?.status === "Cancelled"
+                      ? "grey"
                       : "yellow"
                   }
                   className="ml-2 text-lg py-2 px-4"

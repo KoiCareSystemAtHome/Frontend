@@ -1,9 +1,18 @@
 import { EyeOutlined, ReloadOutlined } from "@ant-design/icons";
-import { Button, Pagination, Select, Spin, Table, Tag, message } from "antd";
+import {
+  Button,
+  Modal,
+  Pagination,
+  Select,
+  Spin,
+  Table,
+  Tag,
+  message,
+} from "antd";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
-import { getListOrder } from "../../redux/slices/orderSlice";
+import { getListOrder, rejectOrder } from "../../redux/slices/orderSlice";
 import {
   createOrderGHN,
   fetchDistricts,
@@ -75,6 +84,15 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
     exception: "Đơn hàng ngoại lệ",
     damage: "Hàng bị hư hỏng",
     lost: "Hàng bị mất",
+  };
+
+  const statusTranslations = {
+    Pending: "Đang Chờ",
+    Confirmed: "Đã Xác Nhận",
+    "In Progress": "Đang Giao Hàng",
+    Completed: "Hoàn Thành",
+    Fail: "Thất Bại",
+    Cancelled: "Đã Hủy",
   };
 
   // const ghnStatusToShipType = {
@@ -211,14 +229,21 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
 
     let computedStatus = order.status; // Default to existing status
     if (
-      !["Pending", "Confirmed", "In Progress", "Completed", "Fail"].includes(
-        order.status
-      )
+      ![
+        "Pending",
+        "Confirmed",
+        "In Progress",
+        "Completed",
+        "Fail",
+        "Cancelled",
+      ].includes(order.status)
     ) {
       computedStatus = "Pending"; // Fallback for invalid status
     }
 
-    if (trackingInfo) {
+    if (order.status === "Cancelled") {
+      computedStatus = "Cancelled";
+    } else if (trackingInfo) {
       if (trackingInfo.status === "delivered") {
         computedStatus = "Completed";
       } else if (trackingInfo.status === "delivery_fail") {
@@ -364,9 +389,7 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
       await dispatch(updateOrderCodeShipFee({ orderId, order_code, shipFee }));
 
       // Update ship type
-      await dispatch(
-        updateOrderShipType({ orderId, shipType: "ready_to_pick" })
-      );
+      await dispatch(updateOrderShipType({ orderId, shipType: "Mới tạo đơn" }));
 
       // Update order status to "Confirmed"
       await dispatch(updateOrderStatus({ orderId, status: "Confirmed" }));
@@ -422,6 +445,81 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
     }
   };
 
+  // Updated handler for canceling an order using rejectOrder
+  const handleCancelOrder = async (orderId) => {
+    Modal.confirm({
+      centered: true,
+      closable: true,
+      title: "Xác nhận hủy đơn",
+      content: (
+        <div>
+          <p>Bạn có chắc chắn muốn hủy đơn hàng này?</p>
+          <p>Vui lòng nhập lý do hủy đơn:</p>
+          <textarea
+            id="cancelReason"
+            className="w-full p-2 border rounded"
+            rows="3"
+            placeholder="Nhập lý do hủy đơn..."
+          />
+        </div>
+      ),
+      onOk: async () => {
+        try {
+          setProcessingOrders((prev) => ({ ...prev, [orderId]: true }));
+
+          const orderByShopId = dataSource.find(
+            (order) => order.orderId === orderId
+          );
+
+          if (!orderByShopId) {
+            message.error("Order not found for the given orderId");
+            setProcessingOrders((prev) => ({ ...prev, [orderId]: false }));
+            return;
+          }
+
+          // Get the reason from the textarea
+          const reason =
+            document.getElementById("cancelReason")?.value ||
+            "No reason provided";
+          if (!reason.trim()) {
+            message.error("Vui lòng nhập lý do hủy đơn.");
+            setProcessingOrders((prev) => ({ ...prev, [orderId]: false }));
+            return;
+          }
+
+          // Call rejectOrder with orderId and reason
+          const response = await dispatch(
+            rejectOrder({ orderId, reason })
+          ).unwrap();
+
+          // Update the order status to "Cancelled" after rejecting the order
+          await dispatch(
+            updateOrderStatus({ orderId, status: "Cancelled" })
+          ).unwrap();
+
+          // Optionally, if the order has an order_code and is linked to GHN, cancel it in GHN
+          if (orderByShopId.oder_code) {
+            console.log(
+              `Cancel GHN order with code: ${orderByShopId.oder_code}`
+            );
+            // Example: await dispatch(cancelOrderGHN({ orderCode: orderByShopId.oder_code, ghnId }));
+          }
+
+          // Show success message and refresh the order list
+          message.success("Đơn hàng đã được hủy thành công.");
+          await dispatch(getListOrder(currentShopId)).unwrap();
+
+          setProcessingOrders((prev) => ({ ...prev, [orderId]: false }));
+        } catch (error) {
+          message.error(
+            `Error cancelling order: ${error.message || "Unknown error"}`
+          );
+          setProcessingOrders((prev) => ({ ...prev, [orderId]: false }));
+        }
+      },
+    });
+  };
+
   const columns = [
     {
       title: "",
@@ -449,7 +547,7 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
       key: "wardName",
     },
     {
-      title: "Loại Ship",
+      title: "Tình Trạng Giao Hàng",
       dataIndex: "shipType",
       key: "shipType",
     },
@@ -471,10 +569,12 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
               ? "red"
               : status === "Confirmed"
               ? "blue"
+              : status === "Cancelled"
+              ? "grey"
               : "yellow"
           }
         >
-          {status}
+          {statusTranslations[status] || status} {/* Use translated status */}
         </Tag>
       ),
     },
@@ -508,28 +608,56 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
       width: 150,
       render: (record, _, index) => (
         <div className="flex space-x-2">
-          <Button
-            type="primary"
-            onClick={() => handleConfirmOrder(record.orderId)}
-            loading={processingOrders[record.orderId]}
-            disabled={
-              record.status === "Confirmed" ||
+          {/* Conditionally render the Confirm button */}
+          {record.status !== "Cancelled" && (
+            <Button
+              type="primary"
+              onClick={() => handleConfirmOrder(record.orderId)}
+              loading={processingOrders[record.orderId]}
+              disabled={
+                record.status === "Confirmed" ||
+                record.status === "In Progress" ||
+                record.status === "Completed" ||
+                record.status === "Fail" ||
+                processingOrders[record.orderId]
+              }
+            >
+              {record.status === "Confirmed" ||
               record.status === "In Progress" ||
               record.status === "Completed" ||
-              record.status === "Fail" ||
-              processingOrders[record.orderId]
-            }
-          >
-            {record.status === "Confirmed" ||
-            record.status === "In Progress" ||
-            record.status === "Completed" ||
-            record.status === "Fail"
-              ? "Đã Xác Nhận"
-              : "Xác Nhận"}
-          </Button>
-          {["In Progress", "Confirmed", "Completed", "Fail"].includes(
-            record.computedStatus
-          ) && (
+              record.status === "Fail"
+                ? "Đã Xác Nhận"
+                : "Xác Nhận"}
+            </Button>
+          )}
+
+          {/* Conditionally render the Cancel button */}
+          {record.status !== "Confirmed" &&
+            record.status !== "In Progress" &&
+            record.status !== "Completed" &&
+            record.status !== "Fail" && (
+              <Button
+                type="default"
+                danger
+                onClick={() => handleCancelOrder(record.orderId)}
+                loading={processingOrders[record.orderId]}
+                disabled={
+                  record.status === "Cancelled" ||
+                  processingOrders[record.orderId]
+                }
+              >
+                {record.status === "Cancelled" ? "Đã Hủy" : "Hủy Đơn"}
+              </Button>
+            )}
+
+          {/* View Details button */}
+          {[
+            "In Progress",
+            "Confirmed",
+            "Completed",
+            "Fail",
+            "Cancelled",
+          ].includes(record.computedStatus) && (
             <Button
               type="text"
               icon={<EyeOutlined className="w-4 h-4" />}
@@ -554,6 +682,7 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
     selectedProvince,
     selectedDistrict,
     selectedWard,
+    selectedStatus,
   ]);
 
   return (
@@ -605,10 +734,11 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
           value={selectedStatus}
           onChange={(value) => setSelectedStatus(value)}
           options={[
-            { value: "Confirmed", label: "Confirmed" },
-            { value: "In Progress", label: "In Progress" },
-            { value: "Completed", label: "Completed" },
-            { value: "Fail", label: "Fail" },
+            { value: "Confirmed", label: "Đã Xác Nhận" },
+            { value: "In Progress", label: "Đang Giao Hàng" },
+            { value: "Completed", label: "Hoàn Thành" },
+            { value: "Fail", label: "Thất Bại" },
+            { value: "Cancelled", label: "Đã Hủy" },
           ]}
         />
         <Button

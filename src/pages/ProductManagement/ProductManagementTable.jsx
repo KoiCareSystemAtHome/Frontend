@@ -7,6 +7,8 @@ import UpdateProductManagement from "./UpdateProductManagement";
 import dayjs from "dayjs";
 import UpdateFood from "./UpdateFood";
 import UpdateMedicine from "./UpdateMedicine";
+import { useDispatch, useSelector } from "react-redux";
+import { getProductsByShopId } from "../../redux/slices/productManagementSlice";
 
 const renderUpdateProductManagement = (record) => {
   if (record.type === 1) {
@@ -22,11 +24,15 @@ const renderUpdateProductManagement = (record) => {
   return null;
 };
 
-function ProductManagementTable({ dataSource }) {
+function ProductManagementTable({ dataSource, shopId }) {
   console.log("Datasource: ", dataSource);
   //const productList = useSelector(getListProductManagementSelector);
   //console.log("Product list", productList);
-  //const dispatch = useDispatch();
+  const dispatch = useDispatch();
+  const [products, setProducts] = useState([]);
+
+  const loggedInUser = useSelector((state) => state.authSlice.user);
+  const currentShopId = shopId || loggedInUser?.shopId;
 
   // Ensure dataSource is an array, default to empty array if not
   const safeDataSource = Array.isArray(dataSource) ? dataSource : [];
@@ -60,6 +66,21 @@ function ProductManagementTable({ dataSource }) {
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+
+  useEffect(() => {
+    const fetchProductsByShopId = async () => {
+      try {
+        const response = await dispatch(getProductsByShopId(currentShopId));
+        if (response.payload) {
+          setProducts(response.payload);
+        }
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      }
+    };
+
+    fetchProductsByShopId();
+  }, [currentShopId, dispatch]);
 
   // Compute paginated data
   const paginatedData = filteredData.slice(
@@ -136,25 +157,30 @@ function ProductManagementTable({ dataSource }) {
       key: "brand",
     },
     {
-      title: "Ngày Sản Xuất",
-      dataIndex: "manufactureDate",
-      key: "manufactureDate",
-      width: 150,
-      render: (date) =>
-        date
-          ? dayjs.utc(date).tz("Asia/Ho_Chi_Minh").format("DD-MM-YYYY")
-          : "-",
+      title: "Phân Loại",
+      dataIndex: ["category", "name"],
+      key: "'category'",
     },
-    {
-      title: "Ngày Hết Hạn",
-      dataIndex: "expiryDate",
-      key: "expiryDate",
-      width: 150,
-      render: (date) =>
-        date
-          ? dayjs.utc(date).tz("Asia/Ho_Chi_Minh").format("DD-MM-YYYY")
-          : "-",
-    },
+    // {
+    //   title: "Ngày Sản Xuất",
+    //   dataIndex: "manufactureDate",
+    //   key: "manufactureDate",
+    //   width: 150,
+    //   render: (date) =>
+    //     date
+    //       ? dayjs.utc(date).tz("Asia/Ho_Chi_Minh").format("DD-MM-YYYY")
+    //       : "-",
+    // },
+    // {
+    //   title: "Ngày Hết Hạn",
+    //   dataIndex: "expiryDate",
+    //   key: "expiryDate",
+    //   width: 150,
+    //   render: (date) =>
+    //     date
+    //       ? dayjs.utc(date).tz("Asia/Ho_Chi_Minh").format("DD-MM-YYYY")
+    //       : "-",
+    // },
     {
       title: "Thông Số Ảnh Hưởng",
       dataIndex: "parameterImpacts",

@@ -28,6 +28,25 @@ export const getListProductManagement = createAsyncThunk(
   }
 );
 
+// Products by Shop ID
+export const getProductsByShopId = createAsyncThunk(
+  "Product/getByShopId",
+  async (shopId, { rejectWithValue }) => {
+    try {
+      const res = await getRequestParams(`Product/shop/${shopId}/products`, {
+        shopId,
+      });
+      console.log("🔍 Products by Shop ID Response:", res);
+      return res.data;
+    } catch (error) {
+      console.log("❌ Get Products by Shop ID Error:", error);
+      return rejectWithValue(
+        error.response?.data || "Failed to fetch products by shop ID"
+      );
+    }
+  }
+);
+
 // GET PRODUCT BY ID
 export const getProductById = createAsyncThunk(
   "Product/getById",
@@ -212,6 +231,10 @@ const productManagementSlice = createSlice({
     builder
       .addCase(getListProductManagement.fulfilled, (state, action) => {
         state.listProduct = action.payload;
+      })
+      // Add the new case for getProductsByShopId
+      .addCase(getProductsByShopId.fulfilled, (state, action) => {
+        state.listProduct = action.payload; // Add this case
       })
       // Add the new case for getProductById
       .addCase(getProductById.fulfilled, (state, action) => {

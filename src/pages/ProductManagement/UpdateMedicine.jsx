@@ -18,6 +18,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getListProductManagement,
+  getProductsByShopId,
   updateMedicineManagement,
 } from "../../redux/slices/productManagementSlice";
 import { getListCategorySelector } from "../../redux/selector";
@@ -26,7 +27,7 @@ import { getParameters } from "../../redux/slices/parameterSlice";
 import { uploadImage } from "../../redux/slices/authSlice";
 import { getSymptoms } from "../../redux/slices/diseasesSlice";
 
-const UpdateMedicine = (props) => {
+const UpdateMedicine = (props, { shopId }) => {
   const { record } = props;
   const [form] = Form.useForm();
   const dispatch = useDispatch();
@@ -38,6 +39,8 @@ const UpdateMedicine = (props) => {
   const categories = useSelector(getListCategorySelector);
   const [symptoms, setSymptoms] = useState([]); // New state for symptoms
   const [isLoadingSymptoms, setIsLoadingSymptoms] = useState(false); // New state for loading symptoms
+  const loggedInUser = useSelector((state) => state.authSlice.user);
+  const currentShopId = shopId || loggedInUser?.shopId;
 
   // Fetch categories when the component mounts
   useEffect(() => {
@@ -113,7 +116,7 @@ const UpdateMedicine = (props) => {
       price: record.price,
       stockQuantity: record.stockQuantity,
       shopId: record.shopId,
-      categoryId: record.categoryId,
+      categoryId: record.category?.categoryId,
       brand: record.brand,
       manufactureDate: record.manufactureDate
         ? dayjs
@@ -239,7 +242,7 @@ const UpdateMedicine = (props) => {
         description: values.description,
         price: Number(values.price),
         stockQuantity: Number(values.stockQuantity),
-        shopId: values.shopId,
+        shopId: currentShopId,
         categoryId: values.categoryId,
         brand: values.brand,
         manufactureDate: values.manufactureDate
@@ -271,7 +274,7 @@ const UpdateMedicine = (props) => {
           setIsEditOpen(false);
           message.success("Cập nhật Thuốc thành công!");
           openNotification("success", `Cập nhật sản phẩm thành công!`);
-          dispatch(getListProductManagement());
+          dispatch(getProductsByShopId(currentShopId));
         })
         .catch((error) => {
           console.error("Update error:", error);
@@ -412,7 +415,7 @@ const UpdateMedicine = (props) => {
           </Row>
           {/* 3rd Row */}
           <Row style={{ justifyContent: "space-between" }}>
-            <Col>
+            {/* <Col>
               <p className="modalContent">Ngày Sản Xuất</p>
               <Form.Item
                 name="manufactureDate"
@@ -445,7 +448,7 @@ const UpdateMedicine = (props) => {
                   placeholder="Ngày Hết Hạn"
                 />
               </Form.Item>
-            </Col>
+            </Col> */}
             <Col>
               <p className="modalContent">Tên Thuốc</p>
               <Form.Item
@@ -460,9 +463,6 @@ const UpdateMedicine = (props) => {
                 <Input placeholder="Tên Thuốc" />
               </Form.Item>
             </Col>
-          </Row>
-          {/* 4th Row: New Fields (medicineName, dosageForm, symptoms) */}
-          <Row>
             <Col>
               <p className="modalContent">Liều Dùng</p>
               <Form.Item
@@ -506,6 +506,8 @@ const UpdateMedicine = (props) => {
               </Form.Item>
             </Col>
           </Row>
+          {/* 4th Row: New Fields (medicineName, dosageForm, symptoms) */}
+          <Row></Row>
           {/* 5th Row: Parameter Impacts */}
           <Col style={{ marginLeft: "6px" }}>
             <p className="modalContent">Thông Số Ảnh Hưởng</p>
@@ -575,7 +577,7 @@ const UpdateMedicine = (props) => {
                         </Form.Item>
                       </Col>
                       <Col span={4}>
-                        {fields.length > 1 ? (
+                        {fields.length > 0 ? (
                           <Button
                             type="link"
                             danger
@@ -610,7 +612,7 @@ const UpdateMedicine = (props) => {
           </Col>
           {/* 6th Row: Shop ID (Hidden) */}
           <Row style={{ justifyContent: "space-between" }}>
-            <Col>
+            {/* <Col>
               <Form.Item
                 name="shopId"
                 rules={[
@@ -622,7 +624,7 @@ const UpdateMedicine = (props) => {
               >
                 <Input hidden placeholder="Shop ID" />
               </Form.Item>
-            </Col>
+            </Col> */}
             <Col>
               {/* <p className="modalContent">Product ID</p> */}
               <Form.Item
