@@ -76,6 +76,26 @@ export const createOrderGHN = createAsyncThunk(
   }
 );
 
+// CANCEL ORDER GHN
+export const cancelOrderGHN = createAsyncThunk(
+  "Ghn/CancelOrderGHN",
+  async ({ shopId, orderCodes }, { rejectWithValue }) => {
+    try {
+      const response = await postRequest(`Ghn/cancel-order/${shopId}`, {
+        orderCodes,
+      });
+      console.log("Cancel Order Response:", response.data); // Debug API response
+      return response.data;
+    } catch (error) {
+      // Return a structured payload to handle errors gracefully in the UI
+      return rejectWithValue({
+        status: "CancelFailed",
+        message: error.response?.data || "Error cancelling order",
+      });
+    }
+  }
+);
+
 // Update Order Code Ship Fee
 export const updateOrderCodeShipFee = createAsyncThunk(
   "Order/updateOrderCodeShipFee",
@@ -204,6 +224,38 @@ const ghnSlice = createSlice({
       .addCase(createShopGHN.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      // Create Order GHN
+      .addCase(createOrderGHN.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createOrderGHN.fulfilled, (state, action) => {
+        state.loading = false;
+        state.orders.push(action.payload);
+      })
+      .addCase(createOrderGHN.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // Cancel Order GHN
+      .addCase(cancelOrderGHN.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(cancelOrderGHN.fulfilled, (state, action) => {
+        state.loading = false;
+        // Optionally update the state if needed (e.g., mark order as cancelled)
+        const cancelledOrderCodes = action.meta.arg.orderCodes;
+        state.orders = state.orders.map((order) =>
+          cancelledOrderCodes.includes(order.order_code)
+            ? { ...order, status: "Cancelled" }
+            : order
+        );
+      })
+      .addCase(cancelOrderGHN.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload.message; // Store the error message for debugging
       })
       // Handle Order Code Ship Fee Update
       .addCase(updateOrderCodeShipFee.fulfilled, (state, action) => {

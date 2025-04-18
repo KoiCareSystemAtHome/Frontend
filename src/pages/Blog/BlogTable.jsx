@@ -163,11 +163,11 @@ function BlogTable({ dataSource }) {
     //   dataIndex: ["shop", "name"],
     //   key: "name",
     // },
-    {
-      title: "Số Lượng View",
-      dataIndex: "view",
-      key: "view",
-    },
+    // {
+    //   title: "Số Lượng View",
+    //   dataIndex: "view",
+    //   key: "view",
+    // },
     {
       title: "Trạng Thái",
       dataIndex: "isApproved",

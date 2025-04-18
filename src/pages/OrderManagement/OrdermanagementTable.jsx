@@ -92,7 +92,7 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
     "In Progress": "Đang Giao Hàng",
     Completed: "Hoàn Thành",
     Fail: "Thất Bại",
-    Cancelled: "Đã Hủy",
+    Cancel: "Đã Hủy",
   };
 
   // const ghnStatusToShipType = {
@@ -235,14 +235,14 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
         "In Progress",
         "Completed",
         "Fail",
-        "Cancelled",
+        "Cancel",
       ].includes(order.status)
     ) {
       computedStatus = "Pending"; // Fallback for invalid status
     }
 
-    if (order.status === "Cancelled") {
-      computedStatus = "Cancelled";
+    if (order.status === "Cancel") {
+      computedStatus = "Cancel";
     } else if (trackingInfo) {
       if (trackingInfo.status === "delivered") {
         computedStatus = "Completed";
@@ -488,13 +488,11 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
           }
 
           // Call rejectOrder with orderId and reason
-          const response = await dispatch(
-            rejectOrder({ orderId, reason })
-          ).unwrap();
+          await dispatch(rejectOrder({ orderId, reason })).unwrap();
 
-          // Update the order status to "Cancelled" after rejecting the order
+          // Update the order status to "Cancel" after rejecting the order
           await dispatch(
-            updateOrderStatus({ orderId, status: "Cancelled" })
+            updateOrderStatus({ orderId, status: "Cancel" })
           ).unwrap();
 
           // Optionally, if the order has an order_code and is linked to GHN, cancel it in GHN
@@ -550,6 +548,22 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
       title: "Tình Trạng Giao Hàng",
       dataIndex: "shipType",
       key: "shipType",
+      render: (shipType, record) => {
+        const trackingInfo = trackingData[record.oder_code || record.orderId]; // Use orderId if oder_code is missing
+        if (!trackingInfo) {
+          return "Chưa Xác Nhận Đơn"; // Fallback while tracking data is loading
+        }
+        if (trackingInfo.status === "Unconfirmed") {
+          return "Chưa xác nhận"; // Display for unconfirmed orders
+        }
+        if (trackingInfo.status === "N/A") {
+          return "Không khả dụng"; // For invalid format
+        }
+        if (trackingInfo.status === "Error") {
+          return `Lỗi: ${trackingInfo.error || "Không thể theo dõi"}`; // Display error for confirmed orders with tracking issues
+        }
+        return shipType || "Chưa có thông tin";
+      },
     },
     {
       title: "Mã Đơn Hàng",
@@ -569,7 +583,7 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
               ? "red"
               : status === "Confirmed"
               ? "blue"
-              : status === "Cancelled"
+              : status === "Cancel"
               ? "grey"
               : "yellow"
           }
@@ -609,7 +623,7 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
       render: (record, _, index) => (
         <div className="flex space-x-2">
           {/* Conditionally render the Confirm button */}
-          {record.status !== "Cancelled" && (
+          {record.status !== "Cancel" && (
             <Button
               type="primary"
               onClick={() => handleConfirmOrder(record.orderId)}
@@ -642,22 +656,17 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
                 onClick={() => handleCancelOrder(record.orderId)}
                 loading={processingOrders[record.orderId]}
                 disabled={
-                  record.status === "Cancelled" ||
-                  processingOrders[record.orderId]
+                  record.status === "Cancel" || processingOrders[record.orderId]
                 }
               >
-                {record.status === "Cancelled" ? "Đã Hủy" : "Hủy Đơn"}
+                {record.status === "Cancel" ? "Đã Hủy" : "Hủy Đơn"}
               </Button>
             )}
 
           {/* View Details button */}
-          {[
-            "In Progress",
-            "Confirmed",
-            "Completed",
-            "Fail",
-            "Cancelled",
-          ].includes(record.computedStatus) && (
+          {["In Progress", "Confirmed", "Completed", "Fail", "Cancel"].includes(
+            record.computedStatus
+          ) && (
             <Button
               type="text"
               icon={<EyeOutlined className="w-4 h-4" />}
@@ -738,7 +747,7 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
             { value: "In Progress", label: "Đang Giao Hàng" },
             { value: "Completed", label: "Hoàn Thành" },
             { value: "Fail", label: "Thất Bại" },
-            { value: "Cancelled", label: "Đã Hủy" },
+            { value: "Cancel", label: "Đã Hủy" },
           ]}
         />
         <Button

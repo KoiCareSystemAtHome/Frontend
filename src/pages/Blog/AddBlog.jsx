@@ -248,43 +248,6 @@ const AddBlog = ({ onClose }) => {
             </Col>
             {/* 2nd column */}
             <Col>
-              <p className="modalContent">Tag</p>
-              <Form.Item
-                name="tag"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng nhập tag!",
-                  },
-                ]}
-              >
-                <Input placeholder="Tag" />
-              </Form.Item>
-            </Col>
-            {/* 3rd column */}
-            <Col>
-              <p className="modalContent">Trạng Thái</p>
-              <Form.Item
-                name="isApproved"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng chọn trạng thái!",
-                  },
-                ]}
-              >
-                <Select placeholder="Status" style={{ width: "270px" }}>
-                  <Select.Option value="true">Chấp Thuận</Select.Option>
-                  <Select.Option value="false">Từ Chối</Select.Option>
-                </Select>
-              </Form.Item>
-            </Col>
-          </Row>
-
-          {/* 2nd Row */}
-          <Row>
-            {/* 1st column */}
-            <Col>
               <p className="modalContent">Loại</p>
               <Form.Item
                 name="type"
@@ -298,7 +261,7 @@ const AddBlog = ({ onClose }) => {
                 <Input allowClear placeholder="Loại" />
               </Form.Item>
             </Col>
-            {/* 2nd column */}
+            {/* 3rd column */}
             <Col style={{ marginLeft: "6px" }}>
               <p className="modalContent">Sản Phẩm</p>
               <Form.Item
@@ -326,6 +289,42 @@ const AddBlog = ({ onClose }) => {
                       {product.productName}
                     </Select.Option>
                   ))}
+                </Select>
+              </Form.Item>
+            </Col>
+          </Row>
+          {/* 2nd Row */}
+          <Row>
+            {/* 1st column */}
+            <Col>
+              {/* <p className="modalContent">Tag</p> */}
+              <Form.Item
+                name="tag"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng nhập tag!",
+                  },
+                ]}
+              >
+                <Input hidden placeholder="Tag" />
+              </Form.Item>
+            </Col>
+            {/* 2nd column */}
+            <Col>
+              {/* <p className="modalContent">Trạng Thái</p> */}
+              <Form.Item
+                name="isApproved"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng chọn trạng thái!",
+                  },
+                ]}
+              >
+                <Select hidden placeholder="Status" style={{ width: "270px" }}>
+                  <Select.Option value="true">Chấp Thuận</Select.Option>
+                  <Select.Option value="false">Từ Chối</Select.Option>
                 </Select>
               </Form.Item>
             </Col>
