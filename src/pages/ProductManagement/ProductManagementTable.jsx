@@ -192,8 +192,16 @@ function ProductManagementTable({ dataSource, shopId }) {
             return <span>-</span>;
           }
 
+          // Translate "increased" and "decreased" to Vietnamese
+          const translatedValue = Object.fromEntries(
+            Object.entries(value).map(([key, val]) => [
+              key,
+              val === "Increased" ? "Tăng" : val === "Decreased" ? "Giảm" : val,
+            ])
+          );
+
           // Convert the object entries into a formatted string
-          const formattedString = Object.entries(value)
+          const formattedString = Object.entries(translatedValue)
             .map(([key, val]) => `"${key}" : "${val}"`)
             .join(",\n");
 

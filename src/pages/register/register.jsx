@@ -1,9 +1,10 @@
 import React from "react";
-import { Form, Input, Button } from "antd";
+import { Form, Input, Button, Select } from "antd";
 import LoginBackground from "../../assets/login-background.png";
 import Logo from "../../assets/logo.png";
 import { useDispatch, useSelector } from "react-redux";
 import { register } from "../../redux/slices/authSlice";
+import { Option } from "antd/es/mentions";
 
 const RegisterPage = () => {
   const dispatch = useDispatch();
@@ -53,91 +54,131 @@ const RegisterPage = () => {
         <Form onFinish={onFinish} layout="vertical" className="space-y-4">
           {/* Email field */}
           <Form.Item
-            label="Enter your email address"
-            name="email"
+            label="Email"
+            name="Email"
             className="mb-4"
             rules={[
-              { required: true, message: "Please input your email!" },
-              { type: "email", message: "Invalid email address!" },
+              { required: true, message: "Vui lòng nhập email!" },
+              { type: "email", message: "Email không khả dụng!" },
             ]}
           >
             <Input
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-colors"
-              placeholder="Email address"
+              placeholder="Email"
             />
           </Form.Item>
 
           {/* User Name field */}
           <Form.Item
-            label="Enter your User Name"
-            name="username"
+            label="Tên Người Dùng"
+            name="UserName"
             className="mb-4"
-            rules={[{ required: true, message: "Please input your username!" }]}
+            rules={[
+              { required: true, message: "Vui lòng nhập tên người dùng!" },
+            ]}
           >
             <Input
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-colors"
-              placeholder="User Name"
+              placeholder="Tên Người Dùng"
             ></Input>
           </Form.Item>
 
           {/* Phone Number field */}
           <Form.Item
-            label="Enter your Phone Number"
-            name="phone"
+            label="Họ Tên"
+            name="Name"
             className="mb-4"
-            rules={[
-              { required: true, message: "Please input your phone number!" },
-            ]}
+            rules={[{ required: true, message: "Vui lòng nhập họ tên!" }]}
           >
             <Input
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-colors"
-              placeholder="Phone Number"
+              placeholder="Họ Tên"
             ></Input>
           </Form.Item>
 
           {/* Password field */}
           <Form.Item
-            label="Enter your Password"
-            name="password"
+            label="Mật Khẩu"
+            name="Password"
             className="mb-4"
             rules={[
-              { required: true, message: "Please input your password!" },
+              { required: true, message: "Vui lòng nhập mật khẩu!" },
               {
                 pattern:
                   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
                 message:
-                  "Password must include at least 8 characters, one uppercase, one lowercase, one number, and one special character.",
+                  "Mật khẩu phải bao gồm ít nhất 8 ký tự, một chữ hoa, một chữ thường, một số và một ký tự đặc biệt!",
               },
             ]}
           >
             <Input.Password
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-colors"
-              placeholder="Password"
+              placeholder="Mật Khẩu"
             />
           </Form.Item>
 
           {/* Confirm your password */}
           <Form.Item
-            label="Confirm your Password"
-            name="confirm"
+            label="Xác Nhận Mật Khẩu"
+            name="ConfirmPassword"
             className="mb-4"
             dependencies={["password"]} // Ensures it re-validates when password changes
             rules={[
-              { required: true, message: "Please confirm your password!" },
+              { required: true, message: "Vui lòng xác nhận mật khẩu!" },
               ({ getFieldValue }) => ({
                 validator(_, value) {
-                  if (!value || getFieldValue("password") === value) {
+                  if (!value || getFieldValue("Password") === value) {
                     return Promise.resolve();
                   }
-                  return Promise.reject(new Error("Password does not match!"));
+                  return Promise.reject(new Error("Mật khẩu không khớp!"));
                 },
               }),
             ]}
           >
             <Input.Password
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-colors"
-              placeholder="Confirm Password"
+              placeholder="Xác Nhận Mật Khẩu"
             />
+          </Form.Item>
+
+          {/* Role and Gender in one row */}
+          <div className="flex space-x-4">
+            <Form.Item
+              label="Vai Trò"
+              name="Role"
+              className="mb-4 flex-1"
+              rules={[{ required: true, message: "Vui lòng chọn vai trò!" }]}
+            >
+              <Select placeholder="Vai Trò" allowClear>
+                <Option value="Admin">Quản Trị Viên</Option>
+                <Option value="Shop">Cửa Hàng</Option>
+              </Select>
+            </Form.Item>
+
+            <Form.Item
+              label="Giới Tính"
+              name="Gender"
+              className="mb-4 flex-1"
+              rules={[{ required: true, message: "Vui lòng chọn giới tính!" }]}
+            >
+              <Select placeholder="Giới Tính" allowClear>
+                <Option value="Male">Nam</Option>
+                <Option value="Female">Nữ</Option>
+              </Select>
+            </Form.Item>
+          </div>
+
+          {/* Address field */}
+          <Form.Item
+            label="Địa Chỉ"
+            name="Address"
+            className="mb-4"
+            rules={[{ required: true, message: "Vui lòng nhập địa chỉ!" }]}
+          >
+            <Input
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-colors"
+              placeholder="Địa Chỉ"
+            ></Input>
           </Form.Item>
 
           {/* Sign In Button */}
