@@ -38,7 +38,7 @@ function ReviewBlogDetail() {
   // Function to translate the tag into Vietnamese
   const translateTag = (tag) => {
     const tagMap = {
-      Pending: "Đang Chờ Xét Duyệt",
+      Pending: "Đang Chờ Duyệt",
       Approved: "Chấp Nhận",
       Rejected: "Từ Chối",
     };

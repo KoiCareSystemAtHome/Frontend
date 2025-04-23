@@ -1,12 +1,12 @@
 import { useDispatch, useSelector } from "react-redux";
-import { getLissMemberSelector } from "../redux/selector";
+import { getListMemberSelector } from "../redux/selector";
 import { useEffect } from "react";
 import { getListMember } from "../redux/slices/memberSlice";
 
 const useMemberList = () => {
   const dispatch = useDispatch();
 
-  const memberList = useSelector(getLissMemberSelector);
+  const memberList = useSelector(getListMemberSelector);
 
   useEffect(() => {
     const fecthMember = async () => {

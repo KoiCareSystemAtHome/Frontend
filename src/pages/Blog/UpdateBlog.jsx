@@ -17,7 +17,7 @@ import ReactQuill from "react-quill";
 import { useDispatch } from "react-redux";
 import { getListBlog, updateBlog } from "../../redux/slices/blogSlice";
 import { uploadImage } from "../../redux/slices/authSlice";
-import { getListProductManagement } from "../../redux/slices/productManagementSlice";
+import { getProductsByShopId } from "../../redux/slices/productManagementSlice";
 
 const UpdateBlog = (props) => {
   const { record } = props;
@@ -33,7 +33,9 @@ const UpdateBlog = (props) => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const result = await dispatch(getListProductManagement()).unwrap();
+        const result = await dispatch(
+          getProductsByShopId(record.shopId)
+        ).unwrap();
         console.log("Fetched Products:", result);
         setProducts(result || []); // Store the fetched products, default to empty array if result is undefined
       } catch (error) {

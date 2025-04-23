@@ -181,7 +181,7 @@ const ChangePassword = () => {
             }
             className="text-blue-600 hover:underline"
           >
-            Quay lại Dashboard
+            Quay lại Bảng Điều Khiển
           </a>
         </div>
       </div>

@@ -16,7 +16,7 @@ import { createBlog, getListBlog } from "../../redux/slices/blogSlice";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { uploadImage } from "../../redux/slices/authSlice";
-import { getListProductManagement } from "../../redux/slices/productManagementSlice";
+import { getProductsByShopId } from "../../redux/slices/productManagementSlice";
 
 const AddBlog = ({ onClose }) => {
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -35,7 +35,9 @@ const AddBlog = ({ onClose }) => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const result = await dispatch(getListProductManagement()).unwrap();
+        const result = await dispatch(
+          getProductsByShopId(currentShopId)
+        ).unwrap();
         console.log("Fetched Products:", result);
         setProducts(result || []); // Store the fetched products, default to empty array if result is undefined
       } catch (error) {

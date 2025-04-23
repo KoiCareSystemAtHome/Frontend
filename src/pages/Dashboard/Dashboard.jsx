@@ -6,7 +6,6 @@ import {
   Typography,
   Space,
   Select,
-  Image,
   DatePicker,
   Button,
 } from "antd";
@@ -29,7 +28,6 @@ import {
   DollarOutlined,
 } from "@ant-design/icons";
 import { Option } from "antd/es/mentions";
-import "./Dashboard.css";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchOrderStatusSummary,

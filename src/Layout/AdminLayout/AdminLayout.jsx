@@ -17,12 +17,12 @@ import CommonDiseases from "../../pages/CommonDiseases/CommonDiseases";
 import CommonDiseasesDetail from "../../pages/CommonDiseases/CommonDiseasesDetail";
 import dashboardIcon from "../../assets/dashboard.png";
 import membershipIcon from "../../assets/membership.png";
-import parameterIcon from "../../assets/parameter.png";
 import accountIcon from "../../assets/account.png";
 import pondIcon from "../../assets/pond.png";
 import diseaseIcon from "../../assets/diseases.png";
 import reportIcon from "../../assets/report.png";
 import blogIcon from "../../assets/blog.png";
+import foodIcon from "../../assets/carp-fish.png";
 import PondParameter from "../../pages/Parameter/Pond/PondParameter";
 import FishParameter from "../../pages/Parameter/Fish/FishParameter";
 import Report from "../../pages/Report/Report";
@@ -31,6 +31,7 @@ import ChangePassword from "../../pages/ChangePassword/ChangePassword";
 import UpdateProfile from "../../pages/UpdateProfile/UpdateProfile";
 import ReviewBlog from "../../pages/ReviewBlog/ReviewBlog";
 import ReviewBlogDetail from "../../pages/ReviewBlog/ReviewBlogDetail";
+import NormFood from "../../pages/NormFood/NormFood";
 
 const { Sider, Content } = Layout;
 
@@ -67,6 +68,8 @@ const AdminLayout = ({ children }) => {
       { key: "/admin/diseases-detail", label: "Common Diseases Detail" },
       { key: "/admin/report", label: "Report" },
       { key: "/admin/report-detail", label: "Report Detail" },
+      { key: "/admin/review-blog-detail", label: "Blog Detail" },
+      { key: "/admin/norm-food", label: "Norm Food" },
     ];
 
     const menuItem = menuItems.find((item) => item.key === key);
@@ -344,6 +347,26 @@ const AdminLayout = ({ children }) => {
                 </span>
               ),
             },
+            {
+              key: "/admin/normFood",
+              label: "Thức Ăn Chuẩn",
+              style: { color: "white" },
+              className: "group",
+              icon: (
+                <span>
+                  <img
+                    src={foodIcon}
+                    alt="Report Icon"
+                    className={`w-5 transition-all duration-200 
+                                    invert group-hover:invert-0 ${
+                                      selectedKey === "/admin/normFood"
+                                        ? "invert-0"
+                                        : ""
+                                    }`}
+                  />
+                </span>
+              ),
+            },
           ]}
         />
       </Sider>
@@ -376,6 +399,7 @@ const AdminLayout = ({ children }) => {
               path="review-blog-detail/:blogId"
               element={<ReviewBlogDetail />}
             />
+            <Route path="normFood" element={<NormFood />} />
           </Routes>
         </Content>
       </Layout>

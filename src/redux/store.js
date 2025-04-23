@@ -13,6 +13,7 @@ import orderSlice from "./slices/orderSlice";
 import reportSlice from "./slices/reportSlice";
 import categorySlice from "./slices/categorySlice";
 import transactionSlice from "./slices/transactionSlice";
+import normFoodSlice from "./slices/normFoodSlice";
 
 const store = configureStore({
   reducer: {
@@ -30,6 +31,7 @@ const store = configureStore({
     reportSlice: reportSlice.reducer,
     categorySlice: categorySlice.reducer,
     transactionSlice: transactionSlice.reducer,
+    normFoodSlice: normFoodSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

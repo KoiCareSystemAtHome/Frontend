@@ -7,13 +7,14 @@ import ShopLayout from "./Layout/ShopLayout/ShopLayout";
 import "antd/dist/reset.css"; // For Ant Design v5
 import ForgotPassword from "./pages/ForgotPassword/ForgotPassword";
 import ConfirmResetPassword from "./pages/ForgotPassword/ConfirmResetPassword";
-import ChangePassword from "./pages/ChangePassword/ChangePassword";
+import OTP from "./pages/register/OTP";
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/otp" element={<OTP />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route
         path="/confirm-reset-password"

@@ -16,7 +16,7 @@ export const diseaseDetail = (state) => state.diseasesSlice.diseaseDetail;
 export const getListParameterSelector = (state) =>
   state.parameterSlice.listParameter;
 
-export const getLissMemberSelector = (state) => state.memberSlice.listMember;
+export const getListMemberSelector = (state) => state.memberSlice.listMember;
 
 export const getListBlogSelector = (state) => state.blogSlice.listBlog;
 
@@ -26,3 +26,6 @@ export const getListReportSelector = (state) => state.reportSlice.listReport;
 
 export const getListCategorySelector = (state) =>
   state.categorySlice.listCategory;
+
+export const getListNormFoodSelector = (state) =>
+  state.normFoodSlice.listNormFood;

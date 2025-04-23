@@ -5,13 +5,23 @@ import Logo from "../../assets/logo.png";
 import { useDispatch, useSelector } from "react-redux";
 import { register } from "../../redux/slices/authSlice";
 import { Option } from "antd/es/mentions";
+import { useNavigate } from "react-router";
 
 const RegisterPage = () => {
   const dispatch = useDispatch();
   const loading = useSelector((state) => state.authSlice?.loading);
-  const onFinish = (values) => {
+  const navigate = useNavigate(); // Initialize useNavigate
+  const onFinish = async (values) => {
     console.log("Form submitted:", values);
-    dispatch(register(values));
+    try {
+      // Dispatch the register action and wait for the result
+      await dispatch(register(values)).unwrap();
+      // If registration is successful, redirect to OTP page with email in state
+      navigate("/otp", { state: { email: values.Email } });
+    } catch (error) {
+      // Error is already handled in the authSlice (via message.error)
+      console.error("Registration failed:", error);
+    }
   };
 
   return (

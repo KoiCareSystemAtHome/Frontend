@@ -92,6 +92,20 @@ const putRequest = async (url, payload) => {
   }
 };
 
+// [PUT] -> params
+const putRequestParams = async (url, params) => {
+  try {
+    // Convert params object to query parameters
+    const queryString = new URLSearchParams(params).toString();
+    const fullUrl = queryString ? `${url}?${queryString}` : url;
+
+    const res = await axiosClientVer2.put(fullUrl, null);
+    return res;
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
 // [PUT] -> multipart/form-data (file, ...)
 const putRequestFormData = async (url, payload) => {
   try {
@@ -124,6 +138,7 @@ export {
   patchRequest,
   postRequestParams,
   postRequestFormData,
+  putRequestParams,
   putRequestFormData,
   postRequestMultipartFormData,
 };

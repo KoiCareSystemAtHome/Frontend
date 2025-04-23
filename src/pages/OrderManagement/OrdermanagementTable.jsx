@@ -90,7 +90,7 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
     Pending: "Đang Chờ",
     Confirmed: "Đã Xác Nhận",
     "In Progress": "Đang Giao Hàng",
-    Completed: "Hoàn Thành",
+    Complete: "Hoàn Thành",
     Fail: "Thất Bại",
     Cancel: "Đã Hủy",
   };
@@ -157,62 +157,68 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
       const trackingResults = {};
 
       await Promise.all(
-        listOrder.map(async (order) => {
-          if (order.oder_code) {
-            // Skip fetching tracking if the order_code doesn't match the expected GHN format
-            const isValidGhnOrderCode = /^[A-Z0-9]{6}$/.test(order.oder_code); // Example: Check for 6-character alphanumeric code
-            if (!isValidGhnOrderCode) {
-              console.log(
-                `Skipping tracking for order_code: ${order.oder_code} (invalid format)`
-              );
-              return; // Skip this order
-            }
-            try {
-              const trackingInfo = await dispatch(
-                fetchOrderTracking(order.oder_code)
-              ).unwrap();
-              trackingResults[order.oder_code] = trackingInfo;
-
-              // Update order status based on GHN tracking status
-              let newStatus = order.status;
-              if (trackingInfo.status === "delivered") {
-                newStatus = "Completed";
-              } else if (trackingInfo.status === "delivery_fail") {
-                newStatus = "Fail";
-              } else if (trackingInfo.status !== "ready_to_pick") {
-                newStatus = "In Progress";
+        listOrder
+          .filter((order) =>
+            ["Confirmed", "In Progress", "Complete", "Fail"].includes(
+              order.status
+            )
+          ) // Only process confirmed orders
+          .map(async (order) => {
+            if (order.oder_code) {
+              // Skip fetching tracking if the order_code doesn't match the expected GHN format
+              const isValidGhnOrderCode = /^[A-Z0-9]{6}$/.test(order.oder_code); // Example: Check for 6-character alphanumeric code
+              if (!isValidGhnOrderCode) {
+                console.log(
+                  `Skipping tracking for order_code: ${order.oder_code} (invalid format)`
+                );
+                return; // Skip this order
               }
+              try {
+                const trackingInfo = await dispatch(
+                  fetchOrderTracking(order.oder_code)
+                ).unwrap();
+                trackingResults[order.oder_code] = trackingInfo;
 
-              // If the computed status differs from the current status, update it
-              if (newStatus !== order.status) {
-                await dispatch(
-                  updateOrderStatus({
-                    orderId: order.orderId,
-                    status: newStatus,
-                  })
+                // Update order status based on GHN tracking status
+                let newStatus = order.status;
+                if (trackingInfo.status === "delivered") {
+                  newStatus = "Complete";
+                } else if (trackingInfo.status === "delivery_fail") {
+                  newStatus = "Fail";
+                } else if (trackingInfo.status !== "ready_to_pick") {
+                  newStatus = "In Progress";
+                }
+
+                // If the computed status differs from the current status, update it
+                if (newStatus !== order.status) {
+                  await dispatch(
+                    updateOrderStatus({
+                      orderId: order.orderId,
+                      status: newStatus,
+                    })
+                  );
+                }
+
+                // Update shipType based on GHN status
+                const newShipType =
+                  ghnStatusToShipType[trackingInfo.status] || order.shipType;
+                if (newShipType !== order.shipType) {
+                  await dispatch(
+                    updateOrderShipType({
+                      orderId: order.orderId,
+                      shipType: newShipType,
+                    })
+                  );
+                }
+              } catch (error) {
+                console.error(
+                  "Error fetching tracking for order:",
+                  order.oder_code,
+                  error
                 );
               }
-
-              // Update shipType based on GHN status
-              const newShipType =
-                ghnStatusToShipType[trackingInfo.status] || order.shipType;
-              if (newShipType !== order.shipType) {
-                await dispatch(
-                  updateOrderShipType({
-                    orderId: order.orderId,
-                    shipType: newShipType,
-                  })
-                );
-              }
-            } catch (error) {
-              console.error(
-                "Error fetching tracking for order:",
-                order.oder_code,
-                error
-              );
             }
-          }
-        })
+          })
       );
 
       setTrackingData(trackingResults);
@@ -233,7 +239,7 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
         "Pending",
         "Confirmed",
         "In Progress",
-        "Completed",
+        "Complete",
         "Fail",
         "Cancel",
       ].includes(order.status)
@@ -245,7 +251,7 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
       computedStatus = "Cancel";
     } else if (trackingInfo) {
       if (trackingInfo.status === "delivered") {
-        computedStatus = "Completed";
+        computedStatus = "Complete";
       } else if (trackingInfo.status === "delivery_fail") {
         computedStatus = "Fail";
       } else if (trackingInfo.status !== "ready_to_pick") {
@@ -407,7 +413,7 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
       ).unwrap();
       let newStatus = "Confirmed";
       if (trackingInfo.status === "delivered") {
-        newStatus = "Completed";
+        newStatus = "Complete";
       } else if (trackingInfo.status === "delivery_fail") {
         newStatus = "Fail";
       } else if (trackingInfo.status !== "ready_to_pick") {
@@ -566,7 +572,7 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
       },
     },
     {
-      title: "Mã Đơn Hàng",
+      title: "Mã Vận Đơn",
       dataIndex: "oder_code",
       key: "oder_code",
     },
@@ -577,7 +583,7 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
       render: (status) => (
         <Tag
           color={
-            status === "Completed"
+            status === "Complete"
               ? "green"
               : status === "Fail"
               ? "red"
@@ -631,14 +637,14 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
               disabled={
                 record.status === "Confirmed" ||
                 record.status === "In Progress" ||
-                record.status === "Completed" ||
+                record.status === "Complete" ||
                 record.status === "Fail" ||
                 processingOrders[record.orderId]
               }
             >
               {record.status === "Confirmed" ||
               record.status === "In Progress" ||
-              record.status === "Completed" ||
+              record.status === "Complete" ||
               record.status === "Fail"
                 ? "Đã Xác Nhận"
                 : "Xác Nhận"}
@@ -648,7 +654,7 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
           {/* Conditionally render the Cancel button */}
           {record.status !== "Confirmed" &&
             record.status !== "In Progress" &&
-            record.status !== "Completed" &&
+            record.status !== "Complete" &&
             record.status !== "Fail" && (
               <Button
                 type="default"
@@ -664,7 +670,7 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
             )}
 
           {/* View Details button */}
-          {["In Progress", "Confirmed", "Completed", "Fail", "Cancel"].includes(
+          {["In Progress", "Confirmed", "Complete", "Fail", "Cancel"].includes(
             record.computedStatus
           ) && (
             <Button
@@ -745,7 +751,7 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
           options={[
             { value: "Confirmed", label: "Đã Xác Nhận" },
             { value: "In Progress", label: "Đang Giao Hàng" },
-            { value: "Completed", label: "Hoàn Thành" },
+            { value: "Complete", label: "Hoàn Thành" },
             { value: "Fail", label: "Thất Bại" },
             { value: "Cancel", label: "Đã Hủy" },
           ]}

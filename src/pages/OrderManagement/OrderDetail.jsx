@@ -290,7 +290,7 @@ function OrderDetail() {
                 <span className="font-semibold text-xl">Trạng Thái: </span>
                 <Tag
                   color={
-                    order?.status === "Completed" ||
+                    order?.status === "Complete" ||
                     order?.status === "Confirmed"
                       ? "green"
                       : order?.status === "Fail"

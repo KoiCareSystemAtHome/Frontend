@@ -3,6 +3,7 @@ import {
   postRequest,
   postRequestFormData,
   postRequestParams,
+  putRequestParams,
 } from "../../services/httpMethods";
 import { message, notification } from "antd";
 import { handleDangNhap } from "../../axios/axiosInterceptor";
@@ -50,7 +51,9 @@ export const register = createAsyncThunk(
     try {
       const response = await postRequestFormData("Account/register", payload);
       if (response && response.status === 200) {
-        message.success("You have successfully registered.");
+        message.success(
+          "Bạn đã đăng ký thành công! Vui lòng kiểm tra email để kích hoạt tài khoản."
+        );
       }
       return response.data;
     } catch (error) {
@@ -58,6 +61,57 @@ export const register = createAsyncThunk(
         error.response.data.message || "An error occurred during registration."
       );
       return rejectWithValue(error.response || error.response.data.message);
+    }
+  }
+);
+
+// Add the activateAccount thunk
+export const activateAccount = createAsyncThunk(
+  "Account/activate",
+  async ({ email, code }, { rejectWithValue }) => {
+    try {
+      const response = await putRequestParams("Account/activate", {
+        email,
+        code,
+      });
+
+      if (response && response.status === 200) {
+        message.success("Tài khoản của bạn đã được kích hoạt thành công!");
+      }
+      return response.data; // The response data (likely a string based on the schema)
+    } catch (error) {
+      message.error(
+        error.response?.data?.message ||
+          "Mã kích hoạt không hợp lệ hoặc đã hết hạn."
+      );
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to activate account"
+      );
+    }
+  }
+);
+
+// Add the resendCode thunk
+export const resendCode = createAsyncThunk(
+  "Account/resend-code",
+  async (email, { rejectWithValue }) => {
+    try {
+      const response = await putRequestParams("Account/resend-code", {
+        email,
+      });
+
+      if (response && response.status === 200) {
+        message.success("Mã xác thực đã được gửi lại đến email của bạn!");
+      }
+      return response.data; // The response data (likely a string)
+    } catch (error) {
+      message.error(
+        error.response?.data?.message ||
+          "Đã xảy ra lỗi khi gửi lại mã xác thực."
+      );
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to resend code"
+      );
     }
   }
 );
@@ -258,6 +312,33 @@ const authSlice = createSlice({
       .addCase(register.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Registration failed";
+      })
+      // Add Activate Account cases
+      .addCase(activateAccount.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(activateAccount.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        // Optionally, you can store the response message if needed
+      })
+      .addCase(activateAccount.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to activate account";
+      })
+      // Add Resend Code cases
+      .addCase(resendCode.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(resendCode.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(resendCode.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to resend code";
       })
       // Add Forgot Password cases
       .addCase(forgotPassword.pending, (state) => {

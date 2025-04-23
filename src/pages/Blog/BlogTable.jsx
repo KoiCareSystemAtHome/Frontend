@@ -16,6 +16,7 @@ import {
   CloseCircleOutlined,
   EyeOutlined,
   ReloadOutlined,
+  SyncOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router";
 import UpdateBlog from "./UpdateBlog";
@@ -173,21 +174,36 @@ function BlogTable({ dataSource }) {
       dataIndex: "isApproved",
       key: "isApproved",
       render: (isApproved, record) => {
-        const approved = isApproved === true || isApproved === "true"; // Ensure boolean
+        let statusText, statusColor, statusIcon;
+
+        if (isApproved === null) {
+          statusText = "Đang Chờ Duyệt";
+          statusColor = "gold";
+          statusIcon = <SyncOutlined />;
+        } else {
+          const approved = isApproved === true || isApproved === "true";
+          statusText = approved ? "Chấp Nhận" : "Từ Chối";
+          statusColor = approved ? "green" : "red";
+          statusIcon = approved ? (
+            <CheckCircleOutlined />
+          ) : (
+            <CloseCircleOutlined />
+          );
+        }
+
         return (
           <Tag
             style={{
-              width: "120px",
+              width: "150px",
               textAlign: "center",
               cursor: "pointer",
               fontSize: "16px",
-              padding: "5px", // More padding for a larger tag
+              padding: "5px",
             }}
-            icon={approved ? <CheckCircleOutlined /> : <CloseCircleOutlined />}
-            color={approved ? "green" : "red"}
-            //onClick={() => handleStatusChange(record.blogId, approved)}
+            icon={statusIcon}
+            color={statusColor}
           >
-            {approved ? "Chấp Nhận" : "Từ Chối"}
+            {statusText}
           </Tag>
         );
       },
