@@ -1,7 +1,6 @@
 import {
   Button,
   Col,
-  DatePicker,
   Form,
   Input,
   Modal,
@@ -14,7 +13,6 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   createFood,
-  getListProductManagement,
   getProductsByShopId,
 } from "../../redux/slices/productManagementSlice";
 import { InboxOutlined, PlusOutlined, DeleteOutlined } from "@ant-design/icons";

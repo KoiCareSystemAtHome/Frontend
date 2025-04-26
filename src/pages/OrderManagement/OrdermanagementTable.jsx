@@ -25,6 +25,114 @@ import {
 } from "../../redux/slices/ghnSlice";
 import { getListOrderSelector } from "../../redux/selector";
 
+// CSS styles for enhanced visuals
+const tableStyles = `
+  .product-management-table .ant-table {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background: #fff;
+  }
+
+  .product-management-table .ant-table-thead > tr > th {
+    background: linear-gradient(135deg,rgb(65, 65, 65),rgb(65, 65, 65));
+    color: #fff;
+    font-weight: 600;
+    padding: 12px 16px;
+    border-bottom: none;
+    transition: background 0.3s;
+  }
+
+  .product-management-table .ant-table-tbody > tr:hover > td {
+    background: #e6f7ff;
+    transition: background 0.2s;
+  }
+
+  .product-management-table .ant-table-tbody > tr > td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: all 0.3s;
+  }
+
+  .product-management-table .ant-table-tbody > tr:nth-child(even) {
+    background: #fafafa;
+  }
+
+  .filter-container {
+    background: #f9f9f9;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  .filter-container .ant-input, 
+  .filter-container .ant-select {
+    border-radius: 6px;
+    transition: all 0.3s;
+  }
+
+  .filter-container .ant-input:hover,
+  .filter-container .ant-input:focus,
+  .filter-container .ant-select:hover .ant-select-selector,
+  .filter-container .ant-select-focused .ant-select-selector {
+    border-color: #40a9ff !important;
+    box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2) !important;
+  }
+
+  .filter-container .ant-btn {
+    border-radius: 6px;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .filter-container .ant-btn:hover {
+    background: #40a9ff;
+    color: #fff;
+    border-color: #40a9ff;
+    transform: translateY(-1px);
+  }
+
+  .custom-spin .ant-spin-dot-item {
+    background-color: #1890ff;
+  }
+
+  .pagination-container {
+    margin-top: 16px;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .pagination-container .ant-pagination-item-active {
+    background:rgb(65, 65, 65);
+    border-color:rgb(65, 65, 65);
+  }
+
+  .pagination-container .ant-pagination-item-active a {
+    color: #fff;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .fade-in {
+    animation: fadeIn 0.5s ease-out;
+  }
+`;
+
+// Inject styles into the document
+const styleSheet = document.createElement("style");
+styleSheet.innerText = tableStyles;
+document.head.appendChild(styleSheet);
+
 function OrdermanagementTable({ dataSource, shopId, ghNid }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -526,7 +634,7 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
 
   const columns = [
     {
-      title: "",
+      title: "STT",
       key: "orderId",
       render: (_, __, index) => index + 1 + (currentPage - 1) * pageSize,
     },
@@ -701,15 +809,16 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
   ]);
 
   return (
-    <div className="w-full">
+    <div className="product-management-table" style={{ padding: "16px" }}>
       {/* Search Dropdowns */}
-      <div className="flex space-x-3 mb-4">
+      <div className="filter-container">
         <Select
+          prefix={<span style={{ color: "#bfbfbf" }}>🔍</span>}
           placeholder="Thành Phố/Tỉnh"
           value={selectedProvince}
           onChange={setSelectedProvince}
           allowClear
-          style={{ width: "220px" }}
+          style={{ width: "220px", height: 36 }}
           loading={loadingProvinces}
           options={provinces.map((prov) => ({
             label: prov.ProvinceName,
@@ -717,11 +826,12 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
           }))}
         />
         <Select
+          prefix={<span style={{ color: "#bfbfbf" }}>🔍</span>}
           placeholder="Quận/Huyện"
           value={selectedDistrict}
           onChange={setSelectedDistrict}
           allowClear
-          style={{ width: "220px" }}
+          style={{ width: "220px", height: 36 }}
           loading={loadingDistricts}
           disabled={!selectedProvince}
           options={districts.map((dist) => ({
@@ -730,11 +840,12 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
           }))}
         />
         <Select
+          prefix={<span style={{ color: "#bfbfbf" }}>🔍</span>}
           placeholder="Phường/Xã"
           value={selectedWard}
           onChange={setSelectedWard}
           allowClear
-          style={{ width: "220px" }}
+          style={{ width: "220px", height: 36 }}
           loading={loadingWards}
           disabled={!selectedDistrict}
           options={wards.map((ward) => ({
@@ -743,9 +854,10 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
           }))}
         />
         <Select
+          prefix={<span style={{ color: "#bfbfbf" }}>🔍</span>}
           placeholder="Trạng Thái"
           allowClear
-          style={{ width: 200 }}
+          style={{ width: 200, height: 36 }}
           value={selectedStatus}
           onChange={(value) => setSelectedStatus(value)}
           options={[
@@ -760,13 +872,14 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
           icon={<ReloadOutlined />}
           onClick={resetFilters}
           type="default"
-          style={{ marginLeft: 10 }}
+          style={{ height: 36 }}
+          className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white rounded-md flex items-center justify-center"
         >
           Đặt lại bộ lọc
         </Button>
       </div>
 
-      <Spin spinning={loading} tip="Loading...">
+      <Spin spinning={loading} tip="Đang Tải...">
         <Table
           scroll={{ x: "1500px" }}
           dataSource={paginatedData}
@@ -777,20 +890,22 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
           style={{ marginBottom: "1rem" }}
         />
       </Spin>
-      <Pagination
-        total={filteredOrders.length}
-        pageSize={pageSize}
-        current={currentPage}
-        showSizeChanger
-        align="end"
-        showTotal={(total, range) =>
-          `${range[0]}-${range[1]} / ${total} sản phẩm`
-        }
-        onChange={(page, pageSize) => {
-          setCurrentPage(page);
-          setPageSize(pageSize);
-        }}
-      />
+      <div className="pagination-container">
+        <Pagination
+          total={filteredOrders.length}
+          pageSize={pageSize}
+          current={currentPage}
+          showSizeChanger
+          align="end"
+          showTotal={(total, range) =>
+            `${range[0]}-${range[1]} / ${total} đơn đặt hàng`
+          }
+          onChange={(page, pageSize) => {
+            setCurrentPage(page);
+            setPageSize(pageSize);
+          }}
+        />
+      </div>
     </div>
   );
 }

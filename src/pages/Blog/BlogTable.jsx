@@ -22,6 +22,114 @@ import { useNavigate } from "react-router";
 import UpdateBlog from "./UpdateBlog";
 import dayjs from "dayjs";
 
+// CSS styles for enhanced visuals
+const tableStyles = `
+  .product-management-table .ant-table {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background: #fff;
+  }
+
+  .product-management-table .ant-table-thead > tr > th {
+    background: linear-gradient(135deg,rgb(65, 65, 65),rgb(65, 65, 65));
+    color: #fff;
+    font-weight: 600;
+    padding: 12px 16px;
+    border-bottom: none;
+    transition: background 0.3s;
+  }
+
+  .product-management-table .ant-table-tbody > tr:hover > td {
+    background: #e6f7ff;
+    transition: background 0.2s;
+  }
+
+  .product-management-table .ant-table-tbody > tr > td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: all 0.3s;
+  }
+
+  .product-management-table .ant-table-tbody > tr:nth-child(even) {
+    background: #fafafa;
+  }
+
+  .filter-container {
+    background: #f9f9f9;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  .filter-container .ant-input, 
+  .filter-container .ant-select {
+    border-radius: 6px;
+    transition: all 0.3s;
+  }
+
+  .filter-container .ant-input:hover,
+  .filter-container .ant-input:focus,
+  .filter-container .ant-select:hover .ant-select-selector,
+  .filter-container .ant-select-focused .ant-select-selector {
+    border-color: #40a9ff !important;
+    box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2) !important;
+  }
+
+  .filter-container .ant-btn {
+    border-radius: 6px;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .filter-container .ant-btn:hover {
+    background: #40a9ff;
+    color: #fff;
+    border-color: #40a9ff;
+    transform: translateY(-1px);
+  }
+
+  .custom-spin .ant-spin-dot-item {
+    background-color: #1890ff;
+  }
+
+  .pagination-container {
+    margin-top: 16px;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .pagination-container .ant-pagination-item-active {
+    background:rgb(65, 65, 65);
+    border-color:rgb(65, 65, 65);
+  }
+
+  .pagination-container .ant-pagination-item-active a {
+    color: #fff;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .fade-in {
+    animation: fadeIn 0.5s ease-out;
+  }
+`;
+
+// Inject styles into the document
+const styleSheet = document.createElement("style");
+styleSheet.innerText = tableStyles;
+document.head.appendChild(styleSheet);
+
 function BlogTable({ dataSource }) {
   console.log("Datasource: ", dataSource);
   // const blogList = useSelector(getListBlogSelector);
@@ -67,10 +175,10 @@ function BlogTable({ dataSource }) {
     currentPage * pageSize
   );
 
-  const handleViewDetail = (blogId) => {
-    navigate(`/shop/blog-detail/${blogId}`);
-    console.log("Navigating to detail page with ID:", blogId);
-  };
+  // const handleViewDetail = (blogId) => {
+  //   navigate(`/shop/blog-detail/${blogId}`);
+  //   console.log("Navigating to detail page with ID:", blogId);
+  // };
 
   // const handleStatusChange = (blogId, isApproved) => {
   //   const newStatus = !isApproved;
@@ -117,7 +225,7 @@ function BlogTable({ dataSource }) {
 
   const columns = [
     {
-      title: "",
+      title: "STT",
       //dataIndex: "blogId",
       key: "blogId",
       render: (_, __, index) => index + 1 + (currentPage - 1) * pageSize,
@@ -149,26 +257,6 @@ function BlogTable({ dataSource }) {
       dataIndex: "type",
       key: "type",
     },
-    // {
-    //   title: "Report By",
-    //   dataIndex: "reportedBy",
-    //   key: "reportedBy",
-    // },
-    // {
-    //   title: "Reported Date",
-    //   dataIndex: "reportedDate",
-    //   key: "reportedDate",
-    // },
-    // {
-    //   title: "Shop",
-    //   dataIndex: ["shop", "name"],
-    //   key: "name",
-    // },
-    // {
-    //   title: "Số Lượng View",
-    //   dataIndex: "view",
-    //   key: "view",
-    // },
     {
       title: "Trạng Thái",
       dataIndex: "isApproved",
@@ -209,7 +297,7 @@ function BlogTable({ dataSource }) {
       },
     },
     {
-      title: "",
+      title: "Chỉnh Sửa",
       key: "action",
       render: (record) => (
         <div style={{ display: "flex", gap: "10px" }}>
@@ -251,16 +339,9 @@ function BlogTable({ dataSource }) {
   };
 
   return (
-    <div className="w-full">
+    <div className="product-management-table" style={{ padding: "16px" }}>
       {/* Search Filters */}
-      <div
-        style={{
-          marginBottom: "1rem",
-          display: "flex",
-          gap: "1rem",
-          flexWrap: "wrap",
-        }}
-      >
+      <div className="filter-container">
         <Input
           placeholder="Tựa Đề"
           value={searchTitle}
@@ -268,7 +349,9 @@ function BlogTable({ dataSource }) {
             setSearchTitle(e.target.value);
             setCurrentPage(1); // Reset to first page on search
           }}
-          style={{ width: 200 }}
+          style={{ width: 200, height: 36 }}
+          prefix={<span style={{ color: "#bfbfbf" }}>🔍</span>}
+          allowClear
         />
         <Select
           placeholder="Trạng Thái"
@@ -277,47 +360,50 @@ function BlogTable({ dataSource }) {
             setSearchStatus(value);
             setCurrentPage(1);
           }}
-          style={{ width: 200 }}
+          style={{ width: 200, height: 36 }}
+          prefix={<span style={{ color: "#bfbfbf" }}>🔍</span>}
           allowClear
         >
           <Select.Option value="approved">Chấp Nhận</Select.Option>
           <Select.Option value="rejected">Từ Chối</Select.Option>
+          <Select.Option value="pending">Đang Chờ Duyệt</Select.Option>
         </Select>
         <Button
           icon={<ReloadOutlined />}
           type="default"
           onClick={handleResetFilters}
-          //disabled={!searchTitle && !searchDate && !searchStatus} // Disable when no filters applied
+          style={{ height: 36 }}
+          className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white rounded-md flex items-center justify-center"
         >
           Cài lại bộ lọc
         </Button>
       </div>
 
-      <Spin spinning={loading} tip="Loading...">
+      <Spin spinning={loading} tip="Đang Tải...">
         <Table
           scroll={{ x: "1500px" }}
           dataSource={paginatedData}
           columns={columns}
           pagination={false}
-          className="[&_.ant-table-thead_.ant-table-cell]:bg-[#fafafa] [&_.ant-table-thead_.ant-table-cell]:font-medium [&_.ant-table-cell]:py-4"
-          style={{ marginBottom: "1rem" }}
           onChange={GetListTable}
         />
       </Spin>
-      <Pagination
-        total={filteredData.length}
-        pageSize={pageSize}
-        current={currentPage}
-        showSizeChanger
-        align="end"
-        showTotal={(total, range) =>
-          `${range[0]}-${range[1]} of ${total} items`
-        }
-        onChange={(page, pageSize) => {
-          setCurrentPage(page);
-          setPageSize(pageSize);
-        }}
-      />
+      <div className="pagination-container">
+        <Pagination
+          total={filteredData.length}
+          pageSize={pageSize}
+          current={currentPage}
+          showSizeChanger
+          align="end"
+          showTotal={(total, range) =>
+            `${range[0]}-${range[1]} / ${total} bài viết`
+          }
+          onChange={(page, pageSize) => {
+            setCurrentPage(page);
+            setPageSize(pageSize);
+          }}
+        />
+      </div>
     </div>
   );
 }

@@ -7,7 +7,7 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import Input from "antd/es/input/Input";
-import { ReloadOutlined, SearchOutlined } from "@ant-design/icons";
+import { ReloadOutlined } from "@ant-design/icons";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 
@@ -104,7 +104,7 @@ function Membership({ dataSource }) {
 
   const columns = [
     {
-      title: "",
+      title: "STT",
       // dataIndex: "packageId",
       key: "packageId",
       render: (_, __, index) => index + 1 + (currentPage - 1) * pageSize,
@@ -220,18 +220,11 @@ function Membership({ dataSource }) {
   };
 
   return (
-    <div className="w-full">
+    <div className="product-management-table" style={{ padding: "16px" }}>
       {/* Search Inputs */}
-      <div
-        style={{
-          marginBottom: 16,
-          display: "flex",
-          gap: "12px",
-          alignItems: "center",
-        }}
-      >
+      <div className="filter-container">
         <Input
-          prefix={<SearchOutlined />}
+          prefix={<span style={{ color: "#bfbfbf" }}>🔍</span>}
           allowClear
           placeholder="Tên Gói"
           value={searchTitle}
@@ -239,7 +232,7 @@ function Membership({ dataSource }) {
           style={{ width: 220, borderRadius: 6, padding: "6px 10px" }}
         />
         <Input
-          prefix={<SearchOutlined />}
+          prefix={<span style={{ color: "#bfbfbf" }}>🔍</span>}
           allowClear
           placeholder="Mô Tả"
           value={searchDescription}
@@ -247,7 +240,7 @@ function Membership({ dataSource }) {
           style={{ width: 250, borderRadius: 6, padding: "6px 10px" }}
         />
         <Input
-          prefix={<SearchOutlined />}
+          prefix={<span style={{ color: "#bfbfbf" }}>🔍</span>}
           allowClear
           placeholder="Loại"
           value={searchType}
@@ -255,22 +248,24 @@ function Membership({ dataSource }) {
           style={{ width: 150, borderRadius: 6, padding: "6px 10px" }}
         />
         <DatePicker
-          prefix={<SearchOutlined />}
+          prefix={<span style={{ color: "#bfbfbf" }}>🔍</span>}
           placeholder="Ngày Bắt Đầu"
           value={searchStartDate ? dayjs(searchStartDate, "DD-MM-YYYY") : null}
           onChange={(date) =>
             setSearchStartDate(date ? date.format("DD-MM-YYYY") : "")
           }
           format="DD-MM-YYYY"
+          style={{ height: 36 }}
         />
         <DatePicker
-          prefix={<SearchOutlined />}
+          prefix={<span style={{ color: "#bfbfbf" }}>🔍</span>}
           placeholder="Ngày Kết Thúc"
           value={searchEndDate ? dayjs(searchEndDate, "DD-MM-YYYY") : null}
           onChange={(date) =>
             setSearchEndDate(date ? date.format("DD-MM-YYYY") : "")
           }
           format="DD-MM-YYYY"
+          style={{ height: 36 }}
         />
 
         <Button
@@ -283,17 +278,13 @@ function Membership({ dataSource }) {
             setSearchStartDate(null);
             setSearchEndDate(null);
           }}
-          style={{
-            borderRadius: 6,
-            display: "flex",
-            alignItems: "center",
-            gap: "6px",
-          }}
+          style={{ height: 36 }}
+          className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white rounded-md flex items-center justify-center"
         >
           Cài lại bộ lọc
         </Button>
       </div>
-      <Spin spinning={loading} tip="Loading...">
+      <Spin spinning={loading} tip="Đang Tải...">
         <Table
           scroll={{ x: 1700 }}
           dataSource={paginatedData}
@@ -304,20 +295,22 @@ function Membership({ dataSource }) {
           onChange={handleTableChange}
         />
       </Spin>
-      <Pagination
-        total={filteredData.length || 0}
-        pageSize={pageSize || 10}
-        current={currentPage || 1}
-        showSizeChanger
-        align="end"
-        showTotal={(total, range) =>
-          `${range[0]}-${range[1]} of ${total} items`
-        }
-        onChange={(page, pageSize) => {
-          setCurrentPage(page);
-          setPageSize(pageSize);
-        }}
-      />
+      <div className="pagination-container">
+        <Pagination
+          total={filteredData.length || 0}
+          pageSize={pageSize || 10}
+          current={currentPage || 1}
+          showSizeChanger
+          align="end"
+          showTotal={(total, range) =>
+            `${range[0]}-${range[1]} / ${total} gói thành viên`
+          }
+          onChange={(page, pageSize) => {
+            setCurrentPage(page);
+            setPageSize(pageSize);
+          }}
+        />
+      </div>
     </div>
   );
 }

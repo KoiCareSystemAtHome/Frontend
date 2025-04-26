@@ -43,66 +43,66 @@ const { Title, Text } = Typography;
 const { RangePicker } = DatePicker;
 
 // Static data for admins (updated to use 'amount')
-const allSalesData = {
-  2023: [
-    { month: "Tháng 1", amount: 3500 },
-    { month: "Tháng 2", amount: 4200 },
-    { month: "Tháng 3", amount: 3800 },
-    { month: "Tháng 4", amount: 4500 },
-    { month: "Tháng 5", amount: 4100 },
-    { month: "Tháng 6", amount: 3900 },
-    { month: "Tháng 7", amount: 4300 },
-    { month: "Tháng 8", amount: 4800 },
-    { month: "Tháng 9", amount: 4400 },
-    { month: "Tháng 10", amount: 4600 },
-    { month: "Tháng 11", amount: 4900 },
-    { month: "Tháng 12", amount: 5000 },
-  ],
-  2024: [
-    { month: "Tháng 1", amount: 4000 },
-    { month: "Tháng 2", amount: 4500 },
-    { month: "Tháng 3", amount: 4200 },
-    { month: "Tháng 4", amount: 4800 },
-    { month: "Tháng 5", amount: 4300 },
-    { month: "Tháng 6", amount: 4100 },
-    { month: "Tháng 7", amount: 4600 },
-    { month: "Tháng 8", amount: 5000 },
-    { month: "Tháng 9", amount: 4700 },
-    { month: "Tháng 10", amount: 4900 },
-    { month: "Tháng 11", amount: 5200 },
-    { month: "Tháng 12", amount: 5500 },
-  ],
-  2025: [
-    { month: "Tháng 1", amount: 4500 },
-    { month: "Tháng 2", amount: 4800 },
-    { month: "Tháng 3", amount: 4600 },
-    { month: "Tháng 4", amount: 5100 },
-    { month: "Tháng 5", amount: 4500 },
-    { month: "Tháng 6", amount: 4300 },
-    { month: "Tháng 7", amount: 4900 },
-    { month: "Tháng 8", amount: 5300 },
-    { month: "Tháng 9", amount: 5000 },
-    { month: "Tháng 10", amount: 5200 },
-    { month: "Tháng 11", amount: 5500 },
-    { month: "Tháng 12", amount: 5800 },
-  ],
-};
+// const allSalesData = {
+//   2023: [
+//     { month: "Tháng 1", amount: 3500 },
+//     { month: "Tháng 2", amount: 4200 },
+//     { month: "Tháng 3", amount: 3800 },
+//     { month: "Tháng 4", amount: 4500 },
+//     { month: "Tháng 5", amount: 4100 },
+//     { month: "Tháng 6", amount: 3900 },
+//     { month: "Tháng 7", amount: 4300 },
+//     { month: "Tháng 8", amount: 4800 },
+//     { month: "Tháng 9", amount: 4400 },
+//     { month: "Tháng 10", amount: 4600 },
+//     { month: "Tháng 11", amount: 4900 },
+//     { month: "Tháng 12", amount: 5000 },
+//   ],
+//   2024: [
+//     { month: "Tháng 1", amount: 4000 },
+//     { month: "Tháng 2", amount: 4500 },
+//     { month: "Tháng 3", amount: 4200 },
+//     { month: "Tháng 4", amount: 4800 },
+//     { month: "Tháng 5", amount: 4300 },
+//     { month: "Tháng 6", amount: 4100 },
+//     { month: "Tháng 7", amount: 4600 },
+//     { month: "Tháng 8", amount: 5000 },
+//     { month: "Tháng 9", amount: 4700 },
+//     { month: "Tháng 10", amount: 4900 },
+//     { month: "Tháng 11", amount: 5200 },
+//     { month: "Tháng 12", amount: 5500 },
+//   ],
+//   2025: [
+//     { month: "Tháng 1", amount: 4500 },
+//     { month: "Tháng 2", amount: 4800 },
+//     { month: "Tháng 3", amount: 4600 },
+//     { month: "Tháng 4", amount: 5100 },
+//     { month: "Tháng 5", amount: 4500 },
+//     { month: "Tháng 6", amount: 4300 },
+//     { month: "Tháng 7", amount: 4900 },
+//     { month: "Tháng 8", amount: 5300 },
+//     { month: "Tháng 9", amount: 5000 },
+//     { month: "Tháng 10", amount: 5200 },
+//     { month: "Tháng 11", amount: 5500 },
+//     { month: "Tháng 12", amount: 5800 },
+//   ],
+// };
 
-const pieData = [
-  { name: "A", value: 35 },
-  { name: "B", value: 45 },
-  { name: "C", value: 20 },
-];
+// const pieData = [
+//   { name: "A", value: 35 },
+//   { name: "B", value: 45 },
+//   { name: "C", value: 20 },
+// ];
 
 const COLORS = ["#4ade80", "#ef4444", "#3b82f6"];
 
-const bestSellers = [
-  { name: "Yamato Nishiki Koi Food", sold: 10 },
-  { name: "Yamato Nishiki Koi Food", sold: 10 },
-  { name: "Yamato Nishiki Koi Food", sold: 10 },
-  { name: "Yamato Nishiki Koi Food", sold: 10 },
-  { name: "Yamato Nishiki Koi Food", sold: 10 },
-];
+// const bestSellers = [
+//   { name: "Yamato Nishiki Koi Food", sold: 10 },
+//   { name: "Yamato Nishiki Koi Food", sold: 10 },
+//   { name: "Yamato Nishiki Koi Food", sold: 10 },
+//   { name: "Yamato Nishiki Koi Food", sold: 10 },
+//   { name: "Yamato Nishiki Koi Food", sold: 10 },
+// ];
 
 const StatCard = ({ title, value, icon, color }) => (
   <Card
@@ -346,7 +346,7 @@ const Dashboard = () => {
 
   return (
     <div>
-      <div className="font-semibold ml-4 text-2xl">Dashboard</div>
+      <div className="font-semibold ml-4 text-2xl">Bảng Điều Khiển</div>
       <div style={{ padding: 24, minHeight: "100vh", background: "#f0f2f5" }}>
         <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
           <Col>
@@ -363,7 +363,7 @@ const Dashboard = () => {
                 onClick={handleFetchData}
                 disabled={loading}
               >
-                {loading ? "Loading..." : "Tìm kiếm"}
+                {loading ? "Đang Tải..." : "Tìm kiếm"}
               </Button>
             </Space>
           </Col>

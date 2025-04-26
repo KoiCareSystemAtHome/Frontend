@@ -226,7 +226,7 @@ function FishParameterTable({ dataSource = [] }) {
         </Button>
       </div>
 
-      <Spin spinning={loading} tip="Loading...">
+      <Spin spinning={loading} tip="Đang Tải...">
         {/* {error && <p className="text-red-500 mb-4">Error: {error}</p>} */}
         {error && (
           <Alert
