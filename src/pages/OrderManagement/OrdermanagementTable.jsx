@@ -199,6 +199,7 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
     Confirmed: "Đã Xác Nhận",
     "In Progress": "Đang Giao Hàng",
     Complete: "Hoàn Thành",
+    delivered: "Đã Giao Hàng", // New status for database "delivered" but GHN "delivering"
     Fail: "Thất Bại",
     Cancel: "Đã Hủy",
   };
@@ -267,7 +268,7 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
       await Promise.all(
         listOrder
           .filter((order) =>
-            ["Confirmed", "In Progress", "Complete", "Fail"].includes(
+            ["Confirmed", "In Progress", "Complete", "Fail","delivered"].includes(
               order.status
             )
           ) // Only process confirmed orders
@@ -291,7 +292,13 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
                 let newStatus = order.status;
                 if (trackingInfo.status === "delivered") {
                   newStatus = "Complete";
-                } else if (trackingInfo.status === "delivery_fail") {
+                } else if (
+                  order.status === "delivered" &&
+                  trackingInfo.status === "delivering"
+                ) {
+                  newStatus = "delivered"; // Keep "delivered" for database status
+                }
+                 else if (trackingInfo.status === "delivery_fail") {
                   newStatus = "Fail";
                 } else if (trackingInfo.status !== "ready_to_pick") {
                   newStatus = "In Progress";
@@ -348,6 +355,7 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
         "Confirmed",
         "In Progress",
         "Complete",
+        "delivered",
         "Fail",
         "Cancel",
       ].includes(order.status)
@@ -360,7 +368,13 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
     } else if (trackingInfo) {
       if (trackingInfo.status === "delivered") {
         computedStatus = "Complete";
-      } else if (trackingInfo.status === "delivery_fail") {
+      } else if (
+        order.status === "delivered" &&
+        trackingInfo.status === "delivering"
+      ) {
+        computedStatus = "delivered"; // "Delivered" when database is "delivered" but GHN is "delivering"
+      }
+       else if (trackingInfo.status === "delivery_fail") {
         computedStatus = "Fail";
       } else if (trackingInfo.status !== "ready_to_pick") {
         computedStatus = "In Progress";
@@ -693,6 +707,8 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
           color={
             status === "Complete"
               ? "green"
+              : status === "Delivered" // Add color for new "Delivered" status
+              ? "cyan"
               : status === "Fail"
               ? "red"
               : status === "Confirmed"
