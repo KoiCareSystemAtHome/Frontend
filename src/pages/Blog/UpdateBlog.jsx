@@ -229,43 +229,6 @@ const UpdateBlog = (props) => {
               </Form.Item>
             </Col>
             <Col>
-              <p className="modalContent">Tag</p>
-              <Form.Item
-                name="tag"
-                initialValue={record.tag}
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng nhập tag!",
-                  },
-                ]}
-              >
-                <Input disabled placeholder="Tag"></Input>
-              </Form.Item>
-            </Col>
-            <Col>
-              <p className="modalContent">Trạng Thái</p>
-              <Form.Item
-                name="isApproved"
-                initialValue={record.isApproved}
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng chọn trạng thái!",
-                  },
-                ]}
-              >
-                <Select disabled placeholder="Status">
-                  <Select.Option value={true}>Chấp Nhận</Select.Option>
-                  <Select.Option value={false}>Từ Chối</Select.Option>
-                </Select>
-              </Form.Item>
-            </Col>
-          </Row>
-
-          {/* Các phần còn lại giữ nguyên */}
-          <Row>
-            <Col>
               <p className="modalContent">Loại</p>
               <Form.Item
                 name="type"
@@ -280,7 +243,7 @@ const UpdateBlog = (props) => {
                 <Input placeholder="Loại"></Input>
               </Form.Item>
             </Col>
-            <Col style={{ marginLeft: "6px" }}>
+            <Col style={{ marginLeft: "6px", width: "276px" }}>
               <p className="modalContent">Tên Sản Phẩm</p>
               <Form.Item
                 name="productIds"
@@ -301,6 +264,9 @@ const UpdateBlog = (props) => {
               </Form.Item>
             </Col>
           </Row>
+
+          {/* Các phần còn lại giữ nguyên */}
+          <Row></Row>
 
           <Row style={{ justifyContent: "space-between" }}>
             <Col>
@@ -331,6 +297,40 @@ const UpdateBlog = (props) => {
                 ]}
               >
                 <Input hidden disabled placeholder="Blog ID"></Input>
+              </Form.Item>
+            </Col>
+            <Col>
+              {/* <p className="modalContent">Tag</p> */}
+              <Form.Item
+                name="tag"
+                initialValue={record.tag}
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng nhập tag!",
+                  },
+                ]}
+              >
+                <Input hidden disabled placeholder="Tag"></Input>
+              </Form.Item>
+            </Col>
+            <Col>
+              {/* <p className="modalContent">Trạng Thái</p> */}
+              <Form.Item
+                name="isApproved"
+                initialValue={record.isApproved}
+                // rules={[
+                //   {
+                //     required: true,
+                //     message: "Vui lòng chọn trạng thái!",
+                //   },
+                // ]}
+              >
+                <Select hidden placeholder="Status">
+                  <Select.Option value={true}>Chấp Nhận</Select.Option>
+                  <Select.Option value={false}>Từ Chối</Select.Option>
+                  <Select.Option value={null}>Đang Chờ Duyệt</Select.Option>
+                </Select>
               </Form.Item>
             </Col>
           </Row>
