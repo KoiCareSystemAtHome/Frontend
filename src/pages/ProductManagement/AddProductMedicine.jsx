@@ -238,8 +238,7 @@ const AddProductMedicine = ({ onClose, shopId }) => {
       shopId: values.ShopId,
       categoryId: values.CategoryId,
       brand: values.Brand,
-      manufactureDate: values.ManufactureDate,
-      expiryDate: values.ExpiryDate,
+      weight: values.Weight,
       parameterImpacts: parameterImpactsObj, // Note: using parameterImpacts as per thunk
       image: imageUrl, // Use the image URL from the upload
       medicineName: values.MedicineName,
@@ -279,7 +278,7 @@ const AddProductMedicine = ({ onClose, shopId }) => {
       <Modal
         className="custom-modal"
         centered
-        title="Create Medicine"
+        title="Thêm Thuốc"
         open={isAddOpen}
         onCancel={handleCancel}
         width={870}
@@ -366,7 +365,25 @@ const AddProductMedicine = ({ onClose, shopId }) => {
                 <Input allowClear placeholder="Nhãn Hiệu" />
               </Form.Item>
             </Col>
-            {/* 3rd column - Medicine Name */}
+            {/* 3rd column */}
+            <Col>
+              <p className="modalContent">Khối Lượng</p>
+              <Form.Item
+                name="Weight"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng nhập khối lượng!",
+                  },
+                ]}
+              >
+                <Input allowClear placeholder="Khối Lượng"></Input>
+              </Form.Item>
+            </Col>
+          </Row>
+          {/* 3rd Row */}
+          <Row style={{ justifyContent: "space-between" }}>
+            {/* 1st Column */}
             <Col>
               <p className="modalContent">Tên Thuốc</p>
               <Form.Item
@@ -381,46 +398,7 @@ const AddProductMedicine = ({ onClose, shopId }) => {
                 <Input allowClear placeholder="Tên Thuốc" />
               </Form.Item>
             </Col>
-          </Row>
-          {/* 3rd Row */}
-          <Row style={{ justifyContent: "space-between" }}>
-            {/* 1st Column */}
-            {/* <Col>
-              <p className="modalContent">Ngày Sản Xuất</p>
-              <Form.Item
-                name="ManufactureDate"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng chọn ngày sản xuất!",
-                  },
-                ]}
-              >
-                <DatePicker
-                  style={{ width: "270px" }}
-                  placeholder="Ngày Sản Xuất"
-                />
-              </Form.Item>
-            </Col> */}
             {/* 2nd Column */}
-            {/* <Col>
-              <p className="modalContent">Ngày Hết Hạn</p>
-              <Form.Item
-                name="ExpiryDate"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng chọn ngày hết hạn!",
-                  },
-                ]}
-              >
-                <DatePicker
-                  style={{ width: "270px" }}
-                  placeholder="Ngày Hết Hạn"
-                />
-              </Form.Item>
-            </Col> */}
-            {/* 3rd Column - Category */}
             <Col>
               <p className="modalContent">Loại</p>
               <Form.Item
@@ -449,6 +427,7 @@ const AddProductMedicine = ({ onClose, shopId }) => {
                 </Select>
               </Form.Item>
             </Col>
+            {/* 3rd Column */}
             <Col>
               <p className="modalContent">Liều Dùng</p>
               <Form.Item
@@ -463,6 +442,10 @@ const AddProductMedicine = ({ onClose, shopId }) => {
                 <Input allowClear placeholder="Liều Dùng" />
               </Form.Item>
             </Col>
+          </Row>
+          {/* 4th Row */}
+          <Row>
+            {/* 1st Column */}
             <Col>
               <p className="modalContent">Triệu Chứng</p>
               <Form.Item
@@ -489,11 +472,8 @@ const AddProductMedicine = ({ onClose, shopId }) => {
                 </Select>
               </Form.Item>
             </Col>
-          </Row>
-          {/* 4th Row */}
-          <Row style={{ justifyContent: "space-between" }}>
-            {/* 3rd Column - Pond Param ID */}
-            <Col>
+            {/* 2nd Column */}
+            <Col style={{ marginLeft: "6px" }}>
               <p className="modalContent">Thông Số Hồ</p>
               <Form.Item name="PondParamId">
                 <Select

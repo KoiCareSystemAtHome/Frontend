@@ -12,7 +12,6 @@ import {
   Select,
   Upload,
 } from "antd";
-import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -96,15 +95,7 @@ const UpdateFood = (props, { shopId }) => {
       shopId: record.shopId,
       categoryId: record.category?.categoryId,
       brand: record.brand,
-      manufactureDate: record.manufactureDate
-        ? dayjs
-            .utc(record.manufactureDate)
-            .tz("Asia/Ho_Chi_Minh")
-            .startOf("day")
-        : null,
-      expiryDate: record.expiryDate
-        ? dayjs.utc(record.expiryDate).tz("Asia/Ho_Chi_Minh").startOf("day")
-        : null,
+      weight: record.weight,
       ParameterImpacts: parameterImpactsArray,
       image: record.image,
       name: record.name, // New field
@@ -223,15 +214,7 @@ const UpdateFood = (props, { shopId }) => {
         shopId: currentShopId,
         categoryId: values.categoryId,
         brand: values.brand,
-        manufactureDate: values.manufactureDate
-          ? dayjs(values.manufactureDate)
-              .tz("Asia/Ho_Chi_Minh", true)
-              .utc()
-              .format()
-          : null,
-        expiryDate: values.expiryDate
-          ? dayjs(values.expiryDate).tz("Asia/Ho_Chi_Minh", true).utc().format()
-          : null,
+        weight: values.weight,
         parameterImpacts: parameterImpactsObj,
         image: latestImage,
         name: values.name, // New field
@@ -393,40 +376,22 @@ const UpdateFood = (props, { shopId }) => {
           </Row>
           {/* 3rd Row */}
           <Row style={{ justifyContent: "space-between" }}>
-            {/* <Col>
-              <p className="modalContent">Ngày Sản Xuất</p>
+            {/* 1st Column */}
+            <Col>
+              <p className="modalContent">Khối Lượng</p>
               <Form.Item
-                name="manufactureDate"
+                name="weight"
                 rules={[
                   {
                     required: true,
-                    message: "Vui lòng chọn ngày sản xuât!",
+                    message: "Vui lòng nhập khối lượng!",
                   },
                 ]}
               >
-                <DatePicker
-                  style={{ width: "270px" }}
-                  placeholder="Ngày Sản Xuất"
-                />
+                <Input allowClear placeholder="Khối Lượng"></Input>
               </Form.Item>
             </Col>
-            <Col>
-              <p className="modalContent">Ngày Hết Hạn</p>
-              <Form.Item
-                name="expiryDate"
-                rules={[
-                  {
-                    required: true,
-                    message: "Ngày Hết Hạn!",
-                  },
-                ]}
-              >
-                <DatePicker
-                  style={{ width: "270px" }}
-                  placeholder="Ngày Hết Hạn"
-                />
-              </Form.Item>
-            </Col> */}
+            {/* 2nd Column */}
             <Col>
               <p className="modalContent">Tên Thức Ăn</p>
               <Form.Item
@@ -441,6 +406,7 @@ const UpdateFood = (props, { shopId }) => {
                 <Input placeholder="Tên Thức Ăn" />
               </Form.Item>
             </Col>
+            {/* 3rd Column */}
             <Col>
               <p className="modalContent">Độ Tuổi Từ</p>
               <Form.Item
@@ -455,6 +421,9 @@ const UpdateFood = (props, { shopId }) => {
                 <Input placeholder="Độ Tuổi Từ" type="number" />
               </Form.Item>
             </Col>
+          </Row>
+          {/* 4th Row */}
+          <Row>
             <Col style={{ marginLeft: "6px" }}>
               <p className="modalContent">Độ Tuổi Đến</p>
               <Form.Item
@@ -470,8 +439,6 @@ const UpdateFood = (props, { shopId }) => {
               </Form.Item>
             </Col>
           </Row>
-          {/* 4th Row: New Fields (name, ageFrom, ageTo) */}
-          <Row></Row>
           {/* 5th Row: Parameter Impacts */}
           <Col style={{ marginLeft: "6px" }}>
             <p className="modalContent">Thông Số Ảnh Hưởng</p>

@@ -290,6 +290,23 @@ function ProductManagementTable({ dataSource, shopId }) {
       key: "'category'",
     },
     {
+      title: "Khối Lượng",
+      dataIndex: "weight",
+      key: "weight",
+      render: (weight, record) => {
+        // Check if weight is valid (not undefined, null, or non-numeric)
+        if (weight === undefined || weight === null || isNaN(weight)) {
+          return <span>-</span>;
+        }
+
+        // Determine the unit based on product type
+        const unit = record.type === 2 ? "ml" : "g";
+
+        // Format the weight with the unit
+        return <span>{`${weight} ${unit}`}</span>;
+      },
+    },
+    {
       title: "Thông Số Ảnh Hưởng",
       dataIndex: "parameterImpacts",
       key: "parameterImpacts",

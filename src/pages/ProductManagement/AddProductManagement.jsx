@@ -115,7 +115,7 @@ const AddProductManagement = ({ onClose, shopId }) => {
     // Validate file type (optional)
     const isImage = file.type.startsWith("image/");
     if (!isImage) {
-      openNotification("error", "You can only upload image files!");
+      openNotification("error", "Bạn chỉ có thể tải lên các tệp hình ảnh!");
       return false;
     }
 
@@ -193,6 +193,7 @@ const AddProductManagement = ({ onClose, shopId }) => {
       shopId: values.ShopId,
       categoryId: values.CategoryId,
       brand: values.Brand,
+      weight: values.Weight,
       manufactureDate: values.ManufactureDate,
       expiryDate: values.ExpiryDate,
       parameterImpacts: parameterImpactsObj, // Note: using parameterImpacts as per thunk
@@ -230,7 +231,7 @@ const AddProductManagement = ({ onClose, shopId }) => {
       <Modal
         className="custom-modal"
         centered
-        title="Create New Accessory"
+        title="Thêm Dụng Cụ"
         open={isAddOpen}
         onCancel={handleCancel}
         width={870}
@@ -350,42 +351,21 @@ const AddProductManagement = ({ onClose, shopId }) => {
           </Row>
           {/* 3rd Row */}
           <Row>
-            {/* 1st Column */}
-            {/* <Col>
-              <p className="modalContent">Ngày Sản Xuất</p>
+            {/* 1st column */}
+            <Col>
+              <p className="modalContent">Khối Lượng</p>
               <Form.Item
-                name="ManufactureDate"
+                name="Weight"
                 rules={[
                   {
                     required: true,
-                    message: "Vui lòng chọn ngày sản xuất!",
+                    message: "Vui lòng nhập khối lượng!",
                   },
                 ]}
               >
-                <DatePicker
-                  style={{ width: "270px" }}
-                  placeholder="Ngày Sản Xuất"
-                ></DatePicker>
+                <Input allowClear placeholder="Khối Lượng"></Input>
               </Form.Item>
-            </Col> */}
-            {/* 2nd Column */}
-            {/* <Col style={{ marginLeft: "6px" }}>
-              <p className="modalContent">Ngày Hết Hạn</p>
-              <Form.Item
-                name="ExpiryDate"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng chọn ngày hết hạn!",
-                  },
-                ]}
-              >
-                <DatePicker
-                  style={{ width: "270px" }}
-                  placeholder="Ngày Hết Hạn"
-                ></DatePicker>
-              </Form.Item>
-            </Col> */}
+            </Col>
           </Row>
           {/* 4th Row */}
           <Col style={{ marginRight: "6px" }}>

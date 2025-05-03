@@ -2,7 +2,6 @@ import { EditOutlined, InboxOutlined, PlusOutlined } from "@ant-design/icons";
 import {
   Button,
   Col,
-  DatePicker,
   Form,
   Input,
   message,
@@ -13,11 +12,9 @@ import {
   Select,
   Upload,
 } from "antd";
-import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  getListProductManagement,
   getProductsByShopId,
   updateMedicineManagement,
 } from "../../redux/slices/productManagementSlice";
@@ -118,15 +115,7 @@ const UpdateMedicine = (props, { shopId }) => {
       shopId: record.shopId,
       categoryId: record.category?.categoryId,
       brand: record.brand,
-      manufactureDate: record.manufactureDate
-        ? dayjs
-            .utc(record.manufactureDate)
-            .tz("Asia/Ho_Chi_Minh")
-            .startOf("day")
-        : null,
-      expiryDate: record.expiryDate
-        ? dayjs.utc(record.expiryDate).tz("Asia/Ho_Chi_Minh").startOf("day")
-        : null,
+      weight: record.weight,
       ParameterImpacts: parameterImpactsArray,
       image: record.image,
       medicineName: record.medicineName, // New field
@@ -245,15 +234,7 @@ const UpdateMedicine = (props, { shopId }) => {
         shopId: currentShopId,
         categoryId: values.categoryId,
         brand: values.brand,
-        manufactureDate: values.manufactureDate
-          ? dayjs(values.manufactureDate)
-              .tz("Asia/Ho_Chi_Minh", true)
-              .utc()
-              .format()
-          : null,
-        expiryDate: values.expiryDate
-          ? dayjs(values.expiryDate).tz("Asia/Ho_Chi_Minh", true).utc().format()
-          : null,
+        weight: values.weight,
         parameterImpacts: parameterImpactsObj,
         image: latestImage,
         medicineName: values.medicineName, // New field
@@ -415,40 +396,22 @@ const UpdateMedicine = (props, { shopId }) => {
           </Row>
           {/* 3rd Row */}
           <Row style={{ justifyContent: "space-between" }}>
-            {/* <Col>
-              <p className="modalContent">Ngày Sản Xuất</p>
+            {/* 1st Column */}
+            <Col>
+              <p className="modalContent">Khối Lượng</p>
               <Form.Item
-                name="manufactureDate"
+                name="weight"
                 rules={[
                   {
                     required: true,
-                    message: "Vui lòng chọn ngày sản xuất!",
+                    message: "Vui lòng nhập khối lượng!",
                   },
                 ]}
               >
-                <DatePicker
-                  style={{ width: "270px" }}
-                  placeholder="Ngày Sản Xuất"
-                />
+                <Input allowClear placeholder="Khối Lượng"></Input>
               </Form.Item>
             </Col>
-            <Col>
-              <p className="modalContent">Ngày Hết Hạn</p>
-              <Form.Item
-                name="expiryDate"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng chọn ngày hết hạn!",
-                  },
-                ]}
-              >
-                <DatePicker
-                  style={{ width: "270px" }}
-                  placeholder="Ngày Hết Hạn"
-                />
-              </Form.Item>
-            </Col> */}
+            {/* 2nd Column */}
             <Col>
               <p className="modalContent">Tên Thuốc</p>
               <Form.Item
@@ -463,6 +426,7 @@ const UpdateMedicine = (props, { shopId }) => {
                 <Input placeholder="Tên Thuốc" />
               </Form.Item>
             </Col>
+            {/* 3rd Column */}
             <Col>
               <p className="modalContent">Liều Dùng</p>
               <Form.Item
@@ -477,6 +441,9 @@ const UpdateMedicine = (props, { shopId }) => {
                 <Input placeholder="Liều Dùng" />
               </Form.Item>
             </Col>
+          </Row>
+          {/* 4th Row */}
+          <Row>
             <Col style={{ marginLeft: "6px" }}>
               <p className="modalContent">Triệu Chứng</p>
               <Form.Item
@@ -506,8 +473,6 @@ const UpdateMedicine = (props, { shopId }) => {
               </Form.Item>
             </Col>
           </Row>
-          {/* 4th Row: New Fields (medicineName, dosageForm, symptoms) */}
-          <Row></Row>
           {/* 5th Row: Parameter Impacts */}
           <Col style={{ marginLeft: "6px" }}>
             <p className="modalContent">Thông Số Ảnh Hưởng</p>

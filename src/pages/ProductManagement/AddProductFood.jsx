@@ -195,8 +195,7 @@ const AddProductFood = ({ onClose, shopId }) => {
       shopId: values.ShopId,
       categoryId: values.CategoryId,
       brand: values.Brand,
-      manufactureDate: values.ManufactureDate,
-      expiryDate: values.ExpiryDate,
+      weight: values.Weight,
       parameterImpacts: parameterImpactsObj,
       image: imageUrl,
       name: values.Name,
@@ -235,7 +234,7 @@ const AddProductFood = ({ onClose, shopId }) => {
       <Modal
         className="custom-modal"
         centered
-        title="Create Food"
+        title="Thêm Thức Ăn"
         open={isAddOpen}
         onCancel={handleCancel}
         width={870}
@@ -322,7 +321,25 @@ const AddProductFood = ({ onClose, shopId }) => {
                 <Input allowClear placeholder="Nhãn Hiệu"></Input>
               </Form.Item>
             </Col>
-            {/* 3rd column - Age From */}
+            {/* 3rd column */}
+            <Col>
+              <p className="modalContent">Khối Lượng</p>
+              <Form.Item
+                name="Weight"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng nhập khối lượng!",
+                  },
+                ]}
+              >
+                <Input allowClear placeholder="Khối Lượng"></Input>
+              </Form.Item>
+            </Col>
+          </Row>
+          {/* 3rd Row */}
+          <Row style={{ justifyContent: "space-between" }}>
+            {/* 1st Column */}
             <Col>
               <p className="modalContent">Độ tuổi Từ</p>
               <Form.Item
@@ -337,10 +354,7 @@ const AddProductFood = ({ onClose, shopId }) => {
                 <Input allowClear placeholder="Độ Tuổi Từ" type="number" />
               </Form.Item>
             </Col>
-          </Row>
-          {/* 3rd Column */}
-          <Row style={{ justifyContent: "space-between" }}>
-            {/* 1st Column */}
+            {/* 2nd Column */}
             <Col>
               <p className="modalContent">Độ Tuổi Tới</p>
               <Form.Item
@@ -355,42 +369,7 @@ const AddProductFood = ({ onClose, shopId }) => {
                 <Input allowClear placeholder="Độ Tuổi Tới" type="number" />
               </Form.Item>
             </Col>
-            {/* 2nd Column */}
-            {/* <Col>
-              <p className="modalContent">Ngày Sản Xuất</p>
-              <Form.Item
-                name="ManufactureDate"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng chọn ngày sản xuất!",
-                  },
-                ]}
-              >
-                <DatePicker
-                  style={{ width: "270px" }}
-                  placeholder="Ngày Sản Xuất"
-                ></DatePicker>
-              </Form.Item>
-            </Col> */}
             {/* 3rd Column */}
-            {/* <Col>
-              <p className="modalContent">Ngày Hết Hạn</p>
-              <Form.Item
-                name="ExpiryDate"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng chọn ngày hết hạn!",
-                  },
-                ]}
-              >
-                <DatePicker
-                  style={{ width: "270px" }}
-                  placeholder="Ngày Hết Hạn"
-                ></DatePicker>
-              </Form.Item>
-            </Col> */}
             <Col>
               <p className="modalContent">Loại</p>
               <Form.Item
@@ -419,6 +398,9 @@ const AddProductFood = ({ onClose, shopId }) => {
                 </Select>
               </Form.Item>
             </Col>
+          </Row>
+          {/* 4th Row */}
+          <Row>
             <Col style={{ marginLeft: "6px" }}>
               <p className="modalContent">Tên Thức Ăn</p>
               <Form.Item
@@ -433,31 +415,6 @@ const AddProductFood = ({ onClose, shopId }) => {
                 <Input allowClear placeholder="Tên Thức Ăn"></Input>
               </Form.Item>
             </Col>
-          </Row>
-          {/* 4th Row */}
-          <Row>
-            {/* <Col>
-              <p className="modalContent">Type</p>
-              <Form.Item
-                name="Type"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please select a type!",
-                  },
-                ]}
-              >
-                <Select
-                  allowClear
-                  placeholder="Select Type"
-                  style={{ width: "270px" }}
-                >
-                  <Select.Option value="0">Food</Select.Option>
-                  <Select.Option value="1">Accessory</Select.Option>
-                  <Select.Option value="2">Medicine</Select.Option>
-                </Select>
-              </Form.Item>
-            </Col> */}
           </Row>
           {/* 5th Row */}
           {/* 1st column */}
