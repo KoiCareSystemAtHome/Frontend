@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Tag, Spin, Image } from "antd";
+import { Table, Button, Tag, Spin, Image, Select, message } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { useLocation, useNavigate, useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { getOrderDetail } from "../../redux/slices/orderSlice";
 import { fetchOrderTracking } from "../../redux/slices/ghnSlice";
-import { getProductById } from "../../redux/slices/productManagementSlice"; // Import getProductById
+import { getProductById } from "../../redux/slices/productManagementSlice";
 
 // Hàm định dạng ngày giờ
 const formatDateTime = (dateString) => {
@@ -49,11 +49,11 @@ const formatCurrency = (value) => {
   return value.toLocaleString("vi-VN", { style: "currency", currency: "VND" });
 };
 
-function OrderDetail() {
+function OrderDetailAdmin() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { orderId } = useParams();
-  const location = useLocation(); // Use useLocation to get navigation state
+  const location = useLocation();
 
   // Get rowIndex from navigation state, default to "N/A" if not provided
   const rowIndex = location.state?.rowIndex || "N/A";
@@ -80,29 +80,31 @@ function OrderDetail() {
   useEffect(() => {
     console.log("Fetching order details for ID:", orderId);
     if (orderId) {
-      dispatch(getOrderDetail(orderId)).then((res) => {
-        console.log("Fetched order Detail:", res);
-        if (
-          res.payload?.status === "Confirmed" ||
-          res.payload?.status === "Delivered" ||
-          res.payload?.status === "In Progress" ||
-          res.payload?.status === "Fail" ||
-          //res.payload?.status === "Cancel" ||
-          (res.payload?.status === "Complete" && res.payload?.oder_code)
-        ) {
-          console.log(
-            "Calling fetchOrderTracking with order_code:",
-            res.payload.oder_code
-          );
-          dispatch(fetchOrderTracking(res.payload.oder_code)).then(
-            (trackingRes) => {
-              console.log("Fetched tracking data:", trackingRes);
-            }
-          );
-        } else {
-          console.log("order_code not found in getOrderDetail response");
-        }
-      });
+      dispatch(getOrderDetail(orderId))
+        .then((res) => {
+          console.log("Fetched order Detail:", res);
+          if (
+            res.payload?.status === "Confirmed" ||
+            res.payload?.status === "Delivered" ||
+            (res.payload?.status === "Complete" && res.payload?.oder_code)
+          ) {
+            console.log(
+              "Calling fetchOrderTracking with order_code:",
+              res.payload.oder_code
+            );
+            dispatch(fetchOrderTracking(res.payload.oder_code)).then(
+              (trackingRes) => {
+                console.log("Fetched tracking data:", trackingRes);
+              }
+            );
+          } else {
+            console.log("order_code not found in getOrderDetail response");
+          }
+        })
+        .catch((err) => {
+          console.error("Failed to fetch order details:", err);
+          message.error("Không thể tải chi tiết đơn hàng. Vui lòng thử lại.");
+        });
     }
   }, [dispatch, orderId]);
 
@@ -147,24 +149,26 @@ function OrderDetail() {
     };
 
     fetchProductDetails();
-  }, [dispatch, order]); // Dependency on order
+  }, [dispatch, order]);
 
   // Xử lý trạng thái loading và error
-  if (orderStatus === "loading") return <p>Loading order details...</p>;
-  if (orderStatus === "failed") return <p>Error: {orderError}</p>;
-  if (trackingLoading) return <p>Loading tracking data...</p>;
-  if (trackingError) return <p>Error: {trackingError}</p>;
+  if (orderStatus === "loading") return <p>Đang tải chi tiết đơn hàng...</p>;
+  if (orderStatus === "failed" || !order) {
+    return (
+      <p>
+        Lỗi:{" "}
+        {orderError || "Không thể tải chi tiết đơn hàng. Vui lòng thử lại."}
+      </p>
+    );
+  }
+  if (trackingLoading) return <p>Đang tải dữ liệu theo dõi...</p>;
+  if (trackingError) return <p>Lỗi: {trackingError}</p>;
 
   // Debug trackingData
   console.log("trackingData:", trackingData);
 
-  const handleRefund = () => {
-    navigate("/shop/order-refund");
-  };
-
   const columns = [
     {
-      //title: "Mã Sản Phẩm",
       dataIndex: "productId",
       key: "productId",
       render: (_, __, index) => index + 1,
@@ -218,10 +222,14 @@ function OrderDetail() {
     image: item.image,
   }));
 
-  // Calculate totals
-  const subtotal = productDetails.reduce((sum, item) => sum + item.total, 0);
-  const shippingFee = Number(order?.shipFee) || 0; // Use actual shipping fee from order
+  // Calculate totals with null checks
+  const subtotal = productDetails.reduce(
+    (sum, item) => sum + (item.total || 0),
+    0
+  );
+  const shippingFee = Number(order?.shipFee) || 0;
   const total = subtotal + shippingFee;
+  const commission = total * 0.03; // Calculate 0.3% commission
 
   return (
     <div className="w-full">
@@ -231,7 +239,7 @@ function OrderDetail() {
           type="link"
           className="flex items-center px-0"
           icon={<ArrowLeftOutlined />}
-          onClick={() => navigate("/shop/orderManagement")}
+          onClick={() => navigate("/admin/orderManagement")}
         >
           Return
         </Button>
@@ -250,7 +258,7 @@ function OrderDetail() {
               <div className="space-y-3">
                 <div className="flex">
                   <span className="w-32 text-gray-600">Thành Viên</span>
-                  <span>{order?.customerName}</span>
+                  <span>{order?.customerName || "N/A"}</span>
                 </div>
                 <div className="flex">
                   <span className="w-32 text-gray-600">Số Điện Thoại</span>
@@ -258,21 +266,29 @@ function OrderDetail() {
                 </div>
                 <div className="flex">
                   <span className="w-32 text-gray-600">Địa Chỉ</span>
-                  <span>{`${order?.customerAddress?.wardName || ""}, ${
-                    order?.customerAddress?.districtName || ""
-                  }, ${order?.customerAddress?.provinceName || ""}`}</span>
+                  <span>
+                    {order?.customerAddress
+                      ? `${order.customerAddress.wardName || ""}, ${
+                          order.customerAddress.districtName || ""
+                        }, ${order.customerAddress.provinceName || ""}`
+                      : "N/A"}
+                  </span>
                 </div>
                 <div className="flex">
                   <span className="w-32 text-gray-600">Mã Đơn Hàng</span>
-                  <span>{order?.oder_code}</span>
+                  <span>{order?.oder_code || "N/A"}</span>
                 </div>
                 <div className="flex">
                   <span className="w-32 text-gray-600">Phí Ship</span>
                   <span>
                     {order?.shipFee
-                      ? formatCurrency(Number(order?.shipFee))
+                      ? formatCurrency(Number(order.shipFee))
                       : "N/A"}
                   </span>
+                </div>
+                <div className="flex">
+                  <span className="w-32 text-gray-600">Tiền Hoa Hồng</span>
+                  <span>{formatCurrency(commission)}</span>
                 </div>
                 <div className="flex">
                   <span className="w-32 text-gray-600">Tên Người Nhận</span>
@@ -284,7 +300,7 @@ function OrderDetail() {
                 </div>
                 <div className="flex">
                   <span className="w-32 text-gray-600">Ghi Chú</span>
-                  <span>{order?.note}</span>
+                  <span>{order?.note || "N/A"}</span>
                 </div>
               </div>
             </div>
@@ -338,7 +354,7 @@ function OrderDetail() {
                   ))
                 ) : (
                   <span className="text-gray-500">
-                    Không có lịch sử trạng thái
+                    Chưa có lịch sử trạng thái
                   </span>
                 )}
               </div>
@@ -385,4 +401,4 @@ function OrderDetail() {
   );
 }
 
-export default OrderDetail;
+export default OrderDetailAdmin;

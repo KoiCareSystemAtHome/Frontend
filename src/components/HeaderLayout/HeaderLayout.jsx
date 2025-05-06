@@ -100,7 +100,8 @@ const HeaderLayout = ({ title }) => {
           >
             <img
               src={
-                user?.avatar || "" // Fallback image if avatar is missing
+                user?.avatar ||
+                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXxZR0_1ISIJx_T4oB5-5OJVSNgSMFLe8eCw&s" // Fallback image if avatar is missing
               }
               className="w-10 h-10 rounded-full object-cover"
               alt="profile"

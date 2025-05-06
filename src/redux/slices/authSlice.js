@@ -236,6 +236,35 @@ export const uploadImage = createAsyncThunk(
   }
 );
 
+// Add the processPendingTransactionsById thunk
+export const processPendingTransactionsById = createAsyncThunk(
+  "Account/processPendingTransactionsById",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await postRequest(
+        "Account/process-pending-transactions-by-id",
+        {
+          id,
+        }
+      );
+
+      if (response && response.status === 200) {
+        message.success("Xử lý giao dịch đang chờ thành công!");
+      }
+      return response.data; // Return the response data (e.g., success message or processed transaction data)
+    } catch (error) {
+      message.error(
+        error.response?.data?.message ||
+          "Đã xảy ra lỗi trong quá trình xử lý giao dịch."
+      );
+      return rejectWithValue(
+        error.response?.data?.message ||
+          "Failed to process pending transactions"
+      );
+    }
+  }
+);
+
 const initialState = {
   user: JSON.parse(localStorage.getItem("user")) || null, // Load user from storage
   token: localStorage.getItem("token") || null,
@@ -416,6 +445,21 @@ const authSlice = createSlice({
       .addCase(updateProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Failed to update profile";
+      })
+      // Process Pending Transactions by ID
+      .addCase(processPendingTransactionsById.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(processPendingTransactionsById.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        // Optionally update state if the API returns relevant data
+      })
+      .addCase(processPendingTransactionsById.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          action.payload || "Failed to process pending transactions";
       });
   },
 });

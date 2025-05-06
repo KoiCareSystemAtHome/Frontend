@@ -1,15 +1,21 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { getRequest } from "../../services/httpMethods";
+import {
+  getRequest,
+  postRequest,
+  putRequest,
+} from "../../services/httpMethods";
 
 const initialState = {
   token: "",
-  transactionData: [], // For transactionByShop
+  transactions: [], // For transactionByShop
+  shopBalance: 0, // Store shop balance from the same API response
   productSalesSummary: null, // New state for product sales summary
   revenueData: null, // For revenueByShop
   totalRevenueData: null, // For totalRevenue
   orderStatusSummary: {}, // for shop users
   adminOrderStatusSummary: {}, // For admin users
+  walletWithdrawalData: null, // New state for wallet withdrawal data
   loading: false, // To track loading state
   error: null, // To track errors
 };
@@ -20,15 +26,18 @@ export const transactionByShop = createAsyncThunk(
   "Transaction/transaction-by-shop",
   async (shopid, { rejectWithValue }) => {
     try {
-      // Construct the URL with the shopid query parameter
       const res = await getRequest(
         `Transaction/transaction-by-shop?shopid=${shopid}`
       );
-      console.log("res", res);
-      return res.data; // Return the data to be stored in the Redux state
+      console.log("API response:", res);
+      console.log("API response data:", res.data);
+      // Normalize the response to ensure it's an array
+      return {
+        transactions: res.data.transactions || [], // Ensure transactions is an array
+        shopBalance: res.data.shopBalance || 0, // Assuming shopBalance is part of the response
+      };
     } catch (error) {
       console.log("Error", error);
-      // Use rejectWithValue to pass the error to the rejected state
       return rejectWithValue(
         error.response?.data || "Failed to fetch transactions"
       );
@@ -181,6 +190,83 @@ export const fetchOrderStatusSummary = createAsyncThunk(
   }
 );
 
+// New async thunk for wallet withdrawal
+export const getWalletWithdraw = createAsyncThunk(
+  "Transaction/get-wallet-withdraw",
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await getRequest("WalletWithdraw");
+      console.log("walletWithdraw response:", res);
+      return res.data; // Return the data to be stored in the Redux state
+    } catch (error) {
+      console.log("walletWithdraw error:", error);
+      return rejectWithValue(
+        error.response?.data || "Failed to process wallet withdrawal"
+      );
+    }
+  }
+);
+
+export const walletWithdrawByUser = createAsyncThunk(
+  "Transaction/wallet-withdraw-by-user",
+  async (userId, { rejectWithValue }) => {
+    try {
+      if (!userId) {
+        throw new Error("userId is required");
+      }
+      const res = await getRequest(`WalletWithdraw/user/${userId}`);
+      console.log("walletWithdrawByUser response:", res);
+      return res.data; // Return the data to be stored in the Redux state
+    } catch (error) {
+      console.log("walletWithdrawByUser error:", error);
+      return rejectWithValue(
+        error.response?.data || "Failed to fetch wallet withdrawal data"
+      );
+    }
+  }
+);
+
+export const walletWithdraw = createAsyncThunk(
+  "Transaction/wallet-withdraw",
+  async ({ userId, amount }, { rejectWithValue }) => {
+    try {
+      if (!userId || !amount) {
+        throw new Error("userId and amount are required");
+      }
+      const payload = { userId, amount };
+      const res = await postRequest("walletWithdraw", payload);
+      console.log("walletWithdraw response:", res);
+      return res.data; // Assuming the API returns withdrawal data
+    } catch (error) {
+      console.log("walletWithdraw error:", error);
+      return rejectWithValue(
+        error.response?.data || "Failed to process wallet withdrawal"
+      );
+    }
+  }
+);
+
+// New async thunk for updating wallet withdrawal status
+export const updateWalletWithdraw = createAsyncThunk(
+  "Transaction/update-wallet-withdraw",
+  async ({ withdrawId, status }, { rejectWithValue }) => {
+    try {
+      if (!withdrawId || !status) {
+        throw new Error("withdrawId and status are required");
+      }
+      const payload = { status };
+      const res = await putRequest(`WalletWithdraw/${withdrawId}`, payload);
+      console.log("updateWalletWithdraw response:", res);
+      return res.data;
+    } catch (error) {
+      console.log("updateWalletWithdraw error:", error);
+      return rejectWithValue(
+        error.response?.data || "Failed to update wallet withdrawal status"
+      );
+    }
+  }
+);
+
 const transactionSlice = createSlice({
   name: "transaction",
   initialState,
@@ -193,11 +279,14 @@ const transactionSlice = createSlice({
       })
       .addCase(transactionByShop.fulfilled, (state, action) => {
         state.loading = false;
-        state.transactionData = action.payload;
+        state.transactions = action.payload.transactions || []; // Correctly set the transactions array
+        state.shopBalance = action.payload.shopBalance || 0;
       })
       .addCase(transactionByShop.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+        state.transactions = [];
+        state.shopBalance = 0;
       })
       // revenueByShop
       .addCase(revenueByShop.pending, (state) => {
@@ -275,59 +364,66 @@ const transactionSlice = createSlice({
       .addCase(productSalesSummaryByShop.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
+      })
+      // Cases for walletWithdraw
+      .addCase(getWalletWithdraw.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getWalletWithdraw.fulfilled, (state, action) => {
+        state.loading = false;
+        state.walletWithdrawalData = Array.isArray(action.payload)
+          ? action.payload
+          : [];
+      })
+      .addCase(getWalletWithdraw.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        state.walletWithdrawalData = null;
+      })
+      // New cases for walletWithdrawByUser
+      .addCase(walletWithdrawByUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(walletWithdrawByUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.walletWithdrawalData = action.payload;
+      })
+      .addCase(walletWithdrawByUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        state.walletWithdrawalData = null;
+      })
+      // Cases for walletWithdraw
+      .addCase(walletWithdraw.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(walletWithdraw.fulfilled, (state, action) => {
+        state.loading = false;
+        state.walletWithdrawalData = action.payload; // Update with withdrawal response data
+      })
+      .addCase(walletWithdraw.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        state.walletWithdrawalData = null;
+      })
+      // Cases for updateWalletWithdraw
+      .addCase(updateWalletWithdraw.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateWalletWithdraw.fulfilled, (state, action) => {
+        state.loading = false;
+        state.walletWithdrawalData = action.payload;
+      })
+      .addCase(updateWalletWithdraw.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        state.walletWithdrawalData = null;
       });
   },
 });
 
 export default transactionSlice;
-
-// export const revenueByShop = createAsyncThunk(
-//   "Transaction/revenue-by-shop",
-//   async (shopid, startDate, endDate, { rejectWithValue }) => {
-//     try {
-//       // Construct the URL with the shopid query parameter
-//       const res = await getRequest(
-//         `Transaction/revenue-by-shop?shopid=${shopid}&startDate=${startDate}&endDate=${endDate}`
-//       );
-//       console.log("res", res);
-//       return res.data; // Return the data to be stored in the Redux state
-//     } catch (error) {
-//       console.log("Error", error);
-//       // Use rejectWithValue to pass the error to the rejected state
-//       return rejectWithValue(
-//         error.response?.data || "Failed to fetch transactions"
-//       );
-//     }
-//   }
-// );
-
-// export const revenueByShop = createAsyncThunk(
-//   "Transaction/revenue-by-shop",
-//   async ({ shopid, startDate, endDate }, { rejectWithValue }) => {
-//     try {
-//       // Construct the URL with the shopid and optional date parameters
-//       let url = `Transaction/revenue-by-shop?shopid=${shopid}`;
-//       if (startDate) url += `&startDate=${startDate}`;
-//       if (endDate) url += `&endDate=${endDate}`;
-//       const res = await getRequest(url);
-//       console.log("res", res);
-//       return res.data;
-//     } catch (error) {
-//       console.log("Error", error);
-//       return rejectWithValue(error.response?.data || "Failed to fetch revenue");
-//     }
-//   }
-// );
-
-// export const totalRevenue = createAsyncThunk(
-//   "Transaction/total-revenue",
-//   async () => {
-//     try {
-//       const res = await getRequest("Transaction/total-revenue");
-//       console.log("res", res);
-//       return res.data;
-//     } catch (error) {
-//       console.log("Error", error);
-//     }
-//   }
-// );

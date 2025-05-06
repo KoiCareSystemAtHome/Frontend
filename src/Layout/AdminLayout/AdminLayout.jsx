@@ -4,6 +4,7 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   ShopOutlined,
+  DollarCircleFilled,
 } from "@ant-design/icons";
 import { Layout, Menu, Button } from "antd";
 import { Route, Routes, useNavigate } from "react-router-dom";
@@ -20,6 +21,7 @@ import membershipIcon from "../../assets/membership.png";
 import accountIcon from "../../assets/account.png";
 import pondIcon from "../../assets/pond.png";
 import diseaseIcon from "../../assets/diseases.png";
+import orderIcon from "../../assets/order.png";
 import reportIcon from "../../assets/report.png";
 import blogIcon from "../../assets/blog.png";
 import foodIcon from "../../assets/carp-fish.png";
@@ -32,6 +34,10 @@ import UpdateProfile from "../../pages/UpdateProfile/UpdateProfile";
 import ReviewBlog from "../../pages/ReviewBlog/ReviewBlog";
 import ReviewBlogDetail from "../../pages/ReviewBlog/ReviewBlogDetail";
 import NormFood from "../../pages/NormFood/NormFood";
+import OrderManagementAdmin from "../../pages/reviewOrderAdmin/OrderManagementAdmin";
+import OrderDetailAdmin from "../../pages/reviewOrderAdmin/OrderDetailAdmin";
+import WithdrawAdmin from "../../pages/Withdraw/WithdrawAdmin";
+import ShopDetail from "../../pages/Shop/ShopDetail";
 
 const { Sider, Content } = Layout;
 
@@ -171,6 +177,33 @@ const AdminLayout = ({ children }) => {
                   />
                 </span>
               ),
+            },
+            {
+              key: "/admin/orderManagement",
+              label: "Đơn Đặt Hàng",
+              style: { color: "white" },
+              className: "group", // Add group class to the Blog menu item
+              icon: (
+                <span>
+                  <img
+                    src={orderIcon}
+                    alt="Order Icon"
+                    className={`w-5 transition-all duration-200 
+                                    invert group-hover:invert-0 ${
+                                      selectedKey === "/admin/orderManagement"
+                                        ? "invert-0"
+                                        : ""
+                                    }`}
+                  />
+                </span>
+              ),
+            },
+            {
+              key: "/admin/withdraw",
+              label: "Rút Tiền",
+              style: { color: "white" },
+              className: "group", // Add group class to the Blog menu item
+              icon: <DollarCircleFilled />,
             },
             {
               key: "/admin/membership",
@@ -380,9 +413,19 @@ const AdminLayout = ({ children }) => {
           <Routes>
             {/* Add other admin routes here */}
             <Route path="dashboard" element={<Dashboard />} />
+            <Route path="orderManagement" element={<OrderManagementAdmin />} />
+            <Route
+              path="order-detail/:orderId"
+              element={<OrderDetailAdmin />}
+            />
+            <Route path="withdraw" element={<WithdrawAdmin />} />
             <Route path="membership" element={<Membership />} />
             <Route path="account/member" element={<Member />} />
             <Route path="account/shop" element={<Shop />} />
+            <Route
+              path="/shop-details/:shopId/:userId"
+              element={<ShopDetail />}
+            />
             <Route path="parameter/fish" element={<FishParameter />} />
             <Route path="parameter/pond" element={<PondParameter />} />
             <Route path="diseases" element={<CommonDiseases />} />

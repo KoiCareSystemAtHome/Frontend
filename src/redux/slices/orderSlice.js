@@ -10,6 +10,21 @@ const initialState = {
   error: null,
 };
 
+// GET ALL LIST
+export const getAllListOrder = createAsyncThunk(
+  "Order/getAll",
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await getRequest(`Order/getAll`);
+      console.log("API Response Data:", res?.data); // Ensure data is coming from API
+      return res.data;
+    } catch (error) {
+      console.log("Error", error);
+      return rejectWithValue(error.response?.data || "Something went wrong");
+    }
+  }
+);
+
 // GET BY SHOP ID
 export const getListOrder = createAsyncThunk(
   "Order/getByShopId",
@@ -64,6 +79,19 @@ const orderSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+      // Get All List Order
+      .addCase(getAllListOrder.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(getAllListOrder.fulfilled, (state, action) => {
+        console.log("All Orders Loaded:", action.payload);
+        state.status = "succeeded";
+        state.listOrder = action.payload;
+      })
+      .addCase(getAllListOrder.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
       // Get List Order
       .addCase(getListOrder.pending, (state) => {
         state.status = "loading";

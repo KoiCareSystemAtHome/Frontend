@@ -300,10 +300,15 @@ const Dashboard = () => {
       if (monthIndex >= 0 && monthIndex < 12) {
         chartData[monthIndex] = {
           month: sale.month.toString(),
-          amount: sale.totalCount || 0,
-          foodCount: sale.foodCount || 0,
-          productCount: sale.productCount || 0,
-          medicineCount: sale.medicineCount || 0,
+          amount: (chartData[monthIndex].amount || 0) + (sale.totalCount || 0),
+          foodCount:
+            (chartData[monthIndex].foodCount || 0) + (sale.foodCount || 0),
+          productCount:
+            (chartData[monthIndex].productCount || 0) +
+            (sale.productCount || 0),
+          medicineCount:
+            (chartData[monthIndex].medicineCount || 0) +
+            (sale.medicineCount || 0),
         };
       }
     });

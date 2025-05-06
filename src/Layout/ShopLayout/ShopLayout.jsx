@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
+import {
+  DollarCircleFilled,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+} from "@ant-design/icons";
 import { Layout, Menu, Button } from "antd";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import "./ShopLayout.css";
@@ -19,6 +23,7 @@ import dashboardIcon from "../../assets/dashboard.png";
 import BlogDetail from "../../pages/Blog/BlogDetail";
 import ChangePassword from "../../pages/ChangePassword/ChangePassword";
 import UpdateProfile from "../../pages/UpdateProfile/UpdateProfile";
+import Transaction from "../../pages/Transaction/Transaction";
 
 const { Sider, Content } = Layout;
 
@@ -152,6 +157,13 @@ const ShopLayout = ({ children }) => {
               ),
             },
             {
+              key: "/shop/transaction",
+              label: "Giao Dịch",
+              style: { color: "white" },
+              className: "group", // Add group class to the Blog menu item
+              icon: <DollarCircleFilled />,
+            },
+            {
               key: "/shop/orderManagement",
               label: "Đơn Đặt Hàng",
               style: { color: "white" },
@@ -248,6 +260,7 @@ const ShopLayout = ({ children }) => {
         >
           <Routes>
             <Route path="dashboard" element={<Dashboard />} />
+            <Route path="transaction" element={<Transaction />} />
             <Route path="ordermanagement" element={<OrderManagement />} />
             <Route path="order-detail/:orderId" element={<OrderDetail />} />
             <Route path="order-refund" element={<OrderRefund />} />

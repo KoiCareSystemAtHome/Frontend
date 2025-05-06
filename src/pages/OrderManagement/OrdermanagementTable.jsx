@@ -679,19 +679,11 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
       dataIndex: "shipType",
       key: "shipType",
       render: (shipType, record) => {
-        const trackingInfo = trackingData[record.oder_code || record.orderId]; 
-        if (!trackingInfo) {
-          return "Chưa Xác Nhận Đơn"; // Fallback while tracking data is loading
+        // If the computedStatus is "Cancel" (Đã Hủy), display "Đơn đã hủy"
+        if (record.computedStatus === "Cancel") {
+          return "Đơn đã hủy";
         }
-        if (trackingInfo.status === "Unconfirmed") {
-          return "Chưa xác nhận"; // Display for unconfirmed orders
-        }
-        if (trackingInfo.status === "N/A") {
-          return "Không khả dụng"; // For invalid format
-        }
-        if (trackingInfo.status === "Error") {
-          return `Lỗi: ${trackingInfo.error || "Không thể theo dõi"}`; // Display error for confirmed orders with tracking issues
-        }
+        // Otherwise, display the existing shipType or a fallback
         return shipType || "Chưa có thông tin";
       },
     },
@@ -725,7 +717,7 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
       ),
     },
     {
-      title: "Phí Ship",
+      title: "Phí Vận Chuyển",
       dataIndex: "shipFee",
       key: "shipFee",
       render: (shipFee) => {
@@ -747,6 +739,12 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
       title: "Ghi Chú",
       dataIndex: "note",
       key: "note",
+      render: (note) => {
+        // If note is "string", display "không có ghi chú"
+        return note === "string"
+          ? "không có ghi chú"
+          : note || "không có ghi chú";
+      },
     },
     {
       title: "",
@@ -776,7 +774,7 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
               record.status === "Fail"
                 ? "Đã Xác Nhận"
                 : "Xác Nhận"}
-                {/* {record.status} */}
+              {/* {record.status} */}
             </Button>
           )}
 
@@ -800,9 +798,14 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
             )}
 
           {/* View Details button */}
-          {["In Progress", "Confirmed", "Complete", "Fail", "Cancel"].includes(
-            record.computedStatus
-          ) && (
+          {[
+            "In Progress",
+            "Confirmed",
+            "Complete",
+            "Delivered",
+            "Fail",
+            "Cancel",
+          ].includes(record.computedStatus) && (
             <Button
               type="text"
               icon={<EyeOutlined className="w-4 h-4" />}

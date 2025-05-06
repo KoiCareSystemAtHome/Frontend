@@ -29,3 +29,9 @@ export const getListCategorySelector = (state) =>
 
 export const getListNormFoodSelector = (state) =>
   state.normFoodSlice.listNormFood;
+
+export const getListTransactionSelector = (state) =>
+  state.transactionSlice.transactions;
+
+export const getListWalletWithdrawSelector = (state) =>
+  state.transactionSlice.walletWithdrawalData?.transactions || [];
