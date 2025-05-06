@@ -10,6 +10,8 @@ const initialState = {
   diseases: [],
   listDisease: [],
   diseaseDetail: null,
+  sickSymptoms: [], // Added for sick symptoms
+  sideEffects: [], // Added for side effects
   loading: false,
   error: null,
 };
@@ -35,6 +37,36 @@ export const getSymptoms = createAsyncThunk("Symptomp/type", async () => {
     console.log("Error", error);
   }
 });
+
+// GET Sick Symptoms (New)
+export const getSickSymptoms = createAsyncThunk(
+  "Diseases/sickSymptomps",
+  async () => {
+    try {
+      const res = await getRequest("Diseases/sickSymtomps");
+      console.log("res", res);
+      return res.data;
+    } catch (error) {
+      console.log("Error", error);
+      throw error;
+    }
+  }
+);
+
+// GET Side Effects (New)
+export const getSideEffects = createAsyncThunk(
+  "Diseases/sideEffects",
+  async () => {
+    try {
+      const res = await getRequest("Diseases/sideEffects");
+      console.log("res", res);
+      return res.data;
+    } catch (error) {
+      console.log("Error", error);
+      throw error;
+    }
+  }
+);
 
 // GET all med
 export const getMedicine = createAsyncThunk("Diseases", async () => {
@@ -106,6 +138,32 @@ const diseasesSlice = createSlice({
       })
       .addCase(getSymptoms.fulfilled, (state, action) => {
         state.listDisease = action.payload;
+      })
+      // Add handlers for sick symptoms
+      .addCase(getSickSymptoms.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getSickSymptoms.fulfilled, (state, action) => {
+        state.loading = false;
+        state.sickSymptoms = action.payload;
+      })
+      .addCase(getSickSymptoms.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch sick symptoms.";
+      })
+      // Add handlers for side effects
+      .addCase(getSideEffects.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getSideEffects.fulfilled, (state, action) => {
+        state.loading = false;
+        state.sideEffects = action.payload;
+      })
+      .addCase(getSideEffects.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch side effects.";
       })
       .addCase(createDisease.fulfilled, (state, action) => {
         state.listDisease.push(action.payload);

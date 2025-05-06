@@ -166,7 +166,7 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
   const [selectedProvince, setSelectedProvince] = useState(null);
   const [selectedDistrict, setSelectedDistrict] = useState(null);
   const [selectedWard, setSelectedWard] = useState(null);
-  const [selectedStatus, setSelectedStatus] = useState(null);
+  const [selectedStatus, setSelectedStatus] = useState("Confirmed");
 
   // Mapping of GHN statuses to shipType
   const ghnStatusToShipType = {
