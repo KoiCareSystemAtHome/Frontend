@@ -229,7 +229,7 @@ function OrderDetailAdmin() {
   );
   const shippingFee = Number(order?.shipFee) || 0;
   const total = subtotal + shippingFee;
-  const commission = total * 0.03; // Calculate 0.3% commission
+  const commission = subtotal * 0.03; // Calculate 0.3% commission
 
   return (
     <div className="w-full">
@@ -260,10 +260,10 @@ function OrderDetailAdmin() {
                   <span className="w-32 text-gray-600">Thành Viên</span>
                   <span>{order?.customerName || "N/A"}</span>
                 </div>
-                <div className="flex">
+                {/* <div className="flex">
                   <span className="w-32 text-gray-600">Số Điện Thoại</span>
                   <span>{order?.customerPhoneNumber || "N/A"}</span>
-                </div>
+                </div> */}
                 <div className="flex">
                   <span className="w-32 text-gray-600">Địa Chỉ</span>
                   <span>

@@ -196,7 +196,7 @@
 
 // export default WithdrawTableAdmin;
 
-import { Pagination, Spin, Table, Tag, Modal } from "antd";
+import { Pagination, Spin, Table, Button, Modal, Tag } from "antd";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -265,7 +265,7 @@ const tableStyles = `
   .fade-in {
     animation: fadeIn 0.5s ease-out;
   }
-    
+
   /* Custom styles for larger tags */
   .custom-tag {
     width: 120px; /* Adjust width as needed */
@@ -273,6 +273,11 @@ const tableStyles = `
     font-size: 14px; /* Adjust font size as needed */
     padding: 5px;
     cursor: pointer; /* Change cursor to pointer for better UX */
+  }
+    
+  /* Custom styles for action buttons */
+  .action-buttons .ant-btn {
+    margin-right: 8px;
   }
 `;
 
@@ -297,7 +302,10 @@ function WithdrawTableAdmin() {
     : walletWithdrawalData
     ? [walletWithdrawalData]
     : [];
-  const paginatedWithdrawalData = safeWithdrawalData.slice(
+  const filteredWithdrawalData = safeWithdrawalData.filter(
+    (item) => !["approve", "reject"].includes(item.status.toLowerCase())
+  );
+  const paginatedWithdrawalData = filteredWithdrawalData.slice(
     (withdrawalPage - 1) * withdrawalPageSize,
     withdrawalPage * withdrawalPageSize
   );
@@ -306,9 +314,7 @@ function WithdrawTableAdmin() {
     dispatch(getWalletWithdraw());
   }, [dispatch]);
 
-  const handleStatusChange = (record) => {
-    const currentStatus = record.status.toLowerCase();
-    const newStatus = currentStatus === "approve" ? "reject" : "approve";
+  const handleStatusChange = (record, newStatus) => {
     const actionText = newStatus === "approve" ? "chấp nhận" : "từ chối";
 
     Modal.confirm({
@@ -348,51 +354,16 @@ function WithdrawTableAdmin() {
       title: "Trạng Thái Rút Tiền",
       dataIndex: "status",
       key: "status",
-      render: (status, record) => {
+      render: (status) => {
         const statusLower = status ? status.toLowerCase() : "";
-        if (statusLower === "approve") {
+        if (statusLower === "pending") {
           return (
-            <Tag
-              color="green"
-              className="custom-tag"
-              icon={<CheckCircleOutlined />}
-              onClick={() => handleStatusChange(record)}
-            >
-              Đã Duyệt
-            </Tag>
-          );
-        } else if (statusLower === "pending") {
-          return (
-            <Tag
-              color="yellow"
-              className="custom-tag"
-              icon={<SyncOutlined />}
-              onClick={() => handleStatusChange(record)}
-            >
+            <Tag color="yellow" className="custom-tag" icon={<SyncOutlined />}>
               Đang Chờ
             </Tag>
           );
-        } else if (statusLower === "reject") {
-          return (
-            <Tag
-              color="red"
-              className="custom-tag"
-              icon={<CloseCircleOutlined />}
-              onClick={() => handleStatusChange(record)}
-            >
-              Từ Chối
-            </Tag>
-          );
         }
-        return (
-          <Tag
-            color="gray"
-            className="custom-tag"
-            onClick={() => handleStatusChange(record)}
-          >
-            {status || "N/A"}
-          </Tag>
-        );
+        return <span>{status || "N/A"}</span>;
       },
     },
     {
@@ -400,6 +371,31 @@ function WithdrawTableAdmin() {
       dataIndex: "createDate",
       key: "createDate",
       render: (text) => (text ? new Date(text).toLocaleString("vi-VN") : "N/A"),
+    },
+    {
+      title: "Hành Động",
+      key: "action",
+      render: (_, record) => (
+        <div className="action-buttons">
+          <Button
+            type="primary"
+            size="small"
+            onClick={() => handleStatusChange(record, "approve")}
+            disabled={record.status.toLowerCase() === "approve"}
+          >
+            Xác Nhận
+          </Button>
+          <Button
+            type="default"
+            size="small"
+            danger
+            onClick={() => handleStatusChange(record, "reject")}
+            disabled={record.status.toLowerCase() === "reject"}
+          >
+            Từ Chối
+          </Button>
+        </div>
+      ),
     },
   ];
 
@@ -415,7 +411,7 @@ function WithdrawTableAdmin() {
       </Spin>
       <div className="pagination-container">
         <Pagination
-          total={safeWithdrawalData.length}
+          total={filteredWithdrawalData.length}
           pageSize={withdrawalPageSize}
           current={withdrawalPage}
           showSizeChanger

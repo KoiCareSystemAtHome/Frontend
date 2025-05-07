@@ -659,6 +659,12 @@ function OrderManagementTableAdmin({ dataSource }) {
       title: "Ghi Chú",
       dataIndex: "note",
       key: "note",
+      render: (note) => {
+        // If note is "string", display "không có ghi chú"
+        return note === "string"
+          ? "không có ghi chú"
+          : note || "không có ghi chú";
+      },
     },
     {
       title: "Thao Tác",
@@ -668,10 +674,10 @@ function OrderManagementTableAdmin({ dataSource }) {
         // Check if the order meets the criteria for showing the "Process Transaction" button
         const showProcessButton =
           record.status?.toLowerCase() === "complete" &&
-          record.reportDetail?.status?.toLowerCase() === "pending";
+          record.transactionInfo?.transactionType?.toLowerCase() === "pending";
 
         console.log(
-          `Order ${record.orderId} - Show Process Button: ${showProcessButton}, Status: ${record.status}, Report Detail Status: ${record.reportDetail?.status}`
+          `Order ${record.orderId} - Show Process Button: ${showProcessButton}, Status: ${record.status}, Transaction Info Status: ${record.transactionInfo?.transactionType}`
         );
 
         return (
