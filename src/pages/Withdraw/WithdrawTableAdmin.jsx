@@ -203,11 +203,7 @@ import {
   getWalletWithdraw,
   updateWalletWithdraw,
 } from "../../redux/slices/transactionSlice";
-import {
-  CheckCircleOutlined,
-  CloseCircleOutlined,
-  SyncOutlined,
-} from "@ant-design/icons";
+import { SyncOutlined } from "@ant-design/icons";
 
 // CSS styles for enhanced visuals
 const tableStyles = `
@@ -265,15 +261,6 @@ const tableStyles = `
   .fade-in {
     animation: fadeIn 0.5s ease-out;
   }
-
-  /* Custom styles for larger tags */
-  .custom-tag {
-    width: 120px; /* Adjust width as needed */
-    text-align: center; /* Center the text inside the tag */
-    font-size: 14px; /* Adjust font size as needed */
-    padding: 5px;
-    cursor: pointer; /* Change cursor to pointer for better UX */
-  }
     
   /* Custom styles for action buttons */
   .action-buttons .ant-btn {
@@ -303,7 +290,7 @@ function WithdrawTableAdmin() {
     ? [walletWithdrawalData]
     : [];
   const filteredWithdrawalData = safeWithdrawalData.filter(
-    (item) => !["approve", "reject"].includes(item.status.toLowerCase())
+    (item) => item.status && !["Approve", "Reject"].includes(item.status)
   );
   const paginatedWithdrawalData = filteredWithdrawalData.slice(
     (withdrawalPage - 1) * withdrawalPageSize,
@@ -315,7 +302,7 @@ function WithdrawTableAdmin() {
   }, [dispatch]);
 
   const handleStatusChange = (record, newStatus) => {
-    const actionText = newStatus === "approve" ? "chấp nhận" : "từ chối";
+    const actionText = newStatus === "Approve" ? "Chấp nhận" : "Từ chối";
 
     Modal.confirm({
       centered: true,
@@ -330,7 +317,7 @@ function WithdrawTableAdmin() {
         });
       },
       onCancel: () => {},
-      okText: "Xác nhận",
+      okText: "Chấp Nhận",
       cancelText: "Hủy",
     });
   };
@@ -345,9 +332,14 @@ function WithdrawTableAdmin() {
         index + 1 + (withdrawalPage - 1) * withdrawalPageSize,
     },
     {
-      title: "Số Tiền Rút",
-      dataIndex: "money",
-      key: "money",
+      title: "Tên Người Rút",
+      dataIndex: "userName",
+      key: "userName",
+    },
+    {
+      title: "Số Dư Tài Khoản",
+      dataIndex: "currentBalance",
+      key: "currentBalance",
       render: (text) => (text ? parseInt(text).toLocaleString() + " đ" : "N/A"),
     },
     {
@@ -355,8 +347,8 @@ function WithdrawTableAdmin() {
       dataIndex: "status",
       key: "status",
       render: (status) => {
-        const statusLower = status ? status.toLowerCase() : "";
-        if (statusLower === "pending") {
+        const statusLower = status ? status : "";
+        if (statusLower === "Pending") {
           return (
             <Tag color="yellow" className="custom-tag" icon={<SyncOutlined />}>
               Đang Chờ
@@ -373,6 +365,12 @@ function WithdrawTableAdmin() {
       render: (text) => (text ? new Date(text).toLocaleString("vi-VN") : "N/A"),
     },
     {
+      title: "Số Tiền Rút",
+      dataIndex: "money",
+      key: "money",
+      render: (text) => (text ? parseInt(text).toLocaleString() + " đ" : "N/A"),
+    },
+    {
       title: "Hành Động",
       key: "action",
       render: (_, record) => (
@@ -380,17 +378,17 @@ function WithdrawTableAdmin() {
           <Button
             type="primary"
             size="small"
-            onClick={() => handleStatusChange(record, "approve")}
-            disabled={record.status.toLowerCase() === "approve"}
+            onClick={() => handleStatusChange(record, "Approve")}
+            disabled={record.status && record.status === "Approve"}
           >
-            Xác Nhận
+            Chấp Nhận
           </Button>
           <Button
             type="default"
             size="small"
             danger
-            onClick={() => handleStatusChange(record, "reject")}
-            disabled={record.status.toLowerCase() === "reject"}
+            onClick={() => handleStatusChange(record, "Reject")}
+            disabled={record.status && record.status === "Reject"}
           >
             Từ Chối
           </Button>

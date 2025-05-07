@@ -541,19 +541,16 @@ function OrderManagementTableAdmin({ dataSource }) {
   };
 
   // Handler for processing transaction
-  const handleProcessTransaction = (transactionId) => {
-    if (!transactionId) {
-      console.error("No transactionId provided for processing");
+  const handleProcessTransaction = (orderId) => {
+    if (!orderId) {
+      console.error("No orderId provided for processing");
       return;
     }
 
-    dispatch(processPendingTransactionsById(transactionId))
+    dispatch(processPendingTransactionsById(orderId))
       .unwrap()
       .then(() => {
-        console.log(
-          "Transaction processed successfully for ID:",
-          transactionId
-        );
+        console.log("Transaction processed successfully for ID:", orderId);
       })
       .catch((error) => {
         console.error("Error processing transaction:", error);
@@ -691,11 +688,7 @@ function OrderManagementTableAdmin({ dataSource }) {
             {showProcessButton && (
               <Button
                 type="primary"
-                onClick={() =>
-                  handleProcessTransaction(
-                    record.transactionInfo?.transactionId
-                  )
-                }
+                onClick={() => handleProcessTransaction(record.orderId)}
                 loading={processingLoading}
                 className="flex items-center justify-center"
               >
