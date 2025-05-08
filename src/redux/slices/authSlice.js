@@ -242,7 +242,7 @@ export const processPendingTransactionsById = createAsyncThunk(
   async (id, { rejectWithValue }) => {
     try {
       const response = await postRequest(
-        "Account/process-pending-transactions-by-id",
+        "Account/process-pending-transactions-by-id?id=" + id,
         {
           id,
         }
