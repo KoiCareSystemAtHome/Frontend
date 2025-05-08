@@ -174,7 +174,7 @@ function TransactionTable({ shopId }) {
     },
     {
       title: "Số Tiền Giao Dịch",
-      dataIndex: ["payment", "amount"],
+      dataIndex: "amount",
       key: "amount",
       render: (text) => (text ? parseInt(text).toLocaleString() + " đ" : "N/A"),
     },
