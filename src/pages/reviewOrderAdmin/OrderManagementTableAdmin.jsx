@@ -345,13 +345,14 @@
 
 // export default OrderManagementTableAdmin;
 
-import { EyeOutlined } from "@ant-design/icons";
-import { Button, Pagination, Spin, Table, Tag } from "antd";
+import { EyeOutlined, ReloadOutlined } from "@ant-design/icons";
+import { Button, Input, Pagination, Select, Spin, Table, Tag } from "antd";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { fetchOrderTracking } from "../../redux/slices/ghnSlice";
 import { processPendingTransactionsById } from "../../redux/slices/authSlice";
+import { getAllListOrder } from "../../redux/slices/orderSlice";
 
 // CSS styles for enhanced visuals
 const tableStyles = `
@@ -470,12 +471,26 @@ function OrderManagementTableAdmin({ dataSource }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
+  const [searchShopName, setSearchShopName] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState(null);
+
   // Get loading state for transaction processing from authSlice
   const { loading: processingLoading } = useSelector(
     (state) => state.authSlice || {}
   );
 
-  const paginatedData = dataSource.slice(
+  // Filter data based on search criteria
+  const filteredData = dataSource.filter((order) => {
+    const matchesShopName = order.shopName
+      ?.toLowerCase()
+      .includes(searchShopName.toLowerCase());
+    const matchesStatus = selectedStatus
+      ? order.status === selectedStatus
+      : true;
+    return matchesShopName && matchesStatus;
+  });
+
+  const paginatedData = filteredData.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
@@ -488,6 +503,13 @@ function OrderManagementTableAdmin({ dataSource }) {
     Delivered: "Đã Giao Hàng",
     Fail: "Thất Bại",
     Cancel: "Đã Hủy",
+  };
+
+  const resetFilters = () => {
+    setSearchShopName("");
+    setSelectedStatus(null);
+    setCurrentPage(1);
+    setPageSize(10);
   };
 
   // Fetch tracking data for all orders with valid order codes
@@ -550,6 +572,7 @@ function OrderManagementTableAdmin({ dataSource }) {
     dispatch(processPendingTransactionsById(orderId))
       .unwrap()
       .then(() => {
+        dispatch(getAllListOrder());
         console.log("Transaction processed successfully for ID:", orderId);
       })
       .catch((error) => {
@@ -573,11 +596,11 @@ function OrderManagementTableAdmin({ dataSource }) {
       dataIndex: "customerName",
       key: "customerName",
     },
-    {
-      title: "Địa Chỉ Thành Viên",
-      dataIndex: "customerAddress",
-      key: "customerAddress",
-    },
+    // {
+    //   title: "Địa Chỉ Thành Viên",
+    //   dataIndex: "customerAddress",
+    //   key: "customerAddress",
+    // },
     {
       title: "Tình Trạng Giao Hàng",
       dataIndex: "shipType",
@@ -664,6 +687,19 @@ function OrderManagementTableAdmin({ dataSource }) {
       },
     },
     {
+      title: "Trạng Thái Báo Cáo",
+      key: "reportStatus",
+      render: (_, record) => {
+        const reportStatus = record.reportDetail?.status;
+        if (reportStatus === "Pending") {
+          return <Tag color="yellow">Hàng đang chờ báo cáo</Tag>;
+        } else if (reportStatus === "Approve") {
+          return <Tag color="green">Hàng đã báo cáo</Tag>;
+        }
+        return null; // No tag if no relevant status
+      },
+    },
+    {
       title: "Thao Tác",
       dataIndex: "action",
       key: "action",
@@ -706,10 +742,47 @@ function OrderManagementTableAdmin({ dataSource }) {
     setTimeout(() => {
       setLoading(false);
     }, 2000);
-  }, [dataSource, currentPage, pageSize]);
+  }, [dataSource, currentPage, pageSize, searchShopName, selectedStatus]);
 
   return (
     <div className="product-management-table" style={{ padding: "16px" }}>
+      <div className="filter-container">
+        <Input
+          prefix={<span style={{ color: "#bfbfbf" }}>🔍</span>}
+          placeholder="Tên cửa hàng"
+          value={searchShopName}
+          style={{ width: "220px", height: 36 }}
+          onChange={(e) => {
+            setSearchShopName(e.target.value);
+            setCurrentPage(1); // Reset to first page on search
+          }}
+          allowClear
+        />
+        <Select
+          prefix={<span style={{ color: "#bfbfbf" }}>🔍</span>}
+          placeholder="Chọn trạng thái"
+          value={selectedStatus}
+          style={{ width: 200, height: 36 }}
+          onChange={(value) => {
+            setSelectedStatus(value);
+            setCurrentPage(1); // Reset to first page on filter
+          }}
+          allowClear
+          options={Object.keys(statusTranslations).map((status) => ({
+            value: status,
+            label: statusTranslations[status],
+          }))}
+        />
+        <Button
+          icon={<ReloadOutlined />}
+          onClick={resetFilters}
+          type="default"
+          style={{ height: 36 }}
+          className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white rounded-md flex items-center justify-center"
+        >
+          Đặt lại bộ lọc
+        </Button>
+      </div>
       <Spin spinning={loading} tip="Đang Tải...">
         <Table
           scroll={{ x: "1500px" }}
@@ -722,13 +795,13 @@ function OrderManagementTableAdmin({ dataSource }) {
       </Spin>
       <div className="pagination-container">
         <Pagination
-          total={dataSource.length}
+          total={filteredData.length}
           pageSize={pageSize}
           current={currentPage}
           showSizeChanger
           align="end"
           showTotal={(total, range) =>
-            `${range[0]}-${range[1]} / ${total} thành viên`
+            `${range[0]}-${range[1]} / ${total} đơn hàng`
           }
           onChange={(page, pageSize) => {
             setCurrentPage(page);

@@ -147,6 +147,8 @@ function ReportDetail() {
         return "Chấp Nhận";
       case "Reject":
         return "Từ Chối";
+      case "Pending":
+        return "Đang Chờ";
       default:
         return "N/A";
     }
