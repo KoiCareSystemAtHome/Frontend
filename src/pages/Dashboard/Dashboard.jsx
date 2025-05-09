@@ -173,10 +173,7 @@ const CustomTooltip = ({ active, payload, label, userRole }) => {
 
 const Dashboard = () => {
   const [selectedYear, setSelectedYear] = useState("2025");
-  const [dateRange, setDateRange] = useState([
-    dayjs().subtract(30, "days"),
-    dayjs(),
-  ]);
+  const [dateRange, setDateRange] = useState(null);
   // State to manage visibility of each line
   const [lineVisibility, setLineVisibility] = useState({
     total: true, // Tổng Sản Phẩm

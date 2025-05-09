@@ -221,14 +221,14 @@ function MemberTable({ dataSource }) {
       sorter: (a, b) => new Date(a.createdDate) - new Date(b.createdDate), // Sort by createdDate
       sortDirections: ["ascend", "descend"], // Enable ascending and descending sort
     },
-    {
-      title: "Ngày Kết Thúc",
-      dataIndex: "validUntil",
-      key: "validUntil",
-      render: (date) => formatDate(date), // Format the date here
-      sorter: (a, b) => new Date(a.validUntil) - new Date(b.validUntil), // Sort by validUntil
-      sortDirections: ["ascend", "descend"], // Enable ascending and descending sort
-    },
+    // {
+    //   title: "Ngày Kết Thúc",
+    //   dataIndex: "validUntil",
+    //   key: "validUntil",
+    //   render: (date) => formatDate(date), // Format the date here
+    //   sorter: (a, b) => new Date(a.validUntil) - new Date(b.validUntil), // Sort by validUntil
+    //   sortDirections: ["ascend", "descend"], // Enable ascending and descending sort
+    // },
   ];
 
   useEffect(() => {
@@ -275,8 +275,8 @@ function MemberTable({ dataSource }) {
           />
         </div>
 
-        <div>
-          {/* <span style={{ marginRight: "0.5rem" }}>Ngày kết thúc:</span> */}
+        {/* <div>
+          <span style={{ marginRight: "0.5rem" }}>Ngày kết thúc:</span>
           <DatePicker
             prefix={<span style={{ color: "#bfbfbf" }}>🔍</span>}
             placeholder="Ngày Kết Thúc"
@@ -285,7 +285,7 @@ function MemberTable({ dataSource }) {
             value={validUntil}
             style={{ height: 36 }}
           />
-        </div>
+        </div> */}
 
         <Button
           icon={<ReloadOutlined />}

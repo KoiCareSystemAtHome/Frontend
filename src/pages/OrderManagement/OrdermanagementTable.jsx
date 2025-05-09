@@ -368,6 +368,8 @@ function OrdermanagementTable({ dataSource, shopId, ghNid }) {
 
     if (order.status === "Cancel") {
       computedStatus = "Cancel";
+    } else if (order.status === "Fail") {
+      computedStatus = "Fail"; // Prioritize database "Fail" status
     } else if (trackingInfo) {
       if (trackingInfo.status === "delivered") {
         computedStatus = "Complete";

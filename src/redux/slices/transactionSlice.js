@@ -49,10 +49,20 @@ export const productSalesSummaryByShop = createAsyncThunk(
   "Transaction/product-sales-summary-by-shop",
   async ({ shopId, startDate, endDate }, { rejectWithValue }) => {
     try {
-      // Construct the URL with the shopid query parameter
-      const res = await getRequest(
-        `Transaction/product-sales-summary-by-shop?shopid=${shopId}&startDate=${startDate}&endDate=${endDate}`
-      );
+      // Base URL with shopId
+      let url = `Transaction/product-sales-summary-by-shop?shopid=${shopId}`;
+
+      // Add startDate and endDate to the query string only if they are provided
+      const queryParams = [];
+      if (startDate) queryParams.push(`startDate=${startDate}`);
+      if (endDate) queryParams.push(`endDate=${endDate}`);
+
+      // Append query parameters if any exist
+      if (queryParams.length > 0) {
+        url += `&${queryParams.join("&")}`;
+      }
+
+      const res = await getRequest(url);
       console.log("res", res);
       return res.data; // Return the data to be stored in the Redux state
     } catch (error) {
@@ -69,10 +79,20 @@ export const fetchProductSalesSummary = createAsyncThunk(
   "Transaction/product-sales-summary",
   async ({ startDate, endDate }, { rejectWithValue }) => {
     try {
-      // Construct the URL with the shopid query parameter
-      const res = await getRequest(
-        `Transaction/product-sales-summary?startDate=${startDate}&endDate=${endDate}`
-      );
+      // Base URL
+      let url = `Transaction/product-sales-summary`;
+
+      // Add startDate and endDate to the query string only if they are provided
+      const queryParams = [];
+      if (startDate) queryParams.push(`startDate=${startDate}`);
+      if (endDate) queryParams.push(`endDate=${endDate}`);
+
+      // Append query parameters if any exist
+      if (queryParams.length > 0) {
+        url += `?${queryParams.join("&")}`;
+      }
+
+      const res = await getRequest(url);
       console.log("res", res);
       return res.data; // Return the data to be stored in the Redux state
     } catch (error) {
@@ -148,16 +168,25 @@ export const fetchOrderStatusSummaryByShop = createAsyncThunk(
   "transaction/fetchOrderStatusSummaryByShop",
   async ({ shopId, startDate, endDate }, { rejectWithValue }) => {
     try {
-      const response = await getRequest(
-        `Transaction/order-status-summary-by-shop?shopid=${shopId}&startDate=${startDate}&endDate=${endDate}`,
-        {
-          params: {
-            shopid: shopId,
-            startDate,
-            endDate,
-          },
-        }
-      );
+      // Base URL with shopId
+      let url = `Transaction/order-status-summary-by-shop?shopid=${shopId}`;
+
+      // Add startDate and endDate to the query string only if they are provided
+      const queryParams = [];
+      if (startDate) queryParams.push(`startDate=${startDate}`);
+      if (endDate) queryParams.push(`endDate=${endDate}`);
+
+      // Append query parameters if any exist
+      if (queryParams.length > 0) {
+        url += `&${queryParams.join("&")}`;
+      }
+
+      // Construct params object, excluding undefined/null values
+      const params = { shopid: shopId };
+      if (startDate) params.startDate = startDate;
+      if (endDate) params.endDate = endDate;
+
+      const response = await getRequest(url, { params });
       return response.data;
     } catch (error) {
       return rejectWithValue(
@@ -172,15 +201,25 @@ export const fetchOrderStatusSummary = createAsyncThunk(
   "transaction/fetchOrderStatusSummary",
   async ({ startDate, endDate }, { rejectWithValue }) => {
     try {
-      const response = await getRequest(
-        `Transaction/order-status-summary?startDate=${startDate}&endDate=${endDate}`,
-        {
-          params: {
-            startDate,
-            endDate,
-          },
-        }
-      );
+      // Base URL
+      let url = `Transaction/order-status-summary`;
+
+      // Add startDate and endDate to the query string only if they are provided
+      const queryParams = [];
+      if (startDate) queryParams.push(`startDate=${startDate}`);
+      if (endDate) queryParams.push(`endDate=${endDate}`);
+
+      // Append query parameters if any exist
+      if (queryParams.length > 0) {
+        url += `?${queryParams.join("&")}`;
+      }
+
+      // Construct params object, excluding undefined/null values
+      const params = {};
+      if (startDate) params.startDate = startDate;
+      if (endDate) params.endDate = endDate;
+
+      const response = await getRequest(url, { params });
       return response.data;
     } catch (error) {
       return rejectWithValue(
